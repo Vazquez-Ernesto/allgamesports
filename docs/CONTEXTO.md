@@ -1,0 +1,179 @@
+# Contexto del proyecto: qué se hizo, cómo y por qué
+
+Este documento cuenta la historia de la primera sesión de trabajo: las
+decisiones, los problemas que aparecieron y cómo se resolvieron, qué se probó
+y qué no. `CLAUDE.md` tiene las reglas y la estructura; acá está el porqué.
+
+## 1. De dónde salió la idea
+
+El objetivo original era un sitio tipo catálogo de juegos de consola
+porteados que corren en el navegador, sin emuladores ni ROMs, usando
+ingeniería inversa con la herramienta REA (`morluto/rea`).
+
+Lo que se investigó antes de escribir código:
+
+- **REA no portea juegos.** Es un CLI y servidor MCP que conecta agentes de
+  IA con Ghidra, IDA, JADX y otras herramientas de análisis. Su caso de
+  muestra con juegos (DX-Ball) reconstruyó 270 funciones en C idénticas al
+  original, pero el resultado es un ejecutable nativo de Windows, no web.
+- **Hay cuatro caminos para llevar un juego al navegador**, de menor a mayor
+  esfuerzo por juego:
+  1. Emulador compilado a WASM con el juego precargado (lo que usan casi
+     todos los catálogos grandes).
+  2. Motor de código abierto compilado a WASM (lo que hicimos con Doom).
+  3. Recompilación estática: el código máquina de la consola se traduce a
+     C y luego a WASM, más un runtime que imita la consola (N64Recomp,
+     ps2-web-recomp).
+  4. Decompilación: reconstruir el código fuente a mano (años de trabajo).
+- **Límite legal.** Los proyectos serios no incluyen datos del juego: cada
+  jugador aporta su copia. De ahí sale la regla del catálogo: se hospeda solo
+  lo que tiene licencia libre; lo comercial se juega con el archivo propio.
+
+Consecuencia práctica: un catálogo grande y rápido sale de motores libres
+(camino 2). REA queda como vía de aprendizaje de ingeniería inversa, no como
+requisito para sumar juegos.
+
+## 2. Por qué Doom y por qué Freedoom
+
+Doom fue el primer port porque id Software liberó el código en 1997 y existe
+`doomgeneric`, una versión que reduce todo lo que el juego le pide al sistema
+a seis funciones. Portarlo es escribir esas seis funciones.
+
+El motor es libre (GPL-2.0), pero los niveles originales no. Por eso:
+
+- Lo hospedado es **Freedoom 0.13** (BSD-3): Phase 1 y Phase 2.
+- El Doom original se juega con la entrada "DOOM: tu propio WAD", que acepta
+  el archivo del jugador y lo guarda en su navegador (OPFS).
+
+## 3. Cómo se construyó el motor
+
+Entorno de la sesión: Ubuntu 24.04, Emscripten 3.1.6 instalado con `apt`,
+Node 22. El código de doomgeneric se copió del commit que figura en
+`engines/doom/UPSTREAM_COMMIT`, y se borraron las capas de otras plataformas
+(SDL, Windows, X11, Allegro).
+
+### Decisiones
+
+| Decisión | Motivo |
+|---|---|
+| No usar SDL; capa propia en `doomgeneric_web.c` | El port de SDL para Emscripten se descarga al compilar y la red de la sesión no lo permitía. Además la capa propia es más chica y más fácil de entender |
+| El bucle del juego lo maneja JS con `requestAnimationFrame` | Da control para pausar, detectar errores y cortar al salir. C solo expone `doomgeneric_Tick()` |
+| Dibujar a 320x200 y escalar con CSS | Es la resolución nativa de Doom; `image-rendering: pixelated` hace el resto sin gastar CPU |
+| JS traduce las teclas físicas a teclas de Doom | Permite reasignar controles y sumar mando sin tocar C |
+| Disparo en Espacio y clic, no en Ctrl | Ctrl+W cierra la pestaña y W es avanzar; el navegador no deja bloquear ese atajo |
+| El mouse se acumula y se publica una vez por tic | Doom pisa el movimiento si recibe varios eventos de mouse en el mismo tic (35 por segundo) y los frames son 60 o más |
+| Junto con cada tecla viaja el carácter tipeado | Así los trucos (`iddqd`) y los nombres de partida funcionan aunque D esté asignada a moverse |
+| Sonido: C entrega PCM de 8 bits y JS lo reproduce con Web Audio | Evita compilar un mezclador; cada efecto se convierte una sola vez a `AudioBuffer` |
+| Música: módulo vacío | Los temas están en formato MUS y necesitan un sintetizador. Quedó pendiente |
+| Límites del renderer ampliados y `-mb 64` | Freedoom exige un motor "limit-removing"; con los límites de 1993 algunos mapas fallarían |
+| Partidas en IndexedDB (IDBFS en `/save/<juego>`) | Persisten entre visitas; se sincronizan cada 4 segundos y al ocultar la pestaña |
+
+### Problemas que aparecieron
+
+- **`main` no se podía exportar.** Con Emscripten 3.1.6 el enlazador
+  rechazaba `_main`. Solución: `main()` vacío y un punto de entrada propio,
+  `dg_start(cmdline)`, que recibe la línea de comandos como texto.
+- **El "derretido" entre pantallas congelaba la página.** El original lo
+  anima con un bucle bloqueante y el navegador solo pinta cuando el código
+  devuelve el control. Se cambió para que avance un paso por frame
+  (`d_main.c`).
+- **`I_Quit` no cerraba nada.** En doomgeneric esa función vuelve sin salir.
+  Se agregó un aviso a JS para mostrar la pantalla "Saliste del juego".
+- **La barra de descarga pasaba del 100%.** El servidor de desarrollo de Vite
+  sirve los `.gz` con `Content-Encoding: gzip`, el navegador los descomprime
+  solo y el tamaño anunciado deja de coincidir. Solución: extensión `.wadgz`
+  y detección de gzip por los dos primeros bytes (`1f 8b`).
+
+Todos los cambios al código original están listados en
+`engines/doom/README.md`.
+
+### De dónde salieron los archivos binarios
+
+- `doom.js` y `doom.wasm`: salida de `engines/doom/build.sh`.
+- `freedoom1.wadgz` y `freedoom2.wadgz`: los WAD del paquete `freedoom`
+  0.13.0 de Ubuntu, comprimidos con `gzip -9` (28 MB cada uno sin comprimir,
+  unos 10 MB comprimidos).
+- Las portadas: captura del canvas del juego (`canvas.toDataURL`) en la
+  pantalla de título, a 320x200.
+
+## 4. Cómo se construyó la web
+
+Stack: React 19, Vite 8, React Router 7, JavaScript sin TypeScript, CSS plano.
+
+- **Catálogo (`Home.jsx`)**: buscador que ignora acentos, filtros generados a
+  partir de los datos, atajo `/` para enfocar la búsqueda.
+- **Reproductor (`Player.jsx`)**: es una máquina de estados con cinco fases:
+  `idle`, `loading`, `running`, `ended`, `error`. Cada arranque lleva un
+  número (`runRef`) para descartar arranques viejos si el usuario sale o
+  reinicia mientras descarga.
+- **Paneles**: con uno abierto el juego se pausa. El modal se monta dentro
+  del elemento en pantalla completa cuando lo hay; si no, quedaría tapado.
+- **Controles**: el teclado se reasigna (hasta dos teclas por acción, una
+  tecla no puede estar en dos acciones). El mando tiene mapeo fijo.
+- **Pantalla completa**: se pide el bloqueo de teclado para que Esc abra el
+  menú de Doom en vez de salir (solo Chrome y Edge lo soportan).
+- **Rutas en GitHub Pages**: el sitio vive en una subcarpeta, así que Vite
+  recibe `BASE_PATH` del workflow y React Router usa ese prefijo. Un plugin
+  en `vite.config.js` copia `index.html` a `404.html` para que entrar directo
+  a `/juego/...` no dé 404.
+
+Decisiones de diseño: tema oscuro con acento verde lima, tipografía de
+píxeles para títulos, tarjetas apaisadas con captura del juego en lugar de
+tapas (las tapas oficiales tienen copyright). La primera tipografía de
+títulos (Pixelify Sans) se descartó porque la C se leía como O.
+
+## 5. Qué se probó
+
+Con un navegador automatizado (Chromium y Playwright), contra el servidor de
+desarrollo y contra el build de producción servido en una subruta:
+
+- El catálogo carga y no hay errores en consola.
+- Los dos Freedoom arrancan, se puede entrar a una partida, caminar y
+  disparar.
+- Los 68 mapas (36 de Phase 1, 32 de Phase 2) cargan sin errores del motor.
+  Cada prueba duró unos 5 segundos: un giro completo y caminar disparando.
+- Guardar partida, recargar la página y verla en el menú de carga.
+- Escribir el nombre de la partida con teclas reasignadas, y el truco `iddqd`.
+- En ancho de celular no hay desborde horizontal.
+
+Los scripts de esas pruebas no quedaron en el repo.
+
+## 6. Qué no se probó
+
+- El sonido no se escuchó: solo se verificó que corre sin errores.
+- El mouse y un mando real.
+- La carga de un WAD original.
+- Firefox y Safari.
+- Partidas largas: los mapas se probaron solo unos segundos cada uno.
+
+El dueño del proyecto confirmó después que el sitio publicado funciona y que
+Doom anda en su navegador.
+
+## 7. Publicación
+
+El primer push falló en el workflow porque GitHub Pages no estaba activado.
+Se resolvió eligiendo "GitHub Actions" en Settings → Pages → Source. Desde
+entonces cada push a `main` publica.
+
+## 8. Trabajar en Windows
+
+- Para la web alcanza con Node: `npm install` y `npm run dev`.
+- Recompilar el motor necesita Emscripten (se instala con `emsdk`) y bash
+  (Git Bash o WSL). Con una versión nueva de Emscripten puede cambiar algún
+  flag de `build.sh`; el script se probó solo con la 3.1.6.
+- Si se actualiza Freedoom, hay que volver a comprimir los WAD con gzip y
+  renombrarlos a `.wadgz`.
+
+## 9. Próximos pasos, con pistas
+
+- **Música.** La vía más fiel es llevar `i_oplmusic.c` y el emulador OPL de
+  Chocolate Doom (GPL, compatible), generar el audio en C y sacarlo por un
+  `AudioWorklet`. El WAD ya trae el lump `GENMIDI` con los instrumentos.
+- **Controles táctiles.** Botones en pantalla que llamen a `dg_key`, igual
+  que el teclado.
+- **Segundo motor.** Es el momento de sacar de `Player.jsx` lo específico de
+  Doom y definir una interfaz común de runtime (arrancar, pausar, destruir).
+- **Online y chat.** Necesitan backend; el candidato es Java con Spring Boot.
+- **Ingeniería inversa.** Primer ejercicio: analizar `doom.wasm` con REA y
+  comparar contra el código fuente. La instalación de REA y Ghidra en Windows
+  todavía no se probó.

@@ -8,6 +8,9 @@ Responder siempre en español. Quien mantiene el proyecto conoce JavaScript,
 React, HTML y CSS; C, WebAssembly e ingeniería inversa son temas que está
 aprendiendo, así que explicá esos conceptos en lugar de darlos por sabidos.
 
+La historia del proyecto, las decisiones y lo que se probó están en
+`docs/CONTEXTO.md`. Leelo antes de tocar el motor o el reproductor.
+
 ## Comandos
 
 - `npm install`: dependencias.
