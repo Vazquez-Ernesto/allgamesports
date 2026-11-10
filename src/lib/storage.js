@@ -1,6 +1,6 @@
 // localStorage con JSON, tolerante a fallos (modo privado, cuota llena, etc.).
 
-const PREFIX = 'webports:'
+const PREFIX = 'allgamesports:'
 
 export function loadJSON(key, fallback) {
   try {

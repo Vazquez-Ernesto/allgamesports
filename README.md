@@ -1,4 +1,4 @@
-# webports
+# allgamesports
 
 Catálogo de juegos que corren en el navegador. Cada juego es código fuente
 real compilado a WebAssembly: no hay emuladores, ROMs ni configuración.
