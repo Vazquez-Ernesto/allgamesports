@@ -3,8 +3,11 @@
 //
 // source.type:
 //   'hosted' -> los datos del juego son libres y se sirven desde este sitio.
+//               fileName: nombre con el que el motor reconoce el archivo.
 //   'byo'    -> "bring your own": el jugador aporta su propio archivo, que
-//               nunca sale de su navegador.
+//               nunca sale de su navegador. accept, dropTitle y dropNote son
+//               los textos del reproductor; download (opcional) es un enlace
+//               a la descarga oficial del archivo.
 
 export const GAMES = [
   {
@@ -19,7 +22,7 @@ export const GAMES = [
     source: {
       type: 'hosted',
       url: 'games/doom/freedoom1.wadgz',
-      wadName: 'freedoom1.wad',
+      fileName: 'freedoom1.wad',
       downloadMB: 9.8,
     },
     description: [
@@ -45,7 +48,7 @@ export const GAMES = [
     source: {
       type: 'hosted',
       url: 'games/doom/freedoom2.wadgz',
-      wadName: 'freedoom2.wad',
+      fileName: 'freedoom2.wad',
       downloadMB: 10.4,
     },
     description: [
@@ -71,6 +74,9 @@ export const GAMES = [
     source: {
       type: 'byo',
       storageKey: 'doom-iwad',
+      accept: '.wad,.WAD',
+      dropTitle: 'Arrastrá acá tu archivo .WAD',
+      dropNote: 'DOOM.WAD, DOOM2.WAD, TNT.WAD, PLUTONIA.WAD o DOOM1.WAD (shareware).',
     },
     description: [
       'El motor es libre, pero los niveles originales de DOOM siguen siendo de id Software. Por eso acá no se distribuyen: los ponés vos.',
@@ -80,6 +86,37 @@ export const GAMES = [
       ['Motor', 'doomgeneric (id Software, GPL-2.0)'],
       ['Datos', 'Los aportás vos (no se suben)'],
       ['Acepta', 'DOOM, DOOM II, Final Doom, shareware'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
+    slug: 'tyrian',
+    title: 'Tyrian 2.1',
+    short: "Shoot 'em up vertical de 1995: cuatro episodios y una tienda de armas entre misión y misión.",
+    platform: 'PC (DOS)',
+    genre: "Shoot 'em up",
+    year: 1995,
+    engine: 'tyrian',
+    cover: null,
+    source: {
+      type: 'byo',
+      storageKey: 'tyrian-data',
+      accept: '.zip,.ZIP',
+      dropTitle: 'Arrastrá acá el tyrian21.zip',
+      dropNote: 'Es la versión gratuita y oficial de Tyrian 2.1 (4,7 MB). Descargala y elegila tal cual, sin descomprimir.',
+      download: {
+        url: 'https://camanis.net/tyrian/tyrian21.zip',
+        label: 'Descargar tyrian21.zip',
+      },
+    },
+    description: [
+      'Un shooter de naves de scroll vertical publicado por Epic MegaGames en 1995. Entre nivel y nivel comprás armas, escudos y naves acompañantes con lo que juntaste.',
+      'Corre sobre OpenTyrian, una reconstrucción en C del motor original, compilada a WebAssembly. Tyrian es gratis desde 2004, pero su autor solo permite compartirlo de forma personal: por eso los datos no se hospedan acá. Bajás el zip oficial y lo cargás vos; queda en tu navegador.',
+    ],
+    facts: [
+      ['Motor', 'OpenTyrian (GPL-2.0)'],
+      ['Datos', 'Tyrian 2.1, gratis desde 2004 (los aportás vos)'],
+      ['Tecnología', 'C → WebAssembly con Emscripten, SDL2 y Asyncify'],
       ['Guardado', 'En tu navegador (IndexedDB)'],
     ],
   },

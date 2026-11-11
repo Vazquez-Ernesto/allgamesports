@@ -4,3 +4,4 @@ engines/doom/build
 .DS_Store
 *.local
 smoke.html
+engines/tyrian/build

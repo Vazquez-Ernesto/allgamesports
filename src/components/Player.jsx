@@ -2,31 +2,24 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import Modal from './Modal.jsx'
 import ControlsPanel from './ControlsPanel.jsx'
+import KeyList from './KeyList.jsx'
 import SettingsPanel from './SettingsPanel.jsx'
-import { fetchBytes, startDoom } from '../runtimes/doom/index.js'
-import { defaultBindings } from '../runtimes/doom/keys.js'
-import { identifyWad } from '../lib/wad.js'
+import { runtimeFor } from '../runtimes/index.js'
+import { fetchBytes } from '../lib/fetchBytes.js'
 import { loadLocalFile, removeLocalFile, saveLocalFile } from '../lib/localFiles.js'
 import { loadJSON, removeKey, saveJSON } from '../lib/storage.js'
-
-const DEFAULT_SETTINGS = {
-  volume: 0.8,
-  mouseLook: true,
-  mouseSensitivity: 1,
-  sharpPixels: true,
-  aspect: '4 / 3', // así se veía en un monitor de la época
-}
 
 const formatMB = (bytes) => (bytes / 1024 / 1024).toFixed(1)
 
 export default function Player({ game }) {
+  const runtime = runtimeFor(game.engine)
   const isByo = game.source.type === 'byo'
   const byoKey = isByo ? `byo:${game.source.storageKey}` : null
 
   const frameRef = useRef(null)
   const canvasRef = useRef(null)
   const fileRef = useRef(null)
-  const gameRef = useRef(null) // el motor en marcha (lo que devuelve startDoom)
+  const gameRef = useRef(null) // el motor en marcha (lo que devuelve runtime.start)
   const runRef = useRef(0) // identifica cada arranque, para descartar los viejos
 
   // idle | loading | running | ended | error
@@ -37,10 +30,18 @@ export default function Player({ game }) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [dragging, setDragging] = useState(false)
 
-  const [bindings, setBindings] = useState(() => ({ ...defaultBindings(), ...loadJSON('doom:bindings', {}) }))
-  const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS, ...loadJSON('doom:settings', {}) }))
-  // WAD que el jugador ya cargó en una visita anterior: { wadName, title, size }
+  // Las claves llevan el nombre del motor: 'doom:settings', 'tyrian:settings'...
+  const [bindings, setBindings] = useState(() =>
+    runtime.defaultBindings ? { ...runtime.defaultBindings(), ...loadJSON(`${game.engine}:bindings`, {}) } : null,
+  )
+  const [settings, setSettings] = useState(() => ({
+    ...runtime.defaultSettings,
+    ...loadJSON(`${game.engine}:settings`, {}),
+  }))
+  // Archivo que el jugador ya cargó en una visita anterior: { fileName, title, size }
   const [byoFile, setByoFile] = useState(() => (isByo ? loadJSON(byoKey, null) : null))
+  // Las entradas guardadas antes del segundo motor usaban wadName.
+  const byoFileName = byoFile?.fileName ?? byoFile?.wadName
 
   // ----- Arranque y parada del motor -----
 
@@ -54,7 +55,7 @@ export default function Player({ game }) {
   // Al salir de la página, liberar el motor.
   useEffect(() => stop, [stop])
 
-  async function start(pickedWad) {
+  async function start(picked) {
     stop()
     const run = runRef.current
     setPhase('loading')
@@ -62,32 +63,32 @@ export default function Player({ game }) {
     setProgress(null)
 
     try {
-      let wad
-      let wadName
+      let data
+      let fileName
       let saveKey
 
       if (!isByo) {
-        wad = await fetchBytes(import.meta.env.BASE_URL + game.source.url, (loaded, total) =>
+        data = await fetchBytes(import.meta.env.BASE_URL + game.source.url, (loaded, total) =>
           setProgress({ loaded, total }),
         )
-        wadName = game.source.wadName
+        fileName = game.source.fileName
         saveKey = game.slug
       } else {
-        wad = pickedWad?.bytes ?? (await loadLocalFile(game.source.storageKey))
-        wadName = pickedWad?.wadName ?? byoFile?.wadName
-        if (!wad || !wadName) {
+        data = picked?.bytes ?? (await loadLocalFile(game.source.storageKey))
+        fileName = picked?.fileName ?? byoFileName
+        if (!data || !fileName) {
           forgetByoFile()
           throw new Error('No se encontró el archivo guardado. Elegilo de nuevo.')
         }
-        saveKey = `byo-${wadName.replace('.wad', '')}`
+        saveKey = `byo-${fileName.replace(/\.[^.]+$/, '')}` // doom.wad -> byo-doom
       }
 
       if (run !== runRef.current) return // se canceló mientras descargaba
 
-      const running = await startDoom({
+      const running = await runtime.start({
         canvas: canvasRef.current,
-        wad,
-        wadName,
+        data,
+        fileName,
         saveKey,
         bindings,
         settings,
@@ -112,15 +113,15 @@ export default function Player({ game }) {
     }
   }
 
-  // ----- "Bring your own": el jugador aporta su WAD -----
+  // ----- "Bring your own": el jugador aporta su archivo -----
 
   async function handleFile(file) {
     if (!file) return
     setError('')
     try {
       const bytes = new Uint8Array(await file.arrayBuffer())
-      const { wadName, title } = identifyWad(bytes, file.name)
-      const info = { wadName, title, size: bytes.length }
+      const { fileName, title } = runtime.identifyFile(bytes, file.name)
+      const info = { fileName, title, size: bytes.length }
 
       // Guardarlo en el navegador para la próxima visita (si se puede).
       const stored = await saveLocalFile(game.source.storageKey, bytes)
@@ -129,7 +130,7 @@ export default function Player({ game }) {
         setByoFile(info)
       }
 
-      start({ bytes, wadName })
+      start({ bytes, fileName })
     } catch (failure) {
       setError(failure.message)
       setPhase('error')
@@ -151,18 +152,15 @@ export default function Player({ game }) {
   // ----- Ajustes y controles: guardar y aplicar al motor en marcha -----
 
   useEffect(() => {
-    saveJSON('doom:settings', settings)
-    const running = gameRef.current
-    if (!running) return
-    running.setVolume(settings.volume)
-    running.input.setMouseSensitivity(settings.mouseSensitivity)
-    running.input.setMouseLook(settings.mouseLook)
-  }, [settings])
+    saveJSON(`${game.engine}:settings`, settings)
+    gameRef.current?.applySettings?.(settings)
+  }, [settings, game.engine])
 
   useEffect(() => {
-    saveJSON('doom:bindings', bindings)
-    gameRef.current?.input.setBindings(bindings)
-  }, [bindings])
+    if (!bindings) return
+    saveJSON(`${game.engine}:bindings`, bindings)
+    gameRef.current?.setBindings?.(bindings)
+  }, [bindings, game.engine])
 
   // Con un panel abierto el juego se pausa (y no le llegan las teclas).
   useEffect(() => {
@@ -179,7 +177,7 @@ export default function Player({ game }) {
       const active = document.fullscreenElement === frameRef.current
       setIsFullscreen(active)
       // En pantalla completa, pedirle al navegador que Esc llegue al juego
-      // (abre el menú de Doom) en vez de salir. Solo Chrome/Edge lo soportan.
+      // (abre el menú del juego) en vez de salir. Solo Chrome/Edge lo soportan.
       if (active) navigator.keyboard?.lock?.(['Escape']).catch(() => {})
       else navigator.keyboard?.unlock?.()
     }
@@ -212,6 +210,9 @@ export default function Player({ game }) {
       >
         <canvas
           ref={canvasRef}
+          // SDL2 (Tyrian) busca el canvas por este id y escucha el teclado ahí.
+          id="canvas"
+          tabIndex={0}
           className={`player-canvas${settings.sharpPixels ? ' is-sharp' : ''}`}
           style={{ aspectRatio: settings.aspect }}
           hidden={phase !== 'running'}
@@ -240,21 +241,32 @@ export default function Player({ game }) {
               </>
             ) : (
               <>
-                <p className="player-drop-title">Arrastrá acá tu archivo .WAD</p>
+                <p className="player-drop-title">{game.source.dropTitle}</p>
                 <p className="player-note">
-                  DOOM.WAD, DOOM2.WAD, TNT.WAD, PLUTONIA.WAD o DOOM1.WAD (shareware). Se guarda en tu navegador, no se
-                  sube a ningún lado.
+                  {game.source.dropNote} Se guarda en tu navegador, no se sube a ningún lado.
                 </p>
-                <button type="button" className="btn btn-primary" onClick={() => fileRef.current?.click()}>
-                  Elegir archivo
-                </button>
+                <div className="player-actions">
+                  {game.source.download && (
+                    <a className="btn" href={game.source.download.url} target="_blank" rel="noreferrer">
+                      {game.source.download.label}
+                    </a>
+                  )}
+                  <button type="button" className="btn btn-primary" onClick={() => fileRef.current?.click()}>
+                    Elegir archivo
+                  </button>
+                </div>
               </>
             )}
             <p className="player-hint">
-              <kbd>W</kbd>
-              <kbd>A</kbd>
-              <kbd>S</kbd>
-              <kbd>D</kbd> mover · <kbd>Mouse</kbd> girar · <kbd>Espacio</kbd> o clic disparar · <kbd>E</kbd> usar
+              {runtime.hint.map(([keys, label], index) => (
+                <span key={label}>
+                  {index > 0 && ' · '}
+                  {keys.map((key) => (
+                    <kbd key={key}>{key}</kbd>
+                  ))}{' '}
+                  {label}
+                </span>
+              ))}
             </p>
           </div>
         )}
@@ -303,7 +315,7 @@ export default function Player({ game }) {
           <input
             ref={fileRef}
             type="file"
-            accept=".wad,.WAD"
+            accept={game.source.accept}
             hidden
             onChange={(event) => {
               handleFile(event.target.files[0])
@@ -332,12 +344,16 @@ export default function Player({ game }) {
 
       {panel === 'controls' && (
         <Modal title="Controles" onClose={() => setPanel(null)}>
-          <ControlsPanel bindings={bindings} onChange={setBindings} />
+          {bindings ? (
+            <ControlsPanel bindings={bindings} onChange={setBindings} />
+          ) : (
+            <KeyList keys={runtime.keyList} note={runtime.keyNote} />
+          )}
         </Modal>
       )}
       {panel === 'settings' && (
         <Modal title="Ajustes" onClose={() => setPanel(null)}>
-          <SettingsPanel settings={settings} onChange={setSettings} defaults={DEFAULT_SETTINGS} />
+          <SettingsPanel settings={settings} onChange={setSettings} defaults={runtime.defaultSettings} />
         </Modal>
       )}
     </section>

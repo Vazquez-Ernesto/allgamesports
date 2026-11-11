@@ -9,62 +9,10 @@
 
 import { createAudio } from './audio.js'
 import { createInput } from './input.js'
+import { loadEngineScript } from '../../lib/engineScript.js'
+import { mountSaves } from '../../lib/saves.js'
 
 const ENGINE_DIR = `${import.meta.env.BASE_URL}games/doom/`
-const SAVE_SYNC_MS = 4000
-
-let scriptPromise = null
-
-// doom.js define la función global createDoomModule. Se carga una sola vez.
-function loadEngineScript() {
-  if (!scriptPromise) {
-    scriptPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-      script.src = `${ENGINE_DIR}doom.js`
-      script.onload = () => resolve(window.createDoomModule)
-      script.onerror = () => {
-        scriptPromise = null
-        reject(new Error('No se pudo cargar el motor del juego.'))
-      }
-      document.head.appendChild(script)
-    })
-  }
-  return scriptPromise
-}
-
-// Descarga con progreso. Si el archivo viene comprimido con gzip, lo descomprime.
-export async function fetchBytes(url, onProgress) {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`No se pudo descargar ${url} (HTTP ${response.status})`)
-
-  const total = Number(response.headers.get('content-length')) || 0
-  const reader = response.body.getReader()
-  const chunks = []
-  let loaded = 0
-
-  for (;;) {
-    const { done, value } = await reader.read()
-    if (done) break
-    chunks.push(value)
-    loaded += value.length
-    onProgress?.(loaded, total)
-  }
-
-  let bytes = new Uint8Array(loaded)
-  let offset = 0
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset)
-    offset += chunk.length
-  }
-
-  const isGzip = bytes[0] === 0x1f && bytes[1] === 0x8b
-  if (isGzip) {
-    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
-    bytes = new Uint8Array(await new Response(stream).arrayBuffer())
-  }
-
-  return bytes
-}
 
 /**
  * Arranca Doom.
@@ -81,7 +29,7 @@ export async function fetchBytes(url, onProgress) {
  * @param {(message: string) => void} [options.onError]
  */
 export async function startDoom({ canvas, wad, wadName, saveKey, bindings, settings, extraArgs = '', onQuit, onError }) {
-  const createDoomModule = await loadEngineScript()
+  const createDoomModule = await loadEngineScript(`${ENGINE_DIR}doom.js`, 'createDoomModule')
 
   const audio = createAudio(settings.volume ?? 1)
   const log = [] // últimas líneas que imprimió el motor, para mostrar si falla
@@ -130,28 +78,15 @@ export async function startDoom({ canvas, wad, wadName, saveKey, bindings, setti
     if (log.length > 40) log.shift()
   }
 
-  const { FS, IDBFS } = module
+  const { FS } = module
 
   // --- Sistema de archivos virtual ---
   FS.mkdir('/iwad')
   FS.writeFile(`/iwad/${wadName}`, wad, { canOwn: true })
 
   // /save vive en IndexedDB: ahí quedan la configuración y las partidas.
-  FS.mkdir('/save')
-  FS.mount(IDBFS, {}, '/save')
-  await syncSaves(true)
-  const saveDir = `/save/${saveKey}`
-  if (!FS.analyzePath(saveDir).exists) FS.mkdir(saveDir)
-  FS.chdir(saveDir)
-
-  function syncSaves(fromDisk) {
-    return new Promise((resolve) => {
-      FS.syncfs(fromDisk, (error) => {
-        if (error) console.warn('No se pudieron sincronizar las partidas guardadas', error)
-        resolve()
-      })
-    })
-  }
+  const saves = await mountSaves(module, saveKey)
+  FS.chdir(saves.dir)
 
   // --- Arranque del motor ---
   await audio.resume()
@@ -171,6 +106,7 @@ export async function startDoom({ canvas, wad, wadName, saveKey, bindings, setti
     module.ccall('dg_start', null, ['string'], [`doom -iwad /iwad/${wadName} -mb 64 ${extraArgs}`.trim()])
   } catch (error) {
     audio.close()
+    saves.close()
     const lastLines = log.slice(-4).join('\n').trim()
     throw new Error(lastLines || String(error?.message ?? error))
   }
@@ -189,7 +125,7 @@ export async function startDoom({ canvas, wad, wadName, saveKey, bindings, setti
 
     if (quitRequested) {
       stopLoop()
-      syncSaves(false).then(() => onQuit?.())
+      saves.flush().then(() => onQuit?.())
       return
     }
 
@@ -206,13 +142,6 @@ export async function startDoom({ canvas, wad, wadName, saveKey, bindings, setti
     running = false
     cancelAnimationFrame(frameId)
   }
-
-  // Guardar a IndexedDB cada tanto y cuando se oculta la pestaña.
-  const saveTimer = setInterval(() => syncSaves(false), SAVE_SYNC_MS)
-  const onVisibility = () => {
-    if (document.visibilityState === 'hidden') syncSaves(false)
-  }
-  document.addEventListener('visibilitychange', onVisibility)
 
   startLoop()
 
@@ -234,11 +163,9 @@ export async function startDoom({ canvas, wad, wadName, saveKey, bindings, setti
       if (destroyed) return
       destroyed = true
       stopLoop()
-      clearInterval(saveTimer)
-      document.removeEventListener('visibilitychange', onVisibility)
       input.destroy()
       audio.close()
-      await syncSaves(false)
+      await saves.close()
     },
   }
 }

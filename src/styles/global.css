@@ -771,6 +771,11 @@ code {
   image-rendering: pixelated;
 }
 
+/* El canvas se enfoca para recibir el teclado; el borde taparía el juego. */
+.player-canvas:focus {
+  outline: none;
+}
+
 .player-overlay {
   position: absolute;
   inset: 0;
@@ -806,6 +811,13 @@ code {
 
 .player-drop-title {
   color: var(--byo);
+}
+
+.player-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
 .player-error {

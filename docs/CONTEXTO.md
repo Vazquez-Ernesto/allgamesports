@@ -177,3 +177,72 @@ entonces cada push a `main` publica.
 - **Ingeniería inversa.** Primer ejercicio: analizar `doom.wasm` con REA y
   comparar contra el código fuente. La instalación de REA y Ghidra en Windows
   todavía no se probó.
+
+## 10. Segunda sesión: REA y el segundo motor (Tyrian)
+
+### REA y Ghidra en Windows
+
+Se instalaron REA 6.7.0 (npm), Ghidra 12.1.4 y WABT 1.0.42 en `C:\tools`.
+Lo que se aprendió:
+
+- **Ghidra no lee WebAssembly**: no trae ese procesador. REA rechaza el
+  `.wasm` por la vía nativa y lo manda a `inspect-wasm-artifact`, que usa
+  WABT. Ghidra sí sirve para lo retro nativo: 6502, Z80, 68000, MIPS, ARM,
+  SuperH y ejecutables de DOS.
+- **`doom.wasm` contra el fuente**: 471 funciones en el binario contra unas
+  890 en el C. La diferencia es el `-O2`: borra lo que no se usa y copia las
+  funciones chicas adentro de quien las llama. `dg_start` pesa 17 KB porque
+  tiene adentro todo `D_DoomMain`. Los nombres se recuperan por los mensajes
+  de error (`R_InitTextures: ...`) que quedan en los datos.
+
+### Por qué Tyrian y por qué "archivo propio"
+
+Se eligió por género (shoot 'em up) y porque OpenTyrian es chico y usa SDL2.
+Los datos de Tyrian 2.1 son gratis desde 2004, pero el permiso del autor es
+informal ("jugalo y compartilo con amigos") y el zip todavía trae la licencia
+comercial de 1995. Fedora tiene abierta una revisión legal sin resolver. Por
+la regla de este proyecto, se juega con el archivo propio: la ficha enlaza el
+zip oficial y el jugador lo carga.
+
+### Asyncify en vez de reescribir los bucles
+
+Doom deja que JS llame un tic por frame. OpenTyrian no: cada menú es un bucle
+que nunca devuelve el control. Asyncify permite pausar una función C en medio
+del bucle y retomarla después, así el navegador puede pintar. Costo: el
+`.wasm` pesa 1,5 MB contra los 385 KB de Doom.
+
+### Problemas que aparecieron
+
+- **emsdk no instalaba nada**: busca `python3`, que en Windows es el acceso
+  directo de la Microsoft Store. Se resuelve con `EMSDK_PYTHON`.
+- **Imagen recortada**: el port de SDL2 busca el canvas con `#canvas`, y las
+  versiones nuevas de Emscripten ya no traducen ese nombre al canvas del
+  módulo. Se le puso `id="canvas"` al canvas del reproductor.
+- **Variables de entorno ignoradas**: la libc las copia al inicializarse. Se
+  pasan en `preRun`; antes se ponían después y SDL usaba WebGL en vez de 2D, y
+  las partidas iban a una carpeta que no persistía.
+- **Pantalla negra al entrar a un nivel**: era un crash. Emscripten 7 reserva
+  64 KB de pila y `JE_loadMap` declara un arreglo local de 64.000 bytes. Se
+  encontró compilando con nombres de funciones (`--profiling-funcs`) y
+  traduciendo el stack con `wasm-objdump`. Se subió la pila a 5 MB.
+- **Errores mudos**: un crash dentro de Asyncify no pasa por `onAbort`. El
+  runtime escucha `unhandledrejection` y el reproductor muestra el error.
+
+### Qué se probó
+
+En el servidor de desarrollo, con navegador automatizado: cargar el zip,
+jugar el primer nivel, pausar con un panel abierto, salir desde el menú del
+juego y volver a jugar, reiniciar, y que las partidas de Tyrian y de Freedoom
+convivan en IndexedDB. Doom se volvió a probar después de generalizar el
+reproductor.
+
+No se probó: escuchar el sonido, mando, Firefox y Safari, ni partidas largas.
+
+### Próximos pasos
+
+- El encabezado desborda en ancho de celular (440 px en 375). Venía de
+  antes de esta sesión.
+- Agrupar el catálogo por plataforma ("por consola"): el campo `platform` ya
+  existe.
+- Más ports con licencias verificadas: ScummVM con sus aventuras freeware, o
+  reimplementaciones de consola con archivo propio (zelda3 para SNES).

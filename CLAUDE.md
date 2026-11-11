@@ -19,6 +19,13 @@ La historia del proyecto, las decisiones y lo que se probó están en
 - `npm run build:doom`: recompila el motor de Doom. Requiere Emscripten
   (`emcc` en el PATH) y bash; no hace falta para trabajar en la web, porque
   `doom.js` y `doom.wasm` ya están en el repo.
+- `npm run build:tyrian`: recompila el motor de Tyrian (OpenTyrian). Mismos
+  requisitos; probado con Emscripten 7.0.0.
+
+En Windows, Emscripten está en `C:\tools\emsdk`. Antes de compilar, en Git
+Bash: `export EMSDK_PYTHON=<ruta a python.exe>` y `source
+/c/tools/emsdk/emsdk_env.sh`. Sin `EMSDK_PYTHON`, emsdk usa `python3`, que en
+Windows es el acceso directo de la Microsoft Store y no instala nada.
 
 No hay tests automatizados ni linter. Para verificar un cambio: `npm run
 build` y probar a mano en el navegador (catálogo, arrancar un juego, guardar
@@ -31,12 +38,16 @@ src/
   site.js              nombre del sitio, link al repo, mail de contacto
   data/games.js        el catálogo: una entrada por juego
   pages/               Home (catálogo), GamePage (ficha + reproductor), NotFound
-  components/          Player, Modal, ControlsPanel, SettingsPanel, GameCard...
-  runtimes/doom/       JS que conecta el .wasm con canvas, audio y controles
-  lib/                 localStorage, lectura de WAD, archivos locales (OPFS)
+  components/          Player, Modal, ControlsPanel, KeyList, SettingsPanel, GameCard...
+  runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
+  runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
+  runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
+  lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
 public/games/doom/     motor compilado, datos de Freedoom y portadas
+public/games/tyrian/   motor compilado (los datos los aporta el jugador)
 engines/doom/          código C del motor y build.sh (ver su README.md)
+engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -69,14 +80,31 @@ engines/doom/          código C del motor y build.sh (ver su README.md)
 - Las partidas se guardan en IndexedDB (IDBFS montado en `/save`, una carpeta
   por juego).
 
+## Cómo funciona el port de Tyrian
+
+- El motor es OpenTyrian (GPL-2.0), copiado en `engines/tyrian/src/`. Mismas
+  reglas que Doom: cambios marcados con `WEB:` y listados en su README.
+- Al revés que Doom, el bucle lo maneja C: el juego es una cadena de bucles
+  bloqueantes y se compila con Asyncify, que los deja ceder el control al
+  navegador. `web.c` cede cada 16 ms y maneja pausa y salida.
+- Video, sonido y teclado van por el port de SDL2 de Emscripten. El canvas
+  tiene que tener `id="canvas"`, y la configuración de SDL se pasa por
+  variables de entorno en `preRun` (después ya no las lee).
+- Los datos de Tyrian 2.1 son freeware sin licencia libre: van como `byo` con
+  un enlace al zip oficial, que se descomprime en el navegador (`lib/zip.js`).
+- Emscripten 7 reserva 64 KB de pila por defecto; `build.sh` la sube a 5 MB
+  porque `JE_loadMap` tiene un arreglo local de 64.000 bytes.
+
 ## Agregar un juego
 
 1. Entrada nueva en `src/data/games.js`.
 2. Si usa el motor de Doom, alcanza con apuntar `source` a otro WAD libre.
 3. Motor nuevo: código y script en `engines/<motor>/`, salida compilada en
-   `public/games/<motor>/`, y el código que lo conecta con la página en
-   `src/runtimes/<motor>/`. Hoy `Player.jsx` solo conoce el runtime de Doom;
-   el segundo motor es el momento de generalizarlo.
+   `public/games/<motor>/`, el código que lo conecta con la página en
+   `src/runtimes/<motor>/` y una entrada en `src/runtimes/index.js` (ajustes,
+   controles, cómo validar el archivo del jugador y cómo arrancar).
+4. Antes de recomendar un juego, verificar la licencia de los datos, no solo
+   la del motor.
 
 ## Convenciones
 
@@ -103,6 +131,9 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
 - Chat y juego online: necesitan backend (candidato: Java con Spring Boot).
 - Falta probar con hardware real: sonido, mouse, mando y la carga de un WAD
   original.
+- Tyrian: falta escuchar el sonido y probar mando, Firefox y Safari.
+- El encabezado desborda en ancho de celular (440 px en 375).
+- Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 
 ## Ingeniería inversa con REA
 
@@ -112,3 +143,8 @@ Orden acordado: primero analizar nuestro propio `public/games/doom/doom.wasm`
 (se puede comparar el resultado con el código fuente), después un juego
 chico de PC propio. Lo que salga de analizar software comercial sigue la
 regla del catálogo: se publica el código propio, nunca los datos del juego.
+
+El primer ejercicio ya está hecho (ver `docs/CONTEXTO.md`, sección 10).
+Ghidra no lee WebAssembly: para un `.wasm`, REA usa WABT
+(`rea inspect-wasm-artifact`). Ghidra sí sirve para 6502, Z80, 68000, MIPS,
+ARM, SuperH y ejecutables de DOS.
