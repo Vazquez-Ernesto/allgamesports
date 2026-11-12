@@ -1,0 +1,16 @@
+diff --git a/backends/platform/sdl/emscripten/emscripten.cpp b/backends/platform/sdl/emscripten/emscripten.cpp
+index b6794c84..22c022fb 100644
+--- a/backends/platform/sdl/emscripten/emscripten.cpp
++++ b/backends/platform/sdl/emscripten/emscripten.cpp
+@@ -139,8 +139,9 @@ void OSystem_Emscripten::init() {
+ bool OSystem_Emscripten::hasFeature(Feature f) {
+ 	if (f == kFeatureFullscreenMode)
+ 		return true;
+-	if (f == kFeatureNoQuit)
+-		return true;
++	// allgamesports: sin kFeatureNoQuit. Cada juego arranca directo (sin el
++	// lanzador) y al terminar ScummVM tiene que salir, para que la pagina se
++	// entere (ver 0001-avisar-salida.patch).
+ 	return OSystem_POSIX::hasFeature(f);
+ }
+ 

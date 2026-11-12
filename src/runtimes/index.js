@@ -7,9 +7,15 @@
 //   keyList          (opcional) controles fijos: [['tecla', 'qué hace']]
 //   identifyFile     valida el archivo que aporta el jugador -> { fileName, title }
 //   start(options)   arranca el motor -> { pause, resume, destroy, applySettings?, setBindings? }
+//   surface          (opcional) 'iframe' si el motor corre en su propia página
+//                    en vez de dibujar en el canvas del reproductor
+//
+// Un juego del catálogo puede traer su propio hint y keyList (ScummVM: cada
+// juego usa teclas distintas).
 
 import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
+import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { identifyWad } from '../lib/wad.js'
 
@@ -71,7 +77,15 @@ const tyrian = {
   start: ({ canvas, data, saveKey, onQuit, onError }) => startTyrian({ canvas, data, saveKey, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian }
+// Las teclas de cada juego están en su entrada de src/data/games.js.
+const scummvm = {
+  surface: 'iframe',
+  defaultSettings: {}, // ScummVM escala y suaviza por su cuenta
+  keyNote: 'ScummVM tiene además su menú general con Ctrl+F5.',
+  start: ({ frame, game, onQuit, onError }) => startScummvm({ frame, gameId: game.source.gameId, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

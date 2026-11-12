@@ -5,3 +5,4 @@ engines/doom/build
 *.local
 smoke.html
 engines/tyrian/build
+engines/scummvm/.cache

@@ -13,6 +13,10 @@ const formatMB = (bytes) => (bytes / 1024 / 1024).toFixed(1)
 
 export default function Player({ game }) {
   const runtime = runtimeFor(game.engine)
+  const usesIframe = runtime.surface === 'iframe'
+  const hasSettings = Object.keys(runtime.defaultSettings).length > 0
+  const hint = game.hint ?? runtime.hint
+  const keyList = game.keyList ?? runtime.keyList
   const isByo = game.source.type === 'byo'
   const byoKey = isByo ? `byo:${game.source.storageKey}` : null
 
@@ -68,9 +72,12 @@ export default function Player({ game }) {
       let saveKey
 
       if (!isByo) {
-        data = await fetchBytes(import.meta.env.BASE_URL + game.source.url, (loaded, total) =>
-          setProgress({ loaded, total }),
-        )
+        // Sin url: el motor baja sus datos solo, a medida que los necesita (ScummVM).
+        if (game.source.url) {
+          data = await fetchBytes(import.meta.env.BASE_URL + game.source.url, (loaded, total) =>
+            setProgress({ loaded, total }),
+          )
+        }
         fileName = game.source.fileName
         saveKey = game.slug
       } else {
@@ -86,6 +93,8 @@ export default function Player({ game }) {
       if (run !== runRef.current) return // se canceló mientras descargaba
 
       const running = await runtime.start({
+        game,
+        frame: frameRef.current,
         canvas: canvasRef.current,
         data,
         fileName,
@@ -215,7 +224,7 @@ export default function Player({ game }) {
           tabIndex={0}
           className={`player-canvas${settings.sharpPixels ? ' is-sharp' : ''}`}
           style={{ aspectRatio: settings.aspect }}
-          hidden={phase !== 'running'}
+          hidden={phase !== 'running' || usesIframe}
         />
 
         {phase === 'idle' && (
@@ -258,7 +267,7 @@ export default function Player({ game }) {
               </>
             )}
             <p className="player-hint">
-              {runtime.hint.map(([keys, label], index) => (
+              {hint.map(([keys, label], index) => (
                 <span key={label}>
                   {index > 0 && ' · '}
                   {keys.map((key) => (
@@ -332,9 +341,11 @@ export default function Player({ game }) {
         <button type="button" className="btn" onClick={() => setPanel('controls')}>
           Controles
         </button>
-        <button type="button" className="btn" onClick={() => setPanel('settings')}>
-          Ajustes
-        </button>
+        {hasSettings && (
+          <button type="button" className="btn" onClick={() => setPanel('settings')}>
+            Ajustes
+          </button>
+        )}
         {(phase === 'running' || phase === 'ended') && (
           <button type="button" className="btn btn-quiet" onClick={() => start()}>
             Reiniciar
@@ -347,7 +358,7 @@ export default function Player({ game }) {
           {bindings ? (
             <ControlsPanel bindings={bindings} onChange={setBindings} />
           ) : (
-            <KeyList keys={runtime.keyList} note={runtime.keyNote} />
+            <KeyList keys={keyList} note={runtime.keyNote} />
           )}
         </Modal>
       )}

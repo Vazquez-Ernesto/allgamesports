@@ -1,0 +1,27 @@
+diff --git a/backends/platform/sdl/emscripten/emscripten-main.cpp b/backends/platform/sdl/emscripten/emscripten-main.cpp
+index 8727d364..bcefe41a 100644
+--- a/backends/platform/sdl/emscripten/emscripten-main.cpp
++++ b/backends/platform/sdl/emscripten/emscripten-main.cpp
+@@ -19,6 +19,11 @@
+  *
+  */
+ 
++#ifdef __EMSCRIPTEN__
++#define FORBIDDEN_SYMBOL_EXCEPTION_FILE
++#include <emscripten.h>
++#endif
++
+ #include "common/scummsys.h"
+ 
+ #if defined(__EMSCRIPTEN__) 
+@@ -45,6 +50,10 @@ int main(int argc, char *argv[]) {
+ 	// Free OSystem
+ 	g_system->destroy();
+ 
++	// allgamesports: avisa a la pagina que el juego termino. Con el
++	// runtime vivo (Asyncify), Emscripten no llama a Module.onExit.
++	EM_ASM({ if (Module.onScummvmExit) Module.onScummvmExit($0); }, res);
++
+ 	return res;
+ }
+ #endif

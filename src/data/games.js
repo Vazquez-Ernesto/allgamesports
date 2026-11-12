@@ -4,6 +4,7 @@
 // source.type:
 //   'hosted' -> los datos del juego son libres y se sirven desde este sitio.
 //               fileName: nombre con el que el motor reconoce el archivo.
+//               Sin url, el motor baja sus datos solo (ScummVM, con gameId).
 //   'byo'    -> "bring your own": el jugador aporta su propio archivo, que
 //               nunca sale de su navegador. accept, dropTitle y dropNote son
 //               los textos del reproductor; download (opcional) es un enlace
@@ -117,6 +118,86 @@ export const GAMES = [
       ['Motor', 'OpenTyrian (GPL-2.0)'],
       ['Datos', 'Tyrian 2.1, gratis desde 2004 (los aportás vos)'],
       ['Tecnología', 'C → WebAssembly con Emscripten, SDL2 y Asyncify'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
+    slug: 'beneath-a-steel-sky',
+    title: 'Beneath a Steel Sky',
+    short: 'Aventura gráfica de ciencia ficción de 1994: una ciudad vertical, un robot de bolsillo y una conspiración.',
+    platform: 'PC (DOS)',
+    genre: 'Aventura gráfica',
+    year: 1994,
+    engine: 'scummvm',
+    cover: null,
+    source: {
+      type: 'hosted',
+      gameId: 'sky',
+      downloadMB: 11,
+    },
+    hint: [
+      [['Clic izq.'], 'caminar, mirar, hablar'],
+      [['Clic der.'], 'usar'],
+      [['F5'], 'menú'],
+    ],
+    keyList: [
+      ['Clic izq.', 'Caminar, mirar o hablar'],
+      ['Clic der.', 'Usar'],
+      ['F5', 'Panel de control (guardar, cargar, salir)'],
+      ['Esc', 'Saltar o cerrar'],
+      ['.', 'Saltar una línea de diálogo'],
+      ['P', 'Pausa'],
+      ['Ctrl+F', 'Modo rápido'],
+    ],
+    description: [
+      'Robert Foster cae en una ciudad gigante donde los pobres viven en torres contaminadas y los ricos bajo tierra. Con la ayuda de Joey, un robot que cabe en una placa de circuito, tiene que descubrir quién es y qué esconde la ciudad. La versión de esta página es la de disquete: textos, sin voces.',
+      'Revolution Software lo liberó como freeware en 2003 junto con el equipo de ScummVM, que lo corre acá compilado a WebAssembly. Su licencia permite distribuirlo gratis manteniendo su readme intacto.',
+    ],
+    facts: [
+      ['Motor', 'ScummVM 2026.4.0 (GPL-3.0)'],
+      ['Datos', 'Freeware de Revolution Software (readme.txt)'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
+    slug: 'flight-of-the-amazon-queen',
+    title: 'Flight of the Amazon Queen',
+    short: 'Aventura gráfica de 1995: un piloto de alquiler, una estrella de cine y una selva llena de sorpresas.',
+    platform: 'PC (DOS)',
+    genre: 'Aventura gráfica',
+    year: 1995,
+    engine: 'scummvm',
+    cover: null,
+    source: {
+      type: 'hosted',
+      gameId: 'queen',
+      downloadMB: 11,
+    },
+    hint: [
+      [['Clic izq.'], 'moverse, interactuar'],
+      [['Clic der.'], 'acción rápida'],
+      [['F1'], 'diario'],
+    ],
+    keyList: [
+      ['Clic izq.', 'Moverse o interactuar'],
+      ['Clic der.', 'Moverse, saltar o usar la acción por defecto'],
+      ['F1 o F5', 'Diario (guardar, cargar, opciones)'],
+      ['F11 / F12', 'Guardado / carga rápida'],
+      ['Esc', 'Saltar una escena o diálogo'],
+      ['Espacio', 'Saltar el texto'],
+      ['1 – 4', 'Objetos del inventario'],
+      [', / .', 'Mover el inventario'],
+      ['Ctrl+F', 'Modo rápido'],
+    ],
+    description: [
+      'Joe King es un piloto de alquiler en los años 40. Lleva a la actriz Faye Russell a una sesión de fotos en el Amazonas, el avión cae en plena selva y de ahí en más todo sale mal: tribus de amazonas, pigmeos de 1,80 m y una empresa de lederhosen con planes sospechosos. Versión de disquete: textos, sin voces.',
+      'Sus autores, John Passfield y Steve Stamatiadis, lo liberaron como freeware junto con ScummVM. Su licencia permite distribuirlo gratis manteniendo su readme intacto.',
+    ],
+    facts: [
+      ['Motor', 'ScummVM 2026.4.0 (GPL-3.0)'],
+      ['Datos', 'Freeware de John Passfield y Steve Stamatiadis (readme.txt)'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
       ['Guardado', 'En tu navegador (IndexedDB)'],
     ],
   },

@@ -21,6 +21,10 @@ La historia del proyecto, las decisiones y lo que se probó están en
   `doom.js` y `doom.wasm` ya están en el repo.
 - `npm run build:tyrian`: recompila el motor de Tyrian (OpenTyrian). Mismos
   requisitos; probado con Emscripten 7.0.0.
+- `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
+  Windows, WSL); baja su propio Emscripten. Después,
+  `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
+  juegos. Ver `engines/scummvm/README.md`.
 
 En Windows, Emscripten está en `C:\tools\emsdk`. Antes de compilar, en Git
 Bash: `export EMSDK_PYTHON=<ruta a python.exe>` y `source
@@ -42,12 +46,15 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
+  runtimes/scummvm/    crea el iframe con ScummVM y traduce sus avisos
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
 public/games/doom/     motor compilado, datos de Freedoom y portadas
 public/games/tyrian/   motor compilado (los datos los aporta el jugador)
+public/games/scummvm/  motor compilado, play.html/play.js y data/ con los juegos
 engines/doom/          código C del motor y build.sh (ver su README.md)
 engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
+engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -95,6 +102,23 @@ engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
 - Emscripten 7 reserva 64 KB de pila por defecto; `build.sh` la sube a 5 MB
   porque `JE_loadMap` tiene un arreglo local de 64.000 bytes.
 
+## Cómo funciona el port de ScummVM
+
+- ScummVM (GPL-3.0) no se copia al repo: `build.sh` clona la versión de
+  `UPSTREAM_TAG` y aplica `patches/`. Compila solo los motores de los juegos
+  del catálogo (`--enable-engine=sky,queen`); para sumar un juego, sumar su
+  motor ahí y su descarga en `prepare-data.mjs`.
+- Corre en un iframe (`public/games/scummvm/play.html`): usa un `Module`
+  global y no se puede reiniciar en la misma página. Arrancar es crear el
+  iframe; salir, sacarlo. `play.js` avisa al reproductor con `postMessage`.
+- Los datos se bajan bajo demanda: ScummVM pide `/data/.../index.json` y cada
+  archivo cuando lo abre. `play.js` vuelve relativas esas rutas absolutas y
+  descomprime los `.dgz` (gzip). El `index.json` lleva el tamaño sin comprimir.
+- Los juegos (Beneath a Steel Sky, Flight of the Amazon Queen) son freeware
+  con licencia que permite redistribuirlos con su `readme.txt`: se hospedan.
+- Usa SDL3 (`Module.SDL3.audioContext`) y guarda sus partidas en su propia
+  base de IndexedDB (`/home/web_user`).
+
 ## Agregar un juego
 
 1. Entrada nueva en `src/data/games.js`.
@@ -133,6 +157,7 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
   original.
 - Tyrian: falta escuchar el sonido y probar mando, Firefox y Safari.
 - El encabezado desborda en ancho de celular (440 px en 375).
+- ScummVM: portadas de BASS y FOTAQ, y las versiones de CD con voces.
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 
 ## Ingeniería inversa con REA

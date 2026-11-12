@@ -246,3 +246,52 @@ No se probó: escuchar el sonido, mando, Firefox y Safari, ni partidas largas.
   existe.
 - Más ports con licencias verificadas: ScummVM con sus aventuras freeware, o
   reimplementaciones de consola con archivo propio (zelda3 para SNES).
+## 11. Tercer motor: ScummVM y dos aventuras gráficas
+
+### Por qué estos juegos
+
+Beneath a Steel Sky (Revolution, 1994) y Flight of the Amazon Queen (1995)
+suman un género nuevo. A diferencia de Tyrian, su licencia es formal: el
+`readme.txt` de cada uno permite distribuirlos gratis en cualquier medio, con
+el readme intacto y sin cobrar por el juego. Debian los tiene en `main`. Por
+eso se hospedan y se juegan con el botón Jugar. Se usan las versiones de
+disquete (7 MB cada una); las de CD con voces pesan de 60 a 107 MB.
+
+### Cómo se armó
+
+- **El código no se copia al repo**: ScummVM pesa cientos de MB. `build.sh`
+  clona la versión fijada y aplica dos parches. Se compila con el script
+  oficial de ScummVM, que corre en Linux: en Windows, dentro de WSL.
+- **Corre en un iframe** porque usa un `Module` global y no se puede
+  reiniciar en la misma página. El reproductor ganó soporte para motores que
+  no dibujan en su canvas (`surface: 'iframe'` en el registro de motores).
+- **Datos bajo demanda**: ScummVM monta `/data` por HTTP y baja cada archivo
+  cuando lo necesita. Se guardan con gzip y un interceptor de `fetch` en
+  `play.js` los descomprime y corrige las rutas absolutas.
+
+### Problemas que aparecieron
+
+- **WSL sin internet** en la red corporativa. Se activó la red espejo
+  (`networkingMode=mirrored` en `.wslconfig`, con backup).
+- **Faltaban `pkg-config` y `zip`** en el Ubuntu de WSL.
+- **Configuración rota**: ScummVM pide `scummvm.ini` y el servidor de Vite
+  devolvía el `index.html` del sitio. Se agregó un `scummvm.ini` real.
+- **Falso error al arrancar**: el shell oficial pide acceso a MIDI y el
+  rechazo se tomaba como fatal. Ahora solo cuentan los errores del wasm.
+- **La pausa no silenciaba**: esta versión usa SDL3, no SDL2.
+- **El reproductor no se enteraba de la salida**, por dos causas: con
+  Asyncify Emscripten no llama a `onExit`, y la plataforma Emscripten de
+  ScummVM declara `kFeatureNoQuit`, así que al terminar un juego volvía a su
+  lanzador. Dos parches: `main()` avisa a la página, y la plataforma deja de
+  declarar ese flag.
+- **Dos trampas al probar**: en FOTAQ, "Give Up" reinicia la partida, no
+  sale. Y cambiar solo el `#` de una URL no recarga la página.
+
+### Qué se probó
+
+En el servidor de desarrollo: los dos juegos arrancan desde el reproductor,
+el mouse camina en BASS, el guardado rápido de FOTAQ queda en IndexedDB, la
+pausa suspende el audio, salir del juego muestra "Saliste del juego",
+"Volver a jugar" crea un iframe nuevo, y salir de la ficha no deja ninguno.
+Doom se volvió a probar. No se probó: escuchar el sonido, mando, Firefox y
+Safari, ni GitHub Pages.
