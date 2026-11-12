@@ -21,6 +21,7 @@ La historia del proyecto, las decisiones y lo que se probó están en
   `doom.js` y `doom.wasm` ya están en el repo.
 - `npm run build:tyrian`: recompila el motor de Tyrian (OpenTyrian). Mismos
   requisitos; probado con Emscripten 7.0.0.
+- `npm run build:openlara`: recompila OpenLara (Tomb Raider) con Emscripten 7.
 - `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
   Windows, WSL); baja su propio Emscripten. Después,
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
@@ -48,6 +49,7 @@ src/
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
   runtimes/scummvm/    crea el iframe con ScummVM y traduce sus avisos
+  runtimes/openlara/   lee el disco del jugador y arranca OpenLara en un iframe
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
 public/games/doom/     motor compilado, datos de Freedoom y portadas
@@ -56,6 +58,7 @@ public/games/scummvm/  motor compilado, play.html/play.js y data/ con los juegos
 engines/doom/          código C del motor y build.sh (ver su README.md)
 engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
 engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona aparte)
+engines/openlara/      build.sh de OpenLara (el código se clona aparte, sin parches)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -122,6 +125,20 @@ engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona
 - Usa SDL3 (`Module.SDL3.audioContext`) y guarda sus partidas en su propia
   base de IndexedDB (`/home/web_user`).
 
+## Cómo funciona el port de Tomb Raider (PlayStation)
+
+- El motor es OpenLara (BSD-2), una reconstrucción del motor de Tomb Raider:
+  no es un emulador. Corre en un iframe, como ScummVM (`lib/engineFrame.js`
+  es el código que comparten).
+- El jugador carga la imagen de su disco. `lib/iso9660.js` saca solo los
+  niveles (`PSXDATA`) y las pantallas de carga (`DELDATA`) sin cargar la
+  imagen en memoria; se guardan en un zip en el navegador.
+- El motor exige `runtime.importFile` en vez de `identifyFile`: es el camino
+  para archivos enormes.
+- No usa la música ni los videos del disco todavía.
+- Para consolas vale la misma regla: nada de emuladores ni ROMs hospedadas.
+  Solo motores reconstruidos de código abierto, con los datos del jugador.
+
 ## Agregar un juego
 
 Todo juego lleva: plataforma (clave de `platforms.js`), año, estudio, quién
@@ -169,6 +186,7 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
   original.
 - Tyrian: falta escuchar el sonido y probar mando, Firefox y Safari.
 - El encabezado desborda en ancho de celular (440 px en 375).
+- Tomb Raider: probar con un disco real; música y videos del disco.
 - ScummVM: las versiones de CD con voces de BASS, FOTAQ y DreamWeb.
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 

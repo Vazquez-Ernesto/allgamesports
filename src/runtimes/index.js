@@ -6,6 +6,8 @@
 //   defaultBindings  (opcional) teclas reasignables; si no hay, se muestra keyList
 //   keyList          (opcional) controles fijos: [['tecla', 'qué hace']]
 //   identifyFile     valida el archivo que aporta el jugador -> { fileName, title }
+//   importFile       (opcional, en vez de identifyFile) lee un archivo grande y
+//                    devuelve solo lo que usa el juego -> { fileName, title, bytes }
 //   start(options)   arranca el motor -> { pause, resume, destroy, applySettings?, setBindings? }
 //   surface          (opcional) 'iframe' si el motor corre en su propia página
 //                    en vez de dibujar en el canvas del reproductor
@@ -15,6 +17,7 @@
 
 import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
+import { importTombRaider, startOpenLara } from './openlara/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { identifyWad } from '../lib/wad.js'
@@ -86,7 +89,16 @@ const scummvm = {
     startScummvm({ frame, gameId: game.source.gameId, args: game.source.args, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm }
+// Las teclas están en la entrada del juego en src/data/games.js.
+const openlara = {
+  surface: 'iframe',
+  defaultSettings: {}, // gráficos y sonido se ajustan en el menú del juego
+  keyNote: 'Gráficos, sonido y teclas se cambian en el menú del juego (Esc).',
+  importFile: importTombRaider,
+  start: ({ frame, data, onError }) => startOpenLara({ frame, data, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, openlara }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

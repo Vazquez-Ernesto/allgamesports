@@ -1,13 +1,10 @@
-// Runtime de ScummVM: corre la página games/scummvm/play.html en un iframe.
-//
-// ScummVM usa un Module global y no se puede reiniciar dentro de la misma
-// página, así que vive en su propio documento: arrancar es crear el iframe y
-// salir es sacarlo (eso libera el wasm, el audio y los eventos). Los datos los
-// baja el propio ScummVM a medida que el juego los pide (ver play.js).
-// play.js avisa con postMessage: 'ready', 'error' y 'exit'.
+// Runtime de ScummVM: corre la página games/scummvm/play.html en un iframe
+// (ver lib/engineFrame.js). Los datos los baja el propio ScummVM a medida que
+// el juego los pide (ver play.js), que avisa 'ready', 'error' y 'exit'.
+
+import { createEngineIframe, listenToFrame } from '../../lib/engineFrame.js'
 
 const ENGINE_DIR = `${import.meta.env.BASE_URL}games/scummvm/`
-const START_TIMEOUT_MS = 60000
 
 /**
  * Arranca un juego de ScummVM.
@@ -15,17 +12,19 @@ const START_TIMEOUT_MS = 60000
  * @param {object} options
  * @param {HTMLElement} options.frame      Contenedor donde va el iframe.
  * @param {string} options.gameId          Id de ScummVM ('sky', 'queen'...): también es su carpeta en data/games.
- * @param {string} [options.args]         Opciones extra de ScummVM (p. ej. "--language=es").
+ * @param {string} [options.args]          Opciones extra de ScummVM (p. ej. "--language=es").
  * @param {() => void} [options.onQuit]
  * @param {(message: string) => void} [options.onError]
  */
 export async function startScummvm({ frame, gameId, args = '', onQuit, onError }) {
-  const iframe = createIframe(gameId, args)
-  const messages = listenTo(iframe)
+  // Los argumentos de ScummVM van en el #, separados por espacios; el juego, al final.
+  const hash = `${`--path=/data/games/${gameId} ${args}`.trim()} ${gameId}`
+  const iframe = createEngineIframe(`${ENGINE_DIR}play.html#${hash}`, 'ScummVM')
+  const messages = listenToFrame(iframe, 'scummvm')
   frame.appendChild(iframe)
 
   try {
-    await messages.waitForReady()
+    await messages.waitFor('ready')
   } catch (error) {
     messages.stop()
     iframe.remove()
@@ -35,45 +34,6 @@ export async function startScummvm({ frame, gameId, args = '', onQuit, onError }
   messages.onAfterReady({ onQuit, onError })
   iframe.focus()
   return createController(iframe, messages)
-}
-
-function createIframe(gameId, args) {
-  const iframe = document.createElement('iframe')
-  iframe.className = 'player-iframe'
-  iframe.title = 'ScummVM'
-  iframe.allow = 'autoplay; fullscreen'
-  // Los argumentos de ScummVM van en el #, separados por espacios; el juego, al final.
-  iframe.src = `${ENGINE_DIR}play.html#${`--path=/data/games/${gameId} ${args}`.trim()} ${gameId}`
-  return iframe
-}
-
-// Escucha los avisos de play.js que vienen de ESTE iframe.
-function listenTo(iframe) {
-  let handlers = {}
-  const onMessage = (event) => {
-    if (event.source !== iframe.contentWindow || event.data?.source !== 'scummvm') return
-    handlers[event.data.type]?.(event.data.detail)
-  }
-  window.addEventListener('message', onMessage)
-
-  return {
-    waitForReady: () => waitForReady((next) => (handlers = next)),
-    onAfterReady({ onQuit, onError }) {
-      handlers = { exit: () => onQuit?.(), error: (detail) => onError?.(`ScummVM se cerró por un error: ${detail}`) }
-    },
-    stop: () => window.removeEventListener('message', onMessage),
-  }
-}
-
-function waitForReady(setHandlers) {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('ScummVM tardó demasiado en arrancar.')), START_TIMEOUT_MS)
-    const finish = (callback) => (detail) => {
-      clearTimeout(timer)
-      callback(detail)
-    }
-    setHandlers({ ready: finish(resolve), error: finish((detail) => reject(new Error(detail))) })
-  })
 }
 
 function createController(iframe, messages) {

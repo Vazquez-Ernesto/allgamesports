@@ -339,3 +339,38 @@ Problemas que aparecieron:
 - **Las portadas de ScummVM salían negras**: dibuja con WebGL, que borra la
   imagen después de mostrarla. `play.html?captura` la conserva.
 - Los datos de ScummVM pasaron de 15 MB a unos 103 MB en el repo.
+
+## 13. Primera consola: PlayStation, con Tomb Raider
+
+### La decisión
+
+Para PlayStation no hay juegos comerciales con datos libres, y la regla del
+proyecto descarta emuladores y ROMs hospedadas. Lo que sí existe son motores
+reconstruidos por la comunidad. Se miraron tres: OpenLara (Tomb Raider,
+BSD-2), REDRIVER2 (Driver 2, MIT) y sotn-decomp (Castlevania, AGPL, sin
+versión jugable completa fuera de la consola). Se eligió OpenLara porque ya
+trae un port web y lee los niveles del disco de PlayStation.
+
+### Cómo se armó
+
+- OpenLara compiló con Emscripten 7 sin tocar su código. Solo hizo falta
+  reactivar con un flag la forma vieja en que registra teclado y canvas.
+- Corre en un iframe, como ScummVM. El código común quedó en
+  `src/lib/engineFrame.js`.
+- **Lector de discos** (`src/lib/iso9660.js`): el jugador elige la imagen de
+  su disco, que puede pesar 500 MB o más. En vez de cargarla en memoria, se
+  lee la lista de archivos y se sacan solo los niveles. Entiende imágenes
+  `.iso` y las crudas `.bin` de PlayStation (sectores de 2352 bytes).
+- Lo extraído se guarda como un zip sin comprimir (`createZip` en
+  `src/lib/zip.js`), así el reproductor sigue manejando un solo archivo.
+- El catálogo ganó la sección PlayStation (`platforms.js`).
+
+### Qué se probó y qué no
+
+El lector se probó con una imagen de CD armada para la prueba, en los dos
+formatos, comparando los 66 archivos byte a byte. Con esa imagen el
+reproductor lee el disco, guarda los niveles y el motor arranca.
+
+**No se probó con un disco real de Tomb Raider**: no había uno disponible.
+Falta confirmar que el juego corre. Tampoco se usan todavía la música (pistas
+de audio de CD) ni los videos del disco.

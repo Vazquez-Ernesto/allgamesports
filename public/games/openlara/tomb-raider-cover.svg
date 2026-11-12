@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" shape-rendering="crispEdges">
+  <!-- Portada generada (no es arte oficial): los datos de Tomb Raider los aporta el jugador. -->
+  <rect width="320" height="200" fill="#12100b" />
+
+  <!-- Sol y pirámide escalonada -->
+  <rect x="216" y="26" width="36" height="36" fill="#ffb238" />
+  <g fill="#3a2f1c">
+    <rect x="60" y="128" width="200" height="16" />
+    <rect x="80" y="112" width="160" height="16" />
+    <rect x="100" y="96" width="120" height="16" />
+    <rect x="120" y="80" width="80" height="16" />
+    <rect x="140" y="64" width="40" height="16" />
+  </g>
+  <g fill="#5a482a">
+    <rect x="60" y="128" width="100" height="4" />
+    <rect x="80" y="112" width="80" height="4" />
+    <rect x="100" y="96" width="60" height="4" />
+    <rect x="120" y="80" width="40" height="4" />
+    <rect x="140" y="64" width="20" height="4" />
+  </g>
+  <!-- Entrada -->
+  <rect x="150" y="116" width="20" height="28" fill="#12100b" />
+  <rect x="0" y="144" width="320" height="56" fill="#1d1a10" />
+
+  <text x="160" y="172" text-anchor="middle" font-family="'Courier New', monospace" font-size="26" font-weight="700" letter-spacing="4" fill="#ffb238">TOMB RAIDER</text>
+  <text x="160" y="190" text-anchor="middle" font-family="'Courier New', monospace" font-size="11" font-weight="700" letter-spacing="2" fill="#e9ecdf">CON TU DISCO DE PLAYSTATION</text>
+  <rect x="1" y="1" width="318" height="198" fill="none" stroke="#ffb238" stroke-opacity="0.35" stroke-width="2" />
+</svg>
