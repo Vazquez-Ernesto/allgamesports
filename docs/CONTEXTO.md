@@ -295,3 +295,47 @@ pausa suspende el audio, salir del juego muestra "Saliste del juego",
 "Volver a jugar" crea un iframe nuevo, y salir de la ficha no deja ninguno.
 Doom se volvió a probar. No se probó: escuchar el sonido, mando, Firefox y
 Safari, ni GitHub Pages.
+
+## 12. Front más claro, portadas y tres aventuras más
+
+### El pedido
+
+Que el sitio se entienda sin saber qué es un WAD, que cada juego tenga su
+portada, una guía para quien entra por primera vez, y definir bien de qué
+plataforma es cada juego, con sus años y datos.
+
+### Qué cambió en el front
+
+- **Guía "¿Primera vez? Empezá acá"** arriba del catálogo: tres pasos y una
+  aclaración sobre los juegos que piden un archivo.
+- **Catálogo por plataforma**: `src/data/platforms.js` define cada una
+  (nombre, fabricante, años, descripción) y el catálogo arma una sección por
+  plataforma. Hoy todos son de PC (MS-DOS); sumar una consola es agregar su
+  entrada.
+- **Fichas con datos del original**: plataforma, año, estudio y quién lo
+  publicó, antes de los datos técnicos del port. Los estudios y editores se
+  tomaron de las pantallas de título y de los readme de cada juego.
+- **Lenguaje llano**: las etiquetas pasan a "Listo para jugar" y "Necesita tu
+  copia". "DOOM: tu propio WAD" ahora es "DOOM (con tu copia)". Cada ficha
+  tiene un recuadro "Cómo jugar" y, si pide archivo, "¿Por qué me pide un
+  archivo?".
+- **Portada en todos**: capturas del propio juego. La de "DOOM (con tu
+  copia)" es un dibujo propio (SVG), porque no se puede usar arte de DOOM.
+- El encabezado ya no desborda en celular.
+
+### Tres juegos más sobre ScummVM
+
+Lure of the Temptress (1992, en español), Drascula (1996, en español con
+voces) y DreamWeb (1994, en inglés, para adultos). Las tres licencias son
+formales y están en los archivos de cada juego.
+
+Problemas que aparecieron:
+
+- **Drascula avisaba que faltaba la música** en cada arranque. Viene en un
+  paquete aparte de pistas MP3: se sumó el paquete y el decodificador
+  (`--enable-mad`). Es el juego más pesado: unos 54 MB la primera vez.
+- **DreamWeb decía "Game data not found"**: ScummVM lo reconoce por su
+  `DREAMWEB.EXE`, que se había dejado afuera por ser un ejecutable de DOS.
+- **Las portadas de ScummVM salían negras**: dibuja con WebGL, que borra la
+  imagen después de mostrarla. `play.html?captura` la conserva.
+- Los datos de ScummVM pasaron de 15 MB a unos 103 MB en el repo.

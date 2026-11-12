@@ -297,9 +297,10 @@ code {
 
 .site-header-inner {
   display: flex;
+  flex-wrap: wrap; /* en celular el menú baja a una segunda línea */
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 4px 16px;
   min-height: 60px;
 }
 
@@ -529,20 +530,143 @@ code {
   image-rendering: pixelated;
 }
 
-.card-cover-byo {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(-45deg, #1d1a10 0 14px, #17150d 14px 28px);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--byo) 30%, transparent);
+.card-credit {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
 }
 
-.card-cover-byo span {
+/* ----- Guía de inicio ----- */
+
+.start {
+  margin-bottom: clamp(40px, 6vw, 64px);
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.start-title {
+  margin-bottom: 16px;
   font-family: var(--font-display);
-  font-size: 84px;
+  font-size: clamp(28px, 4vw, 36px);
   font-weight: 400;
+  line-height: 1;
+}
+
+.start-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 12px 28px;
+  padding: 0;
+  list-style: none;
+  counter-reset: start;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.start-steps li {
+  counter-increment: start;
+}
+
+.start-steps li::before {
+  content: counter(start);
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.start-steps strong {
+  color: var(--text);
+}
+
+.start-note {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ----- Sección por plataforma ----- */
+
+.platform + .platform {
+  margin-top: 48px;
+}
+
+.platform-head {
+  display: grid;
+  gap: 4px;
+  margin: 28px 0 18px;
+  padding-left: 14px;
+  border-left: 3px solid var(--accent);
+}
+
+.platform-name {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.platform-meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.platform-about {
+  max-width: 70ch;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ----- "Cómo jugar" en la ficha ----- */
+
+.steps {
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.steps-title {
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.steps-list {
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+  list-style: decimal;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.steps-why {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.steps-why summary {
   color: var(--byo);
+  cursor: pointer;
+}
+
+.steps-why p {
+  margin-top: 8px;
 }
 
 .card-play {

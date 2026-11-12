@@ -2,8 +2,10 @@
 
 [ScummVM](https://github.com/scummvm/scummvm) (versión en `UPSTREAM_TAG`)
 compilado a WebAssembly con su propio target de Emscripten, solo con los
-motores de los juegos del catálogo: `sky` (Beneath a Steel Sky) y `queen`
-(Flight of the Amazon Queen).
+motores de los juegos del catálogo: `sky` (Beneath a Steel Sky), `queen`
+(Flight of the Amazon Queen), `lure` (Lure of the Temptress), `drascula`
+(Drascula) y `dreamweb` (DreamWeb). Lleva además el decodificador de MP3
+(`--enable-mad`) para la música de Drascula.
 
 Licencia: **GPL-3.0** (ver `LICENSE-scummvm`). Cualquier cambio a este código
 tiene que publicarse bajo la misma licencia.
@@ -64,6 +66,15 @@ SHA-256) y arma `public/games/scummvm/data/`.
   `play.js` los descomprime. El `index.json` lleva el tamaño sin comprimir,
   porque ScummVM lo compara con lo que recibe. `queen.1` baja de 22,7 MB a
   7,2 MB.
+- **Qué archivos de cada zip se usan.** Se dejan afuera manuales y
+  ejecutables de DOS, con una excepción: ScummVM reconoce la versión de
+  DreamWeb por su `DREAMWEB.EXE`; sin él dice "Game data not found".
+- **Música de Drascula.** Viene en un paquete aparte (pistas MP3). Sin ellas
+  ScummVM muestra un aviso en cada arranque. Se bajan de a una, cuando suenan.
+- **Idioma.** Drascula trae varios idiomas en la misma carpeta; la ficha
+  pasa `--language=es` (`source.args` en `games.js`).
+- **Portadas.** `play.html?captura#...` conserva la imagen del canvas (WebGL
+  la borra después de mostrarla) para poder copiarla y sacar una portada.
 - **`scummvm.ini`.** Al arrancar, ScummVM pide su configuración. Sin el
   archivo, el servidor de desarrollo de Vite devolvía el `index.html` del
   sitio y ScummVM lo guardaba como configuración rota.
@@ -75,6 +86,6 @@ SHA-256) y arma `public/games/scummvm/data/`.
 ## Pendiente
 
 - Versiones de CD, con voces: pesan entre 60 y 107 MB.
-- Más juegos freeware de ScummVM (Lure of the Temptress, Drascula, DreamWeb):
-  cada uno suma su motor a `--enable-engine` y su entrada en
-  `prepare-data.mjs`, después de verificar su licencia.
+- Más juegos freeware de ScummVM: cada uno suma su motor a
+  `--enable-engine` y su entrada en `prepare-data.mjs`, después de verificar
+  su licencia.

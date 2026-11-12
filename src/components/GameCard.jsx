@@ -8,22 +8,18 @@ export default function GameCard({ game }) {
   return (
     <Link to={`/juego/${game.slug}`} className="card">
       <div className="card-cover">
-        {game.cover ? (
-          <img src={asset(game.cover)} alt="" loading="lazy" width="320" height="200" />
-        ) : (
-          <div className="card-cover-byo" aria-hidden="true">
-            <span>.WAD</span>
-          </div>
-        )}
+        <img src={asset(game.cover)} alt="" loading="lazy" width="320" height="200" />
         <span className="card-play">Jugar</span>
       </div>
       <div className="card-body">
         <h3 className="card-title">{game.title}</h3>
+        <p className="card-credit">
+          {game.year} · {game.developer}
+        </p>
         <p className="card-short">{game.short}</p>
         <ul className="tags" aria-label="Características">
-          <li className="tag">{game.platform}</li>
           <li className="tag">{game.genre}</li>
-          <li className={isByo ? 'tag tag-byo' : 'tag tag-free'}>{isByo ? 'Tu archivo' : 'Datos libres'}</li>
+          <li className={isByo ? 'tag tag-byo' : 'tag tag-free'}>{isByo ? 'Necesita tu copia' : 'Listo para jugar'}</li>
         </ul>
       </div>
     </Link>

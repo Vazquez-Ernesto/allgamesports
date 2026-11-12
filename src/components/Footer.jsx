@@ -9,7 +9,8 @@ export default function Footer() {
           con tu propia copia, que nunca sale de tu navegador.
         </p>
         <p className="site-footer-meta">
-          DOOM es marca de id Software. Motor bajo GPL-2.0, Freedoom bajo BSD-3.
+          Cada juego pertenece a sus autores; su ficha indica el estudio y la licencia. Los motores son software
+          libre (GPL). DOOM es marca de id Software.
           {SITE.contactEmail && (
             <>
               {' '}

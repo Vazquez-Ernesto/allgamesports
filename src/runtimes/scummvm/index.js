@@ -15,11 +15,12 @@ const START_TIMEOUT_MS = 60000
  * @param {object} options
  * @param {HTMLElement} options.frame      Contenedor donde va el iframe.
  * @param {string} options.gameId          Id de ScummVM ('sky', 'queen'...): también es su carpeta en data/games.
+ * @param {string} [options.args]         Opciones extra de ScummVM (p. ej. "--language=es").
  * @param {() => void} [options.onQuit]
  * @param {(message: string) => void} [options.onError]
  */
-export async function startScummvm({ frame, gameId, onQuit, onError }) {
-  const iframe = createIframe(gameId)
+export async function startScummvm({ frame, gameId, args = '', onQuit, onError }) {
+  const iframe = createIframe(gameId, args)
   const messages = listenTo(iframe)
   frame.appendChild(iframe)
 
@@ -36,12 +37,13 @@ export async function startScummvm({ frame, gameId, onQuit, onError }) {
   return createController(iframe, messages)
 }
 
-function createIframe(gameId) {
+function createIframe(gameId, args) {
   const iframe = document.createElement('iframe')
   iframe.className = 'player-iframe'
   iframe.title = 'ScummVM'
   iframe.allow = 'autoplay; fullscreen'
-  iframe.src = `${ENGINE_DIR}play.html#--path=/data/games/${gameId} ${gameId}`
+  // Los argumentos de ScummVM van en el #, separados por espacios; el juego, al final.
+  iframe.src = `${ENGINE_DIR}play.html#${`--path=/data/games/${gameId} ${args}`.trim()} ${gameId}`
   return iframe
 }
 

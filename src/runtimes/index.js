@@ -82,7 +82,8 @@ const scummvm = {
   surface: 'iframe',
   defaultSettings: {}, // ScummVM escala y suaviza por su cuenta
   keyNote: 'ScummVM tiene además su menú general con Ctrl+F5.',
-  start: ({ frame, game, onQuit, onError }) => startScummvm({ frame, gameId: game.source.gameId, onQuit, onError }),
+  start: ({ frame, game, onQuit, onError }) =>
+    startScummvm({ frame, gameId: game.source.gameId, args: game.source.args, onQuit, onError }),
 }
 
 const RUNTIMES = { doom, tyrian, scummvm }

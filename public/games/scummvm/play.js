@@ -24,6 +24,16 @@
     return new Uint8Array(await new Response(stream).arrayBuffer())
   }
 
+  // Modo captura (play.html?captura#...): ScummVM dibuja con WebGL, que borra
+  // la imagen después de mostrarla. Con esto se conserva y se puede copiar el
+  // canvas para sacar la portada de un juego. No se usa al jugar.
+  if (window.location.search.indexOf('captura') !== -1) {
+    var realGetContext = HTMLCanvasElement.prototype.getContext
+    HTMLCanvasElement.prototype.getContext = function (type, options) {
+      return realGetContext.call(this, type, Object.assign({}, options, { preserveDrawingBuffer: true }))
+    }
+  }
+
   var realFetch = window.fetch.bind(window)
   window.fetch = async function (input, init) {
     var url = typeof input === 'string' ? input : input.url

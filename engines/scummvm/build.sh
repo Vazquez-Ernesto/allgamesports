@@ -36,7 +36,7 @@ done
 
 cd "$SRC"
 ./dists/emscripten/build.sh setup libs configure make dist \
-  --disable-all-engines --enable-engine=sky,queen
+  --disable-all-engines --enable-engine=sky,queen,lure,drascula,dreamweb --enable-mad
 
 mkdir -p "$OUT_DIR"
 cp build-emscripten/scummvm.js build-emscripten/scummvm.wasm "$OUT_DIR/"

@@ -41,6 +41,7 @@ partida, paneles de controles y ajustes).
 src/
   site.js              nombre del sitio, link al repo, mail de contacto
   data/games.js        el catálogo: una entrada por juego
+  data/platforms.js    plataformas originales (nombre, fabricante, años)
   pages/               Home (catálogo), GamePage (ficha + reproductor), NotFound
   components/          Player, Modal, ControlsPanel, KeyList, SettingsPanel, GameCard...
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
@@ -106,20 +107,31 @@ engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona
 
 - ScummVM (GPL-3.0) no se copia al repo: `build.sh` clona la versión de
   `UPSTREAM_TAG` y aplica `patches/`. Compila solo los motores de los juegos
-  del catálogo (`--enable-engine=sky,queen`); para sumar un juego, sumar su
-  motor ahí y su descarga en `prepare-data.mjs`.
+  del catálogo (`--enable-engine=...` en `build.sh`); para sumar un juego,
+  sumar su motor ahí y su descarga en `prepare-data.mjs`.
 - Corre en un iframe (`public/games/scummvm/play.html`): usa un `Module`
   global y no se puede reiniciar en la misma página. Arrancar es crear el
   iframe; salir, sacarlo. `play.js` avisa al reproductor con `postMessage`.
 - Los datos se bajan bajo demanda: ScummVM pide `/data/.../index.json` y cada
   archivo cuando lo abre. `play.js` vuelve relativas esas rutas absolutas y
   descomprime los `.dgz` (gzip). El `index.json` lleva el tamaño sin comprimir.
-- Los juegos (Beneath a Steel Sky, Flight of the Amazon Queen) son freeware
-  con licencia que permite redistribuirlos con su `readme.txt`: se hospedan.
+- Los cinco juegos (Beneath a Steel Sky, Flight of the Amazon Queen, Lure of
+  the Temptress, Drascula, DreamWeb) son freeware con licencia que permite
+  redistribuirlos con sus avisos intactos: se hospedan, con su archivo de
+  licencia legible al lado.
 - Usa SDL3 (`Module.SDL3.audioContext`) y guarda sus partidas en su propia
   base de IndexedDB (`/home/web_user`).
 
 ## Agregar un juego
+
+Todo juego lleva: plataforma (clave de `platforms.js`), año, estudio, quién
+lo publicó y una portada de 320x200 (captura del juego; para ScummVM, con
+`play.html?captura`). Si la plataforma es nueva, agregarla a `platforms.js`:
+el catálogo arma una sección por plataforma.
+
+Los textos para el visitante van en lenguaje llano: nada de "WAD" o "ROM" sin
+explicar. Los juegos con archivo propio traen `source.steps` (pasos) y
+`source.why` (por qué hace falta el archivo).
 
 1. Entrada nueva en `src/data/games.js`.
 2. Si usa el motor de Doom, alcanza con apuntar `source` a otro WAD libre.
@@ -157,7 +169,7 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
   original.
 - Tyrian: falta escuchar el sonido y probar mando, Firefox y Safari.
 - El encabezado desborda en ancho de celular (440 px en 375).
-- ScummVM: portadas de BASS y FOTAQ, y las versiones de CD con voces.
+- ScummVM: las versiones de CD con voces de BASS, FOTAQ y DreamWeb.
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 
 ## Ingeniería inversa con REA

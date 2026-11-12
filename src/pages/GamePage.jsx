@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import GameSteps from '../components/GameSteps.jsx'
 import Player from '../components/Player.jsx'
 import NotFound from './NotFound.jsx'
 import { findGame } from '../data/games.js'
+import { platformOf } from '../data/platforms.js'
 import { SITE } from '../site.js'
 
 export default function GamePage() {
@@ -21,6 +23,16 @@ export default function GamePage() {
 
   if (!game) return <NotFound />
 
+  const platform = platformOf(game)
+  // Datos del juego original, antes de los datos técnicos del port.
+  const facts = [
+    ['Plataforma', `${platform.name} (${platform.maker}, ${platform.years})`],
+    ['Año', String(game.year)],
+    ['Estudio', game.developer],
+    ['Publicó', game.publisher],
+    ...game.facts,
+  ]
+
   return (
     <div className="wrap game-page">
       <nav className="crumbs" aria-label="Ruta">
@@ -36,15 +48,16 @@ export default function GamePage() {
         <aside className="game-info">
           <h1 className="game-title">{game.title}</h1>
           <ul className="tags">
-            <li className="tag">{game.platform}</li>
+            <li className="tag">{platform.name}</li>
             <li className="tag">{game.genre}</li>
             <li className="tag">{game.year}</li>
           </ul>
+          <GameSteps game={game} />
           {game.description.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
           <dl className="facts">
-            {game.facts.map(([term, value]) => (
+            {facts.map(([term, value]) => (
               <div key={term}>
                 <dt>{term}</dt>
                 <dd>{value}</dd>

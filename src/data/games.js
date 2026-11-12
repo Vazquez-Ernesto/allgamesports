@@ -1,6 +1,10 @@
 // Catálogo. Para sumar un juego: agregá una entrada acá y, si usa un motor
 // nuevo, un runtime en src/runtimes/<motor>/.
 //
+// platform: clave de src/data/platforms.js (la plataforma original del juego).
+// year, developer, publisher: datos del juego original.
+// cover: captura del juego, 320x200. Todos los juegos tienen una.
+//
 // source.type:
 //   'hosted' -> los datos del juego son libres y se sirven desde este sitio.
 //               fileName: nombre con el que el motor reconoce el archivo.
@@ -8,16 +12,19 @@
 //   'byo'    -> "bring your own": el jugador aporta su propio archivo, que
 //               nunca sale de su navegador. accept, dropTitle y dropNote son
 //               los textos del reproductor; download (opcional) es un enlace
-//               a la descarga oficial del archivo.
+//               a la descarga oficial del archivo; steps son los pasos que se
+//               muestran en la ficha, en lenguaje llano.
 
 export const GAMES = [
   {
     slug: 'freedoom-1',
     title: 'Freedoom: Phase 1',
     short: 'El motor original de DOOM (1993) con cuatro episodios de niveles libres.',
-    platform: 'PC (DOS)',
+    platform: 'dos',
     genre: 'FPS',
     year: 1993,
+    developer: 'id Software (motor) y Proyecto Freedoom (niveles)',
+    publisher: 'Proyecto Freedoom',
     engine: 'doom',
     cover: 'games/doom/freedoom1-cover.png',
     source: {
@@ -41,9 +48,11 @@ export const GAMES = [
     slug: 'freedoom-2',
     title: 'Freedoom: Phase 2',
     short: '32 niveles libres sobre el motor de DOOM II, con la escopeta de dos caños.',
-    platform: 'PC (DOS)',
+    platform: 'dos',
     genre: 'FPS',
     year: 1994,
+    developer: 'id Software (motor) y Proyecto Freedoom (niveles)',
+    publisher: 'Proyecto Freedoom',
     engine: 'doom',
     cover: 'games/doom/freedoom2-cover.png',
     source: {
@@ -65,23 +74,31 @@ export const GAMES = [
   },
   {
     slug: 'doom-tu-wad',
-    title: 'DOOM: tu propio WAD',
-    short: 'Cargá el DOOM.WAD o DOOM2.WAD de tu copia y jugá el original.',
-    platform: 'PC (DOS)',
+    title: 'DOOM (con tu copia)',
+    short: 'El DOOM original de 1993. Necesitás el archivo de datos de tu copia del juego.',
+    platform: 'dos',
     genre: 'FPS',
     year: 1993,
+    developer: 'id Software',
+    publisher: 'id Software',
     engine: 'doom',
-    cover: null,
+    cover: 'games/doom/doom-byo-cover.svg',
     source: {
       type: 'byo',
       storageKey: 'doom-iwad',
       accept: '.wad,.WAD',
-      dropTitle: 'Arrastrá acá tu archivo .WAD',
-      dropNote: 'DOOM.WAD, DOOM2.WAD, TNT.WAD, PLUTONIA.WAD o DOOM1.WAD (shareware).',
+      dropTitle: 'Arrastrá acá el archivo de datos de DOOM',
+      dropNote: 'Se llama DOOM.WAD, DOOM2.WAD, TNT.WAD, PLUTONIA.WAD o DOOM1.WAD (la demo gratuita).',
+      steps: [
+        'Buscá el archivo de datos en la carpeta donde instalaste DOOM (Steam o GOG). Se llama DOOM.WAD o DOOM2.WAD. Si no tenés el juego, sirve la demo gratuita de 1993 (DOOM1.WAD).',
+        'Arrastralo al reproductor o tocá "Elegir archivo".',
+        'Listo: queda guardado en tu navegador y la próxima vez entrás directo. No se sube a ningún servidor.',
+      ],
+      why: 'Un juego tiene dos partes: el motor (el programa) y los datos (niveles, gráficos y sonidos). El motor de DOOM es libre y está en esta página. Los datos siguen siendo de id Software y vienen en un archivo con extensión .WAD, por eso los ponés vos.',
     },
     description: [
-      'El motor es libre, pero los niveles originales de DOOM siguen siendo de id Software. Por eso acá no se distribuyen: los ponés vos.',
-      'Elegí el archivo .WAD de tu copia (Steam, GOG o la versión shareware). Queda guardado en tu navegador y no se sube a ningún servidor; la próxima vez entrás directo a jugar.',
+      'El DOOM original, con sus niveles, monstruos y música de 1993. Corre sobre el mismo motor que Freedoom.',
+      'Funciona con DOOM, DOOM II, Final Doom y la demo gratuita.',
     ],
     facts: [
       ['Motor', 'doomgeneric (id Software, GPL-2.0)'],
@@ -94,11 +111,13 @@ export const GAMES = [
     slug: 'tyrian',
     title: 'Tyrian 2.1',
     short: "Shoot 'em up vertical de 1995: cuatro episodios y una tienda de armas entre misión y misión.",
-    platform: 'PC (DOS)',
+    platform: 'dos',
     genre: "Shoot 'em up",
     year: 1995,
+    developer: 'Eclipse Software',
+    publisher: 'Epic MegaGames',
     engine: 'tyrian',
-    cover: null,
+    cover: 'games/tyrian/tyrian-cover.png',
     source: {
       type: 'byo',
       storageKey: 'tyrian-data',
@@ -109,6 +128,12 @@ export const GAMES = [
         url: 'https://camanis.net/tyrian/tyrian21.zip',
         label: 'Descargar tyrian21.zip',
       },
+      steps: [
+        'Tocá "Descargar tyrian21.zip": es la versión gratuita y oficial (4,7 MB).',
+        'Arrastrá ese archivo al reproductor tal cual, sin descomprimirlo.',
+        'Listo: queda guardado en tu navegador y la próxima vez entrás directo.',
+      ],
+      why: 'Tyrian es gratis desde 2004, pero su autor solo permite compartirlo de persona a persona. Por eso el archivo lo bajás vos del sitio oficial en vez de estar hospedado acá.',
     },
     description: [
       'Un shooter de naves de scroll vertical publicado por Epic MegaGames en 1995. Entre nivel y nivel comprás armas, escudos y naves acompañantes con lo que juntaste.',
@@ -125,11 +150,13 @@ export const GAMES = [
     slug: 'beneath-a-steel-sky',
     title: 'Beneath a Steel Sky',
     short: 'Aventura gráfica de ciencia ficción de 1994: una ciudad vertical, un robot de bolsillo y una conspiración.',
-    platform: 'PC (DOS)',
+    platform: 'dos',
     genre: 'Aventura gráfica',
     year: 1994,
+    developer: 'Revolution Software',
+    publisher: 'Virgin Interactive',
     engine: 'scummvm',
-    cover: null,
+    cover: 'games/scummvm/covers/sky.png',
     source: {
       type: 'hosted',
       gameId: 'sky',
@@ -164,11 +191,13 @@ export const GAMES = [
     slug: 'flight-of-the-amazon-queen',
     title: 'Flight of the Amazon Queen',
     short: 'Aventura gráfica de 1995: un piloto de alquiler, una estrella de cine y una selva llena de sorpresas.',
-    platform: 'PC (DOS)',
+    platform: 'dos',
     genre: 'Aventura gráfica',
     year: 1995,
+    developer: 'Interactive Binary Illusions',
+    publisher: 'Warner Interactive',
     engine: 'scummvm',
-    cover: null,
+    cover: 'games/scummvm/covers/queen.png',
     source: {
       type: 'hosted',
       gameId: 'queen',
@@ -197,6 +226,128 @@ export const GAMES = [
     facts: [
       ['Motor', 'ScummVM 2026.4.0 (GPL-3.0)'],
       ['Datos', 'Freeware de John Passfield y Steve Stamatiadis (readme.txt)'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
+    slug: 'lure-of-the-temptress',
+    title: 'Lure of the Temptress',
+    short: 'Aventura gráfica de 1992, en español: un campesino preso en un pueblo tomado por una hechicera.',
+    platform: 'dos',
+    genre: 'Aventura gráfica',
+    year: 1992,
+    developer: 'Revolution Software',
+    publisher: 'Virgin Games',
+    engine: 'scummvm',
+    cover: 'games/scummvm/covers/lure.png',
+    source: {
+      type: 'hosted',
+      gameId: 'lure',
+      downloadMB: 6,
+    },
+    hint: [
+      [['Clic izq.'], 'caminar, elegir'],
+      [['Clic der.'], 'menú de acciones'],
+      [['F5'], 'guardar'],
+    ],
+    keyList: [
+      ['Clic izq.', 'Caminar o elegir'],
+      ['Clic der.', 'Menú de acciones sobre lo que señalás'],
+      ['F5 / F7', 'Guardar / cargar partida'],
+      ['F9', 'Reiniciar el juego'],
+      ['Esc', 'Saltar la introducción'],
+    ],
+    description: [
+      'Diermot, un campesino, despierta en un calabozo del pueblo de Turnvale, tomado por la hechicera Selena y su ejército de Skorl. Fue el primer juego de Revolution Software: los personajes del pueblo se mueven y hacen su vida por su cuenta. Esta es la versión en español.',
+      'Revolution Software lo liberó como freeware. Su licencia permite distribuirlo gratis manteniendo sus avisos intactos.',
+    ],
+    facts: [
+      ['Idioma', 'Español'],
+      ['Motor', 'ScummVM 2026.4.0 (GPL-3.0)'],
+      ['Datos', 'Freeware de Revolution Software (LICENSE.txt)'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
+    slug: 'drascula',
+    title: 'Drascula: The Vampire Strikes Back',
+    short: 'Aventura gráfica española de 1996, con voces en castellano: un inglés, un conde y mucho humor absurdo.',
+    platform: 'dos',
+    genre: 'Aventura gráfica',
+    year: 1996,
+    developer: 'Alcachofa Soft',
+    publisher: 'Digital Dreams Multimedia',
+    engine: 'scummvm',
+    cover: 'games/scummvm/covers/drascula.png',
+    source: {
+      type: 'hosted',
+      gameId: 'drascula',
+      args: '--language=es',
+      downloadMB: 54,
+    },
+    hint: [
+      [['Clic izq.'], 'moverse, interactuar'],
+      [['Clic der.'], 'inventario'],
+      [['F10'], 'guardar y cargar'],
+    ],
+    keyList: [
+      ['Clic izq.', 'Moverse, interactuar o elegir'],
+      ['Clic der.', 'Inventario'],
+      ['F1 – F6', 'Mirar, coger, abrir, cerrar, hablar, mover'],
+      ['F8', 'Quitar el verbo elegido'],
+      ['F9', 'Volumen'],
+      ['F10', 'Guardar y cargar partida'],
+      ['Espacio', 'Pausar las voces'],
+      ['V / T', 'Activar / desactivar subtítulos'],
+      ['Esc', 'Saltar una escena o salir'],
+    ],
+    description: [
+      'John Hacker, un agente inmobiliario inglés, viaja a Transilvania para venderle unos terrenos al conde Drascula. Se enamora de Billie Jean, el conde la rapta y empieza una parodia de las películas de vampiros. Es una aventura hecha en España, con voces en castellano.',
+      'Alcachofa Soft la liberó como freeware en 2008. Es el juego más pesado del catálogo: la primera vez descarga unos 54 MB, y la música se baja a medida que suena.',
+    ],
+    facts: [
+      ['Idioma', 'Español, con voces'],
+      ['Motor', 'ScummVM 2026.4.0 (GPL-3.0)'],
+      ['Datos', 'Freeware de Alcachofa Soft (readme.txt)'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
+    slug: 'dreamweb',
+    title: 'DreamWeb',
+    short: 'Aventura ciberpunk de 1994, vista desde arriba, oscura y para adultos. En inglés.',
+    platform: 'dos',
+    genre: 'Aventura gráfica',
+    year: 1994,
+    developer: 'Creative Reality',
+    publisher: 'Empire Interactive',
+    engine: 'scummvm',
+    cover: 'games/scummvm/covers/dreamweb.png',
+    source: {
+      type: 'hosted',
+      gameId: 'dreamweb',
+      downloadMB: 13,
+    },
+    hint: [
+      [['Clic izq.'], 'caminar, examinar, usar'],
+      [['Ctrl+F5'], 'guardar y cargar'],
+    ],
+    keyList: [
+      ['Clic izq.', 'Caminar, examinar o usar'],
+      ['Ctrl+F5', 'Menú de ScummVM (guardar, cargar, salir)'],
+    ],
+    description: [
+      'Ryan trabaja en un bar y tiene sueños que le ordenan matar a siete personas para salvar la DreamWeb, la red que sostiene a la humanidad. Una aventura ciberpunk vista desde arriba, con lluvia, neón y una historia que nunca aclara si Ryan es un elegido o un asesino. Tiene violencia y una escena de sexo: en su época se vendió como juego para adultos.',
+      'Sus autores, Neil Dodwell y David Dew (Creative Reality), lo liberaron como freeware en 2012. Esta es la versión de disquete, en inglés.',
+    ],
+    facts: [
+      ['Idioma', 'Inglés'],
+      ['Contenido', 'Para adultos: violencia y sexo'],
+      ['Motor', 'ScummVM 2026.4.0 (GPL-3.0)'],
+      ['Datos', 'Freeware de Creative Reality (license.txt)'],
       ['Tecnología', 'C++ → WebAssembly con Emscripten'],
       ['Guardado', 'En tu navegador (IndexedDB)'],
     ],

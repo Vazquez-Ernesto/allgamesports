@@ -230,7 +230,8 @@ export default function Player({ game }) {
         {phase === 'idle' && (
           <div
             className="player-overlay"
-            style={game.cover ? { '--cover': `url(${import.meta.env.BASE_URL}${game.cover})` } : undefined}
+            // La portada va de fondo solo con el botón Jugar: detrás de las instrucciones molesta.
+            style={canPlay ? { '--cover': `url(${import.meta.env.BASE_URL}${game.cover})` } : undefined}
           >
             {canPlay ? (
               <>
