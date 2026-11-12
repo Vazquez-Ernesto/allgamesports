@@ -19,7 +19,7 @@ export default function GameCard({ game }) {
         <p className="card-short">{game.short}</p>
         <ul className="tags" aria-label="Características">
           <li className="tag">{game.genre}</li>
-          <li className={isByo ? 'tag tag-byo' : 'tag tag-free'}>{isByo ? 'Necesita tu copia' : 'Listo para jugar'}</li>
+          <li className={isByo ? 'tag tag-byo' : 'tag tag-free'}>{isByo ? 'Con descarga gratis' : 'Listo para jugar'}</li>
         </ul>
       </div>
     </Link>

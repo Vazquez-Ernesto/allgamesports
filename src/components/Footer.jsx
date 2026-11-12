@@ -5,8 +5,8 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="wrap site-footer-inner">
         <p>
-          <strong>{SITE.name}</strong> solo hospeda juegos con código y datos libres. Los juegos comerciales se juegan
-          con tu propia copia, que nunca sale de tu navegador.
+          <strong>{SITE.name}</strong> solo publica juegos que se pueden jugar gratis y sin tener nada de antemano. Lo
+          que guardás queda en tu navegador.
         </p>
         <p className="site-footer-meta">
           Cada juego pertenece a sus autores; su ficha indica el estudio y la licencia. Los motores son software

@@ -8,8 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "build:doom": "bash engines/doom/build.sh",
-    "build:tyrian": "bash engines/tyrian/build.sh",
-    "build:openlara": "bash engines/openlara/build.sh"
+    "build:tyrian": "bash engines/tyrian/build.sh"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",

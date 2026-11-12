@@ -58,8 +58,8 @@ function StartHere() {
         </li>
       </ol>
       <p className="start-note">
-        Algunos juegos dicen <span className="tag tag-byo">Necesita tu copia</span>: son gratis de jugar acá, pero te
-        piden un archivo del juego original. Su página explica cuál es y de dónde sacarlo.
+        Algunos juegos dicen <span className="tag tag-byo">Con descarga gratis</span>: antes de jugar bajás un
+        archivo gratuito desde su página y lo cargás ahí mismo. Es un paso, la primera vez.
       </p>
     </section>
   )

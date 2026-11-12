@@ -127,14 +127,9 @@ export default function Player({ game }) {
   async function handleFile(file) {
     if (!file) return
     setError('')
-    setProgress(null)
-    setPhase('loading')
     try {
-      // importFile: para archivos enormes (la imagen de un disco), el motor lee
-      // solo lo que necesita en vez de cargar todo en memoria.
-      const imported = runtime.importFile ? await runtime.importFile(file) : null
-      const bytes = imported?.bytes ?? new Uint8Array(await file.arrayBuffer())
-      const { fileName, title } = imported ?? runtime.identifyFile(bytes, file.name)
+      const bytes = new Uint8Array(await file.arrayBuffer())
+      const { fileName, title } = runtime.identifyFile(bytes, file.name)
       const info = { fileName, title, size: bytes.length }
 
       // Guardarlo en el navegador para la próxima visita (si se puede).
