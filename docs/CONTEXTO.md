@@ -366,3 +366,44 @@ Por la misma regla se retiró "DOOM (con tu copia)", que pedía el archivo de
 datos del juego comprado. Freedoom sigue cubriendo el motor de DOOM con
 niveles libres. La etiqueta de los juegos con archivo pasó a decir "Con
 descarga gratis" (hoy, solo Tyrian).
+
+## 14. Primera consola de verdad: Game Boy, con juegos caseros
+
+### La decisión
+
+Con la regla de la sección 13 no hay juegos comerciales de consola posibles.
+Quedaban los juegos caseros (homebrew): hechos por aficionados y publicados
+gratis con licencia libre. Pero un juego de consola está hecho para el
+procesador de esa consola, así que hace falta un emulador. El dueño del
+proyecto aceptó emuladores **solo** para juegos caseros con licencia libre.
+El lema del sitio dejó de decir "sin emuladores".
+
+### Cómo se armó
+
+- **binjgb** (MIT): emulador de Game Boy y Game Boy Color en C. Se compila
+  solo su núcleo, sin interfaz: 92 KB. No hizo falta parchearlo.
+- El runtime (`src/runtimes/gameboy/`) es propio: hace avanzar la consola
+  en cada cuadro, copia la imagen al canvas, manda el audio a Web Audio,
+  traduce teclado y mando, y guarda la memoria del cartucho en el navegador.
+- Dos plataformas nuevas en el catálogo: Game Boy y Game Boy Color.
+- Juegos: Libbet and the Magic Floor (zlib) y µCity (GPL-3.0), bajados de
+  los releases de sus autores en GitHub, con su licencia al lado.
+
+### Problemas que aparecieron
+
+- **La pausa no frenaba el juego.** El reproductor llama a "reanudar" apenas
+  arranca; el bucle no se protegía de arrancar dos veces y quedaban dos
+  bucles, de los que la pausa frenaba uno. Se agregó la guarda.
+- **Falsas alarmas al probar**: con el panel del navegador de pruebas
+  oculto, `requestAnimationFrame` no se dispara y los juegos parecen
+  colgados. Y las teclas automáticas duran menos que un cuadro, así que la
+  consola no las ve: hay que mantenerlas unos 150 ms.
+- **Tobu Tobu Girl Deluxe** quedó afuera por ahora: licencia perfecta (MIT y
+  CC BY 4.0), pero su autor lo distribuye solo por itch.io.
+
+### Qué se probó
+
+En el servidor de desarrollo: los dos juegos arrancan, Libbet responde a las
+flechas y a Start, µCity guarda su memoria (128 KB) en el navegador, la
+pausa congela y reanuda, y el botón Reiniciar funciona. No se probó el
+sonido de oído, un mando real, ni guardar y recuperar una ciudad en µCity.

@@ -15,6 +15,7 @@
 
 import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
+import { startGameBoy } from './gameboy/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 
@@ -81,7 +82,30 @@ const scummvm = {
     startScummvm({ frame, gameId: game.source.gameId, args: game.source.args, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm }
+// Game Boy y Game Boy Color, sobre el emulador binjgb.
+const gameboy = {
+  defaultSettings: {
+    volume: 0.8,
+    sharpPixels: true,
+  },
+  hint: [
+    [['←', '↑', '↓', '→'], 'cruz'],
+    [['X'], 'botón A'],
+    [['Z'], 'botón B'],
+    [['Enter'], 'Start'],
+  ],
+  keyList: [
+    ['Flechas', 'Cruz de la consola'],
+    ['X', 'Botón A'],
+    ['Z', 'Botón B'],
+    ['Enter', 'Start'],
+    ['Shift', 'Select'],
+  ],
+  keyNote: 'También funciona con un mando conectado. Qué hace cada botón depende del juego: está en su ficha.',
+  start: ({ canvas, data, saveKey, settings }) => startGameBoy({ canvas, data, saveKey, settings }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

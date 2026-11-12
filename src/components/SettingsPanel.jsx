@@ -52,19 +52,21 @@ export default function SettingsPanel({ settings, onChange, defaults }) {
         </>
       )}
 
-      <fieldset className="field">
-        <legend className="field-label">Proporción de pantalla</legend>
-        <div className="segmented">
-          {[
-            ['4 / 3', '4:3 (original)'],
-            ['16 / 10', '16:10 (píxeles cuadrados)'],
-          ].map(([value, label]) => (
-            <button key={value} type="button" aria-pressed={settings.aspect === value} onClick={() => set('aspect', value)}>
-              {label}
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      {has('aspect') && (
+        <fieldset className="field">
+          <legend className="field-label">Proporción de pantalla</legend>
+          <div className="segmented">
+            {[
+              ['4 / 3', '4:3 (original)'],
+              ['16 / 10', '16:10 (píxeles cuadrados)'],
+            ].map(([value, label]) => (
+              <button key={value} type="button" aria-pressed={settings.aspect === value} onClick={() => set('aspect', value)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       <label className="field field-check">
         <input

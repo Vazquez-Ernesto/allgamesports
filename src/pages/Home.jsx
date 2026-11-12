@@ -100,8 +100,8 @@ function HowItWorks() {
           <span className="how-num">01</span>
           <h3>Código fuente real</h3>
           <p>
-            Cada juego parte del código original liberado por sus autores o reconstruido por la comunidad. No hay un
-            emulador imitando una consola.
+            Los juegos de PC parten del código original, liberado por sus autores o reconstruido por la comunidad. Los
+            juegos caseros de consola corren sobre un emulador de código abierto.
           </p>
         </li>
         <li>

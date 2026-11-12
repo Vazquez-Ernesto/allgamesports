@@ -10,6 +10,20 @@ export const PLATFORMS = {
     about:
       'El sistema operativo de las PC de los 80 y 90. Los juegos venían en disquetes o CD y se arrancaban escribiendo comandos.',
   },
+  gb: {
+    name: 'Game Boy',
+    maker: 'Nintendo',
+    years: '1989 – 2003',
+    about:
+      'La consola portátil de Nintendo: pantalla de cuatro tonos de gris y juegos en cartucho. Estos son juegos caseros, hechos por aficionados años después y publicados gratis por sus autores. Corren sobre un emulador libre.',
+  },
+  gbc: {
+    name: 'Game Boy Color',
+    maker: 'Nintendo',
+    years: '1998 – 2003',
+    about:
+      'La sucesora de la Game Boy, con pantalla a color y más memoria. Estos son juegos caseros publicados gratis por sus autores. Corren sobre un emulador libre.',
+  },
 }
 
 export function platformOf(game) {

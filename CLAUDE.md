@@ -21,6 +21,7 @@ La historia del proyecto, las decisiones y lo que se probó están en
   `doom.js` y `doom.wasm` ya están en el repo.
 - `npm run build:tyrian`: recompila el motor de Tyrian (OpenTyrian). Mismos
   requisitos; probado con Emscripten 7.0.0.
+- `npm run build:gameboy`: recompila binjgb, el emulador de Game Boy.
 - `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
   Windows, WSL); baja su propio Emscripten. Después,
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
@@ -48,6 +49,7 @@ src/
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
   runtimes/scummvm/    crea el iframe con ScummVM y traduce sus avisos
+  runtimes/gameboy/    conecta el emulador binjgb con canvas, audio, controles y guardado
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
 public/games/doom/     motor compilado, datos de Freedoom y portadas
@@ -56,6 +58,7 @@ public/games/scummvm/  motor compilado, play.html/play.js y data/ con los juegos
 engines/doom/          código C del motor y build.sh (ver su README.md)
 engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
 engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona aparte)
+engines/gameboy/       build.sh de binjgb (el código se clona aparte, sin parches)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -67,6 +70,11 @@ engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona
   como máximo la ficha enlaza un archivo gratuito y legal que el jugador
   descarga e importa ahí mismo (`source.type: 'byo'` con `download`, como
   Tyrian).
+- **Emuladores: solo para juegos caseros.** Las consolas entran con un
+  emulador de código abierto compilado a WebAssembly y juegos caseros
+  (homebrew) que su autor publica con licencia que permite repartirlos.
+  Nunca juegos comerciales. Cada juego lleva su licencia al lado y la ficha
+  aclara que es casero.
 - No se suman juegos que exijan una copia comprada, un disco físico o una
   ROM propia. Por eso no hay juegos de consola que dependan del disco del
   jugador: si aparece esa limitación, se descarta el juego.
@@ -127,6 +135,16 @@ engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona
   licencia legible al lado.
 - Usa SDL3 (`Module.SDL3.audioContext`) y guarda sus partidas en su propia
   base de IndexedDB (`/home/web_user`).
+
+## Cómo funciona Game Boy
+
+- El emulador es binjgb (MIT), compilado sin su interfaz: 92 KB. Expone
+  funciones simples (avanzar hasta un instante, leer el cuadro y el audio,
+  apretar botones) y `runtimes/gameboy/index.js` las conecta con la página.
+- Sirve para Game Boy y Game Boy Color (plataformas `gb` y `gbc`).
+- Los juegos están en `public/games/gameboy/roms/` con su licencia; la
+  tabla con origen y SHA-256 está en `engines/gameboy/README.md`.
+- La partida es la memoria del cartucho: se guarda sola en el navegador.
 
 ## Agregar un juego
 

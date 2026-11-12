@@ -1,7 +1,9 @@
 # allgamesports
 
-Catálogo de juegos que corren en el navegador. Cada juego es código fuente
-real compilado a WebAssembly: no hay emuladores, ROMs ni configuración.
+Catálogo de juegos que corren en el navegador, sin instalar nada. Los
+clásicos de PC son su código fuente compilado a WebAssembly. Los juegos de
+consola son juegos caseros, publicados gratis por sus autores, sobre un
+emulador de código abierto.
 
 Primer port: **Doom** (motor original de id Software) con los datos libres de
 **Freedoom**, más la opción de jugar el Doom original aportando tu propio WAD.
