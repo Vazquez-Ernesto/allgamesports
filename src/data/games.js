@@ -45,6 +45,33 @@ export const GAMES = [
     ],
   },
   {
+    slug: 'wolfenstein-3d',
+    title: 'Wolfenstein 3D',
+    short: 'El abuelo de los juegos de disparos (1992): su primer episodio completo, "Escape from Wolfenstein".',
+    platform: 'dos',
+    genre: 'FPS',
+    year: 1992,
+    developer: 'id Software',
+    publisher: 'Apogee Software',
+    engine: 'wolf3d',
+    cover: 'games/wolf3d/wolf3d-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 2.7,
+    },
+    description: [
+      'Sos B.J. Blazkowicz, un espía aliado preso en el castillo Wolfenstein, y tenés que escapar piso por piso. Un año antes de DOOM, este juego mostró que una PC podía moverte por un laberinto en primera persona a toda velocidad. Está en inglés.',
+      'Esta es la versión shareware: el primer episodio entero, con sus diez niveles, que Apogee repartió gratis en 1992. Corre sobre Wolf4SDL, una adaptación del código fuente original que id Software liberó en 1995, compilada a WebAssembly. Los otros cinco episodios eran de pago y no están acá.',
+    ],
+    facts: [
+      ['Idioma', 'Inglés'],
+      ['Motor', 'Wolf4SDL (GPL-2.0), sobre el código original de id Software'],
+      ['Datos', 'Wolfenstein 3D shareware 1.4, de distribución gratuita (Apogee)'],
+      ['Tecnología', 'C → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
     slug: 'freedoom-1',
     title: 'Freedoom: Phase 1',
     short: 'El motor original de DOOM (1993) con cuatro episodios de niveles libres.',

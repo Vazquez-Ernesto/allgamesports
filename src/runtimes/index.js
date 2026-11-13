@@ -18,6 +18,7 @@ import { defaultBindings as doomBindings } from './doom/keys.js'
 import { startGameBoy } from './gameboy/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
+import { startWolf3d } from './wolf3d/index.js'
 
 const doom = {
   defaultSettings: {
@@ -105,7 +106,31 @@ const gameboy = {
   start: ({ canvas, data, saveKey, settings }) => startGameBoy({ canvas, data, saveKey, settings }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy }
+// Wolfenstein 3D sobre Wolf4SDL: corre en su propia página, como ScummVM.
+const wolf3d = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '↑', '↓', '→'], 'mover y girar'],
+    [['Ctrl'], 'disparar'],
+    [['Espacio'], 'abrir puertas'],
+    [['Esc'], 'menú'],
+  ],
+  keyList: [
+    ['Flechas', 'Avanzar, retroceder y girar'],
+    ['Ctrl', 'Disparar'],
+    ['Espacio', 'Abrir puertas y buscar pasajes secretos'],
+    ['Shift', 'Correr'],
+    ['Alt + flechas', 'Moverse de costado'],
+    ['1 a 4', 'Elegir arma'],
+    ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
+    ['Enter', 'Aceptar en los menús'],
+  ],
+  keyNote: 'Las teclas se cambian dentro del juego: Esc, Control, Customize controls.',
+  start: ({ frame, onQuit, onError }) => startWolf3d({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

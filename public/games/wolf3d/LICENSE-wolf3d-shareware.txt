@@ -1,0 +1,74 @@
+This VENDOR.DOC describes the only terms by which we (APOGEE
+SOFTWARE PRODUCTIONS, P.O. Box 496389, Garland, TX 75049, (800)
+426-3123)) permit Commercial Distribution of this Program.
+
+"Commercially distribute" means to distribute for money or other
+consideration.  It includes copying onto magnetic disks, CD-Roms
+or any other tangible medium now or subsequently known, and
+distribution by retail rack, direct mail, catalog, advertisement,
+or trade show.  It does *not* include distribution by any not-
+for-profit organization, by any hobby, user or computer interest
+group to its members, or electronically by any BBS.
+
+"Program" means this Version 1.4 and its related files (including
+this one) distributed by us under the marks "WOLFENSTEIN 3-D" and
+"APOGEE" (collectively, the "Trademark"), as it may be upgraded or
+otherwise modified from time-to-time.
+
+Distribution is "non-commercial" when for free, or by any not-for-
+profit corporation or tax exempt organization, or by hobby, user or
+computer interest group to its members, or by any BBS.
+
+A. OWNERSHIP:  Except to the extent expressly licensed by us, we
+have and reserve the exclusive copyright and other right, title
+and interest to distribute the Program and all earlier versions
+of it, and the right to use the Trademark in connection with them.
+
+B. THINGS YOU MUST DO:  You may Commercially Distribute the Program
+under this License so long as you:
+ [1] Market it as shareware using "try before you buy" or similar words,
+ [2] Try to sell only the most current version of it,
+ [3] Make distribution copies only from master copies received directly
+     from us using high quality disks and duplication technology,
+ [4] Distribute the complete Program including all of its related files,
+     each in compressed or other format as released by us,
+ [5] Include the word "Apogee" in every description of the Program used
+     in your catalog or other promotional material.
+
+C. Your right to distribute under this license is personal, and
+does not include any right to [1] sublicense or otherwise cause
+any copying or distribution of the Program by anyone else without
+our consent in writing, or [2] rent or lease the Program, or
+[3] sell it as part of any hardware or software package.
+
+D. THE PROGRAM IS PROVIDED "AS-IS".  NO WARRANTIES OF ANY KIND,
+EXPRESS OR IMPLIED, ARE MADE AS TO IT OR ANY MEDIUM IT MAY BE ON. 
+WE WILL PROVIDE NO REMEDY FOR INDIRECT, CONSEQUENTIAL, PUNITIVE
+OR INCIDENTAL DAMAGES ARISING FROM IT, INCLUDING SUCH FROM
+NEGLIGENCE, STRICT LIABILITY, OR BREACH OF WARRANTY OR CONTRACT,
+EVEN AFTER NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.
+
+F. TERM:  This License terminates upon 30 days prior written notice
+by either us to the other.  If terminated by us by such notice, you
+may distribute the Program until the earlier of 30 days after the
+termination date in the notice, or completion of the distribution
+of the copies you have in stock.  Sections A, D and H will survive
+the termination of this License.
+
+H. MISCELLANY
+ [1] Since we would be irreparably damaged if Section A, B or C
+     of this License were not specifically enforced, we will be
+     entitled without bond, other security or proof of damages, to
+     appropriate equitable remedies with respect to breaches of such
+     sections, in addition to such other remedies as we may have.
+ [2] You will hold us, our partners, contractors, employees and
+     agents harmless from damage, loss and expense arising directly or
+     indirectly from your acts and omissions in copying and
+     distributing the Program.
+ [3] With respect to every matter arising under this License, you
+     consent to the exclusive jurisdiction and venue of the state
+     and federal courts sitting in Dallas, Texas, and to service by
+     certified mail, return receipt requested, or as otherwise
+     permitted by law.
+
+[V.11.01.92]

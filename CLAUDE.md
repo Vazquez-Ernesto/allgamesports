@@ -22,6 +22,7 @@ La historia del proyecto, las decisiones y lo que se probó están en
 - `npm run build:tyrian`: recompila el motor de Tyrian (OpenTyrian). Mismos
   requisitos; probado con Emscripten 7.0.0.
 - `npm run build:gameboy`: recompila binjgb, el emulador de Game Boy.
+- `npm run build:wolf3d`: recompila Wolf4SDL, el motor de Wolfenstein 3D.
 - `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
   Windows, WSL); baja su propio Emscripten. Después,
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
@@ -48,7 +49,9 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/scummvm/    crea el iframe con ScummVM y traduce sus avisos
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D)
+  runtimes/scummvm/    arma la dirección del iframe de ScummVM
+  runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio, controles y guardado
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
@@ -59,6 +62,7 @@ engines/doom/          código C del motor y build.sh (ver su README.md)
 engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
 engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona aparte)
 engines/gameboy/       build.sh de binjgb (el código se clona aparte, sin parches)
+engines/wolf3d/        build.sh, parches y puente C++ de Wolf4SDL (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -145,6 +149,18 @@ engines/gameboy/       build.sh de binjgb (el código se clona aparte, sin parch
 - Los juegos están en `public/games/gameboy/roms/` con su licencia; la
   tabla con origen y SHA-256 está en `engines/gameboy/README.md`.
 - La partida es la memoria del cartucho: se guarda sola en el navegador.
+
+## Cómo funciona Wolfenstein 3D
+
+- El motor es Wolf4SDL (GPL-2.0, variante `-DUSE_GPL`). No se copia al
+  repo: `build.sh` clona el commit fijado, aplica `patches/` y suma
+  `opl_bridge.cpp`. Los cambios están en la tabla de su README.
+- Corre en un iframe (`public/games/wolf3d/play.html`), con SDL2 y Asyncify.
+  `play.js` baja los datos, monta las partidas en IndexedDB
+  (`/save-wolf3d`) y llama a `main()`.
+- Los datos son el shareware 1.4 (primer episodio), sin modificar, con el
+  paquete original y su licencia al lado. El permiso para repartirlo gratis
+  es implícito: ver `engines/wolf3d/README.md`.
 
 ## Agregar un juego
 

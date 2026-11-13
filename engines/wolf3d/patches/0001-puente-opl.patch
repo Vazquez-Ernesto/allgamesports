@@ -1,0 +1,88 @@
+diff --git a/id_sd.c b/id_sd.c
+index 1bd9163..ebd46bf 100644
+--- a/id_sd.c
++++ b/id_sd.c
+@@ -32,9 +32,7 @@
+ #if defined(GP2X_940)
+ #include "gp2x/fmopl.h"
+ #else
+-#ifdef USE_GPL
+-#include "dosbox/dbopl.h"
+-#else
++#ifndef USE_GPL
+ #include "mame/fmopl.h"
+ #endif
+ #endif
+@@ -113,60 +111,28 @@ static  longword                sqHackTime;
+ 
+ #ifdef USE_GPL
+ 
+-DBOPL::Chip oplChip;
++// allgamesports: el emulador OPL de DOSBox (GPL) es C++ y este archivo es C.
++// El uso del chip se movio a opl_bridge.cpp, que expone estas tres funciones.
++void OplBridge_Setup(int rate);
++void OplBridge_Write(unsigned int reg, unsigned char val);
++void OplBridge_Update(int16_t *stream, int length);
++
++static const int oplChip = 0;
+ 
+ static inline bool YM3812Init(int numChips, int clock, int rate)
+ {
+-	oplChip.Setup(rate);
++	OplBridge_Setup(rate);
+ 	return false;
+ }
+ 
+-static inline void YM3812Write(DBOPL::Chip &which, Bit32u reg, Bit8u val)
++static inline void YM3812Write(int which, unsigned int reg, unsigned char val)
+ {
+-	which.WriteReg(reg, val);
++	OplBridge_Write(reg, val);
+ }
+ 
+-static inline void YM3812UpdateOne(DBOPL::Chip &which, int16_t *stream, int length)
++static inline void YM3812UpdateOne(int which, int16_t *stream, int length)
+ {
+-	Bit32s buffer[512 * 2];
+-	int i;
+-
+-	// length is at maximum samplesPerMusicTick = param_samplerate / 700
+-	// so 512 is sufficient for a sample rate of 358.4 kHz (default 44.1 kHz)
+-	if(length > 512)
+-		length = 512;
+-
+-	if(which.opl3Active)
+-	{
+-		which.GenerateBlock3(length, buffer);
+-
+-		// GenerateBlock3 generates a number of "length" 32-bit stereo samples
+-		// so we only need to convert them to 16-bit samples
+-		for(i = 0; i < length * 2; i++)  // * 2 for left/right channel
+-		{
+-			// Multiply by 4 to match loudness of MAME emulator.
+-			Bit32s sample = buffer[i] << 2;
+-			if(sample > 32767) sample = 32767;
+-			else if(sample < -32768) sample = -32768;
+-			stream[i] = sample;
+-		}
+-	}
+-	else
+-	{
+-		which.GenerateBlock2(length, buffer);
+-
+-		// GenerateBlock3 generates a number of "length" 32-bit mono samples
+-		// so we need to convert them to 32-bit stereo samples
+-		for(i = 0; i < length; i++)
+-		{
+-			// Multiply by 4 to match loudness of MAME emulator.
+-			// Then upconvert to stereo.
+-			Bit32s sample = buffer[i] << 2;
+-			if(sample > 32767) sample = 32767;
+-			else if(sample < -32768) sample = -32768;
+-			stream[i * 2] = stream[i * 2 + 1] = (int16_t) sample;
+-		}
+-	}
++	OplBridge_Update(stream, length);
+ }
+ 
+ #else

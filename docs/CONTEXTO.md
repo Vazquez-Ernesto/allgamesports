@@ -457,3 +457,31 @@ Lección de esta tanda: la licencia que declara el catálogo (o la que detecta
 GitHub) habla del código. Hay que leer el README entero: Tuff tiene código
 MIT pero gráficos con todos los derechos reservados, y Renegade Rush usa arte
 de terceros. Los dos quedaron afuera.
+
+## 18. Wolfenstein 3D (shareware)
+
+Primer juego con Wolf4SDL (GPL-2.0), una adaptación del código original de
+id Software a SDL2. Corre en un iframe como ScummVM; el código común de los
+dos quedó en `src/runtimes/iframe.js`.
+
+Dos problemas al compilar, los dos resueltos con parches chicos
+(`engines/wolf3d/patches/`):
+
+- La variante GPL usa el sintetizador de música de DOSBox, que es C++, y
+  este port es C: no compilaba. Se agregó un puente (`opl_bridge.cpp`): tres
+  funciones en C++ marcadas `extern "C"` para poder llamarlas desde C.
+- Los números de la barra de estado no aparecían. `itoa` medía con
+  `strlen()` un texto sin inicializar: en una PC esa memoria tiene basura y
+  funciona por casualidad; en WebAssembly la pila arranca en ceros. Es un
+  ejemplo de "comportamiento indefinido" de C: el mismo código da resultados
+  distintos según la plataforma.
+
+Los datos son los del shareware 1.4 de Apogee (primer episodio), sin
+modificar, con el paquete original y su `VENDOR.DOC` al lado. El permiso para
+repartirlo gratis es implícito (el texto solo pone condiciones a quien
+cobra), no expreso como el de DOOM: está explicado en
+`engines/wolf3d/README.md`.
+
+Se probó: arranca, menú, nivel 1, abrir puertas, disparar, guardar partida
+(queda en IndexedDB, base `/save-wolf3d`) y salir con "Quit". Falta escuchar
+el sonido.
