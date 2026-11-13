@@ -49,6 +49,15 @@ Están en `public/games/gameboy/roms/`, con su licencia al lado:
 |---|---|---|---|---|
 | Libbet and the Magic Floor | 0.08 | github.com/pinobatch/libbet (release) | zlib | `3607412031c8287cf878299ce96e581e85b852dde703806343b95576fa3ff1a9` |
 | µCity | 1.3 | github.com/AntonioND/ucity (release) | GPL-3.0 o posterior | `9422ee2ca7b7ea1d46b58b2a429fff3f354dfd3e732dee1e7ae6220f148ce6e0` |
+| Shock Lobster | — | Homebrew Hub (github.com/tbsp/shock-lobster) | zlib | `f14efd0340903b1b00d7e8b4b39687d4bc33355ac7742267ccfddfe92f54a611` |
+| 2048 | — | Homebrew Hub (github.com/Sanqui/2048-gb) | zlib | `3ea2376b15b34bd26b10e6b31d2753bf8b086098dbdb5ee84d9c0f03d66d3d7f` |
+| Carazu | — | Homebrew Hub (github.com/mholtkamp/carazu) | GPL-3.0 | `eef9dea9ecba15be7b21f3495e8c8bad937a0b2245cac09eec8baf61dfc91fb5` |
+| Tobu Tobu Girl Deluxe | — | Homebrew Hub (github.com/SimonLarsen/tobutobugirl-dx) | Código MIT, arte CC BY 4.0 | `0a0e8018dbbc8d7f8cd99f05e7cdc7b4cc9e358ecfe9377ebfb2291a84c6e310` |
+
+[Homebrew Hub](https://hh.gbdev.io) es el catálogo de la comunidad de Game
+Boy: guarda el archivo de cada juego y su licencia declarada. Los archivos se
+bajan de `https://hh3.gbdev.io/static/database-gb/entries/<juego>/<archivo>`
+y la licencia se confirma siempre en el repositorio del autor.
 
 Para sumar un juego: verificar que su licencia permita repartirlo, bajar el
 archivo que publica su autor, copiar su licencia, agregar la entrada en
@@ -56,6 +65,6 @@ archivo que publica su autor, copiar su licencia, agregar la entrada en
 
 ## Pendiente
 
-- Tobu Tobu Girl Deluxe (código MIT, arte CC BY 4.0): su autor lo distribuye
-  solo por itch.io, sin descarga directa. Hay que bajarlo a mano o compilarlo.
+- Más juegos: Homebrew Hub lista decenas con licencia libre
+  (`https://hh3.gbdev.io/api/search?tags=Open%20Source&typetag=game`).
 - Controles táctiles para celular.

@@ -407,3 +407,23 @@ En el servidor de desarrollo: los dos juegos arrancan, Libbet responde a las
 flechas y a Start, µCity guarda su memoria (128 KB) en el navegador, la
 pausa congela y reanuda, y el botón Reiniciar funciona. No se probó el
 sonido de oído, un mando real, ni guardar y recuperar una ciudad en µCity.
+
+## 15. Cuatro juegos más de Game Boy
+
+Con el emulador andando, sumar un juego es el archivo, su licencia y la
+ficha. Se sumaron Shock Lobster (2021), 2048 (2014), Carazu (2016) y Tobu
+Tobu Girl Deluxe.
+
+- **De dónde salen**: Homebrew Hub (hh.gbdev.io), el catálogo de la
+  comunidad de Game Boy, guarda el archivo de cada juego y su licencia. Tiene
+  una API de búsqueda. Ahí estaba Tobu Tobu Girl Deluxe, que su autor
+  distribuye solo por itch.io. La licencia se confirmó en el repositorio de
+  cada autor, no solo en el catálogo.
+- **Portadas**: capturas del canvas. Como el panel de pruebas oculto frena
+  `requestAnimationFrame`, para grabar se lo reemplazó por un temporizador.
+- Tobu Tobu Girl Deluxe funciona en Game Boy y en Game Boy Color; está en la
+  sección Color porque ahí se ve a color.
+
+Se probó que los cuatro arrancan y responden al teclado. No se jugaron a
+fondo ni se escuchó el sonido. El año de Tobu Tobu Girl Deluxe (2019) y sus
+controles no se verificaron.
