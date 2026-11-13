@@ -23,6 +23,7 @@ La historia del proyecto, las decisiones y lo que se probó están en
   requisitos; probado con Emscripten 7.0.0.
 - `npm run build:gameboy`: recompila binjgb, el emulador de Game Boy.
 - `npm run build:wolf3d`: recompila Wolf4SDL, el motor de Wolfenstein 3D.
+- `npm run build:heretic`: recompila Chocolate Heretic.
 - `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
   Windows, WSL); baja su propio Emscripten. Después,
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
@@ -52,10 +53,11 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
+  runtimes/heretic/    arma la dirección del iframe de Heretic
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio, controles y guardado
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
@@ -68,6 +70,7 @@ engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona
 engines/gameboy/       build.sh de binjgb (el código se clona aparte, sin parches)
 engines/wolf3d/        build.sh, parches y puente C++ de Wolf4SDL (el código se clona aparte)
 engines/openttd/       build.sh, parches y pre.js de OpenTTD (el código se clona aparte)
+engines/heretic/       build.sh, parche y config.h de Chocolate Heretic (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -178,6 +181,18 @@ engines/openttd/       build.sh, parches y pre.js de OpenTTD (el código se clon
   (`pre.js` escribe la configuración inicial).
 - Guarda partidas y ajustes en IndexedDB (`/home/web_user/.openttd`).
 - No tiene sonido ni partidas en red.
+
+## Cómo funciona Heretic
+
+- El motor es Chocolate Heretic (GPL-2.0), parte de Chocolate Doom.
+  `build.sh` clona la versión de `UPSTREAM_TAG`, aplica `patches/` y compila
+  con `emcc` directo (sin CMake; `config.h` está en `engines/heretic/`).
+- Corre en un iframe (`public/games/heretic/play.html`), con SDL2 y Asyncify,
+  igual que Wolfenstein 3D. Partidas en IndexedDB (`/save-heretic`).
+- En el navegador hay un solo hilo: el parche evita una espera al hilo de
+  audio que colgaba la página. Ojo con eso en próximos ports.
+- Los datos son el shareware 1.2 (primer episodio), sin modificar y servidos
+  comprimidos, como exige su licencia, con el paquete original al lado.
 
 ## Agregar un juego
 

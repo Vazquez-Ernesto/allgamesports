@@ -72,6 +72,33 @@ export const GAMES = [
     ],
   },
   {
+    slug: 'heretic',
+    title: 'Heretic',
+    short: 'El motor de DOOM convertido en fantasía oscura (1994): magia, ballestas y su primer episodio completo.',
+    platform: 'dos',
+    genre: 'FPS',
+    year: 1994,
+    developer: 'Raven Software',
+    publisher: 'id Software',
+    engine: 'heretic',
+    cover: 'games/heretic/heretic-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 3.1,
+    },
+    description: [
+      'Sos Corvus, un elfo hereje que enfrenta al hechicero D’Sparil y sus ejércitos de muertos vivos. Raven Software tomó el motor de DOOM y le sumó lo que le faltaba: mirar hacia arriba y abajo, volar, y un inventario de objetos mágicos para usar cuando conviene. Está en inglés.',
+      'Esta es la versión shareware: el primer episodio entero, "City of the Damned", con sus nueve niveles, que id Software repartió gratis. Corre sobre Chocolate Heretic, que parte del código fuente que Raven liberó, compilado a WebAssembly. Los otros episodios eran de pago y no están acá.',
+    ],
+    facts: [
+      ['Idioma', 'Inglés'],
+      ['Motor', 'Chocolate Heretic 3.1.0 (GPL-2.0)'],
+      ['Datos', 'Heretic shareware 1.2, de distribución electrónica gratuita (id Software)'],
+      ['Tecnología', 'C → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
     slug: 'freedoom-1',
     title: 'Freedoom: Phase 1',
     short: 'El motor original de DOOM (1993) con cuatro episodios de niveles libres.',

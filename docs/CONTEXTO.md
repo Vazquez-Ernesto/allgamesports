@@ -517,3 +517,28 @@ Plataforma nueva en el catálogo: "PC (Windows y Linux)".
 Se probó: arranca en español, genera un mapa, guarda la partida (queda en
 IndexedDB), pausa y reanuda, y sale desde el menú. No tiene sonido ni
 partidas en red (así es el soporte oficial para navegador).
+
+## 20. Heretic (shareware)
+
+Chocolate Heretic (parte de Chocolate Doom, GPL-2.0), compilado con `emcc`
+directo, sin su CMake. Corre en un iframe, con la misma receta que
+Wolfenstein 3D: Asyncify, SDL2 y partidas en IndexedDB.
+
+Compiló a la primera, pero la página se colgaba entera al arrancar: ni el
+navegador respondía. La causa fue la detección del chip de música: programa
+un temporizador y espera a que el hilo de audio lo dispare. En el navegador
+hay un solo hilo, así que el audio no puede correr mientras el juego espera:
+un "deadlock". Se resolvió con un parche que saltea esa prueba (el chip es
+un emulador incluido, siempre está).
+
+Lección para próximos ports: cuando una página se cuelga del todo (no se
+puede ni sacar una captura), buscar esperas entre hilos: `SDL_CondWait`,
+`SDL_CreateThread`, mutex.
+
+La licencia de los datos es la más clara de los tres shareware del catálogo:
+permite expresamente la distribución electrónica gratuita, con la condición
+de que vaya comprimido. Se sirve con gzip, con el paquete original y la
+licencia al lado.
+
+Se probó: arranca, menú, partida nueva, moverse y disparar, guardar (y que
+la partida siga después de recargar) y salir. Falta escuchar el sonido.

@@ -16,6 +16,7 @@
 import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
 import { startGameBoy } from './gameboy/index.js'
+import { startHeretic } from './heretic/index.js'
 import { startOpenttd } from './openttd/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
@@ -152,7 +153,33 @@ const openttd = {
   start: ({ frame, onQuit, onError }) => startOpenttd({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d, openttd }
+// Heretic sobre Chocolate Heretic: corre en su propia página.
+const heretic = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '↑', '↓', '→'], 'mover y girar'],
+    [['Ctrl'], 'atacar'],
+    [['Espacio'], 'abrir puertas'],
+    [['Enter'], 'usar objeto'],
+  ],
+  keyList: [
+    ['Flechas', 'Avanzar, retroceder y girar'],
+    ['Mouse', 'Girar (hacé clic en el juego para activarlo; Esc lo suelta)'],
+    ['Ctrl o clic', 'Atacar'],
+    ['Espacio', 'Abrir puertas y accionar interruptores'],
+    ['Shift', 'Correr'],
+    ['Alt + flechas', 'Moverse de costado'],
+    ['[ y ]', 'Elegir un objeto del inventario'],
+    ['Enter', 'Usar el objeto elegido'],
+    ['1 a 7', 'Elegir arma'],
+    ['Tab', 'Mapa'],
+    ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
+  ],
+  start: ({ frame, onQuit, onError }) => startHeretic({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d, openttd, heretic }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]
