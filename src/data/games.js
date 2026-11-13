@@ -17,6 +17,34 @@
 
 export const GAMES = [
   {
+    slug: 'doom',
+    title: 'DOOM',
+    short: 'El DOOM original de 1993: su primer episodio completo, "Knee-Deep in the Dead".',
+    platform: 'dos',
+    genre: 'FPS',
+    year: 1993,
+    developer: 'id Software',
+    publisher: 'id Software',
+    engine: 'doom',
+    cover: 'games/doom/doom-cover.png',
+    source: {
+      type: 'hosted',
+      url: 'games/doom/doom1.wadgz',
+      fileName: 'doom1.wad',
+      downloadMB: 1.7,
+    },
+    description: [
+      'El juego que definió los disparos en primera persona. Sos un marine en una base de Marte invadida por demonios. Esta es la versión shareware: el primer episodio entero, con sus nueve niveles, que id Software repartió gratis en 1993 para que la gente lo copiara y lo pasara.',
+      'Corre sobre el código fuente original del juego, que id Software liberó en 1997, compilado a WebAssembly. Los otros dos episodios eran de pago y no están acá; Freedoom ofrece niveles libres sobre el mismo motor.',
+    ],
+    facts: [
+      ['Motor', 'doomgeneric (id Software, GPL-2.0)'],
+      ['Datos', 'DOOM shareware 1.9, de distribución gratuita (id Software)'],
+      ['Tecnología', 'C → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
     slug: 'freedoom-1',
     title: 'Freedoom: Phase 1',
     short: 'El motor original de DOOM (1993) con cuatro episodios de niveles libres.',

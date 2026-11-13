@@ -427,3 +427,23 @@ Tobu Girl Deluxe.
 Se probó que los cuatro arrancan y responden al teclado. No se jugaron a
 fondo ni se escuchó el sonido. El año de Tobu Tobu Girl Deluxe (2019) y sus
 controles no se verificaron.
+
+## 16. El DOOM original (shareware)
+
+El motor de Doom ya estaba; faltaban datos que se pudieran repartir. El
+primer episodio de DOOM ("Knee-Deep in the Dead") se publicó en 1993 como
+shareware, pensado para copiarse. Su licencia permite hacer copias para
+otras personas, prohíbe cobrar y modificarlo, y John Carmack confirmó en
+1999 que "es libremente distribuible". Debian lo reparte bajo esos términos.
+
+Se tomó `doom1.wad` 1.9 del paquete de Debian (SHA-1
+`5b2e249b9c5133ec987b3ea77596381dc0d6bc1d`, el original), se sirve comprimido
+como `doom1.wadgz` (1,7 MB) con la licencia al lado
+(`LICENSE-doom-shareware.txt`). No se modifica: la compresión es solo para
+la descarga.
+
+Esto reemplaza con ventaja a "DOOM (con tu copia)", retirado en la sección
+13: es el DOOM real y arranca con un clic. Los episodios 2 y 3 eran de pago y
+no se pueden sumar.
+
+Se probó que arranca, muestra el título y entra a E1M1.
