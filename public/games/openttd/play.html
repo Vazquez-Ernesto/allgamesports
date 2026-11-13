@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenTTD</title>
+    <!-- Página mínima que carga OpenTTD dentro del reproductor (en un iframe). -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      /* Sin borde ni padding: si no, las coordenadas del mouse se corren. */
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" tabindex="0" oncontextmenu="event.preventDefault()"></canvas>
+    <script src="play.js"></script>
+    <script src="openttd.js"></script>
+  </body>
+</html>

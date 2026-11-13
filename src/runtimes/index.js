@@ -16,6 +16,7 @@
 import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
 import { startGameBoy } from './gameboy/index.js'
+import { startOpenttd } from './openttd/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { startWolf3d } from './wolf3d/index.js'
@@ -130,7 +131,28 @@ const wolf3d = {
   start: ({ frame, onQuit, onError }) => startWolf3d({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d }
+// OpenTTD: se juega casi todo con el mouse; corre en su propia página.
+const openttd = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['Mouse'], 'todo se maneja con clics'],
+    [['Clic derecho'], 'arrastrar el mapa'],
+    [['Rueda'], 'acercar y alejar'],
+  ],
+  keyList: [
+    ['Clic izquierdo', 'Elegir, construir y abrir ventanas'],
+    ['Clic derecho (mantener)', 'Arrastrar el mapa; sobre un botón, muestra para qué sirve'],
+    ['Rueda del mouse', 'Acercar y alejar'],
+    ['Flechas', 'Mover el mapa'],
+    ['Pausa o F1', 'Pausar el juego'],
+    ['Supr', 'Cerrar todas las ventanas'],
+  ],
+  keyNote: 'Para salir: el botón del disquete, arriba a la izquierda, y después "Salir".',
+  start: ({ frame, onQuit, onError }) => startOpenttd({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d, openttd }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

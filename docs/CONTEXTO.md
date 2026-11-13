@@ -485,3 +485,35 @@ cobra), no expreso como el de DOOM: está explicado en
 Se probó: arranca, menú, nivel 1, abrir puertas, disparar, guardar partida
 (queda en IndexedDB, base `/save-wolf3d`) y salir con "Quit". Falta escuchar
 el sonido.
+
+## 19. OpenTTD
+
+Primer juego de gestión y primero en C++. OpenTTD trae soporte oficial para
+navegador, así que el trabajo fue compilarlo y conectarlo, no adaptarlo.
+
+Se compila en WSL con el Emscripten que usa el proyecto (6.0.1), en dos
+pasos: primero unas herramientas que corren en la máquina y generan código,
+después el juego. Los gráficos libres OpenGFX (GPL-2.0) viajan dentro de
+`openttd.data`.
+
+Problemas encontrados:
+
+- Al tocar "Generar" no pasaba nada. En la consola había un error: el juego
+  usa `Module.HEAPU8` para pedirle números al azar al navegador y Emscripten
+  6 ya no lo expone si no se pide. Parche de una línea.
+- Los cambios en `pre.js` no aparecían: `make` no sabe que ese archivo forma
+  parte del resultado y no rehacía el paso final. `build.sh` ahora borra la
+  salida antes.
+- El juego preguntaba si mandar una encuesta automática a OpenTTD. Se deja
+  en "no" por defecto, junto con el idioma en español, escribiendo un
+  `openttd.cfg` inicial. Un archivo de configuración sin número de versión
+  se lee "a la antigua": por eso alcanza con un solo archivo.
+
+El código del iframe compartido ganó una opción (`pausesMainLoop`): en
+OpenTTD el bucle lo maneja el navegador y hay que frenarlo al pausar.
+
+Plataforma nueva en el catálogo: "PC (Windows y Linux)".
+
+Se probó: arranca en español, genera un mapa, guarda la partida (queda en
+IndexedDB), pausa y reanuda, y sale desde el menú. No tiene sonido ni
+partidas en red (así es el soporte oficial para navegador).

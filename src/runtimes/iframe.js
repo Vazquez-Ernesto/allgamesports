@@ -15,10 +15,11 @@ const START_TIMEOUT_MS = 60000
  * @param {string} options.source       Marca de los mensajes de esa página ('scummvm').
  * @param {string} options.src          Dirección de la página del motor.
  * @param {(win: Window) => AudioContext | undefined} options.audioContextOf
+ * @param {boolean} [options.pausesMainLoop]  El bucle del motor lo maneja el navegador y hay que frenarlo al pausar.
  * @param {() => void} [options.onQuit]
  * @param {(message: string) => void} [options.onError]
  */
-export async function startIframeEngine({ frame, name, source, src, audioContextOf, onQuit, onError }) {
+export async function startIframeEngine({ frame, name, source, src, audioContextOf, pausesMainLoop = false, onQuit, onError }) {
   const iframe = createIframe(name, src)
   const messages = listenTo(iframe, source, name)
   frame.appendChild(iframe)
@@ -33,7 +34,7 @@ export async function startIframeEngine({ frame, name, source, src, audioContext
 
   messages.onAfterReady({ onQuit, onError })
   iframe.focus()
-  return createController(iframe, messages, audioContextOf)
+  return createController(iframe, messages, audioContextOf, pausesMainLoop)
 }
 
 function createIframe(name, src) {
@@ -74,14 +75,23 @@ function waitForReady(setHandlers, name) {
   })
 }
 
-function createController(iframe, messages, audioContextOf) {
+function createController(iframe, messages, audioContextOf, pausesMainLoop) {
   // Mismo origen: se puede llegar al AudioContext de SDL dentro del iframe.
   const audioContext = () => iframe.contentWindow && audioContextOf(iframe.contentWindow)
 
+  // Si el bucle del motor lo maneja el navegador (OpenTTD), se frena con
+  // pauseMainLoop/resumeMainLoop de Emscripten. Los que manejan su propio
+  // bucle (ScummVM, Wolfenstein) solo callan el audio.
+  const mainLoop = (action) => pausesMainLoop && iframe.contentWindow?.Module?.[action]?.()
+
   return {
-    pause: () => audioContext()?.suspend(),
+    pause() {
+      audioContext()?.suspend()
+      mainLoop('pauseMainLoop')
+    },
     resume() {
       audioContext()?.resume()
+      mainLoop('resumeMainLoop')
       iframe.focus()
     },
     async destroy() {

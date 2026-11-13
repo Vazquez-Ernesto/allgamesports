@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2891bee..02b2223 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -376,6 +376,8 @@ if(EMSCRIPTEN)
+     # only ship the English language.
+     target_link_libraries(WASM::WASM INTERFACE "--preload-file ${CMAKE_BINARY_DIR}/baseset@/baseset")
+     target_link_libraries(WASM::WASM INTERFACE "--preload-file ${CMAKE_BINARY_DIR}/lang/english.lng@/lang/english.lng")
++    # allgamesports: el sitio es en español.
++    target_link_libraries(WASM::WASM INTERFACE "--preload-file ${CMAKE_BINARY_DIR}/lang/spanish_MX.lng@/lang/spanish_MX.lng")
+     target_link_libraries(WASM::WASM INTERFACE "--preload-file ${CMAKE_SOURCE_DIR}/bin/ai@/ai")
+     target_link_libraries(WASM::WASM INTERFACE "--preload-file ${CMAKE_SOURCE_DIR}/bin/game@/game")
+     # Documentation files for the in-game text file viewer

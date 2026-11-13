@@ -10,6 +10,13 @@ export const PLATFORMS = {
     about:
       'El sistema operativo de las PC de los 80 y 90. Los juegos venían en disquetes o CD y se arrancaban escribiendo comandos.',
   },
+  pc: {
+    name: 'PC (Windows y Linux)',
+    maker: 'Varios fabricantes',
+    years: '1995 – hoy',
+    about:
+      'La PC con ventanas y mouse. Acá van los juegos de código abierto hechos por comunidades de aficionados, que se siguen actualizando hoy.',
+  },
   gb: {
     name: 'Game Boy',
     maker: 'Nintendo',

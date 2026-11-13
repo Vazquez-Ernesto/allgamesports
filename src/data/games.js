@@ -682,6 +682,34 @@ export const GAMES = [
       ['Guardado', 'En tu navegador'],
     ],
   },
+  {
+    slug: 'openttd',
+    title: 'OpenTTD',
+    short: 'Armá tu empresa de transporte: trenes, colectivos, barcos y aviones en un mapa que crece con vos.',
+    platform: 'pc',
+    genre: 'Estrategia y gestión',
+    year: 2004,
+    developer: 'Comunidad de OpenTTD',
+    publisher: 'Proyecto OpenTTD',
+    engine: 'openttd',
+    cover: 'games/openttd/openttd-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 11,
+    },
+    description: [
+      'Empezás en 1950 con un préstamo y un mapa lleno de pueblos e industrias. Tendés vías, comprás vehículos y llevás pasajeros, carbón o correo de un lado al otro para ganar plata y crecer. Es un juego para tomarse con calma: no hay apuro ni enemigos, salvo las empresas rivales si las activás.',
+      'OpenTTD es una recreación libre de Transport Tycoon Deluxe (Chris Sawyer, 1995), hecha desde cero por una comunidad que la mantiene desde 2004. Acá corre su código compilado a WebAssembly, con gráficos también libres (OpenGFX). Esta versión no tiene sonido ni partidas en red.',
+    ],
+    facts: [
+      ['Idioma', 'Español'],
+      ['Motor', 'OpenTTD 15.3 (GPL-2.0)'],
+      ['Gráficos', 'OpenGFX 8.0 (GPL-2.0)'],
+      ['Basado en', 'Transport Tycoon Deluxe (Chris Sawyer, MicroProse, 1995)'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
 ]
 
 export function findGame(slug) {

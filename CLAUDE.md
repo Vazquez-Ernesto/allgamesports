@@ -28,6 +28,9 @@ La historia del proyecto, las decisiones y lo que se probó están en
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
   juegos. Ver `engines/scummvm/README.md`.
 
+- `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
+  (WSL); baja su propio Emscripten y los gráficos. Tarda varios minutos.
+
 En Windows, Emscripten está en `C:\tools\emsdk`. Antes de compilar, en Git
 Bash: `export EMSDK_PYTHON=<ruta a python.exe>` y `source
 /c/tools/emsdk/emsdk_env.sh`. Sin `EMSDK_PYTHON`, emsdk usa `python3`, que en
@@ -49,9 +52,10 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
+  runtimes/openttd/    arma la dirección del iframe de OpenTTD
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio, controles y guardado
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
@@ -63,6 +67,7 @@ engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
 engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona aparte)
 engines/gameboy/       build.sh de binjgb (el código se clona aparte, sin parches)
 engines/wolf3d/        build.sh, parches y puente C++ de Wolf4SDL (el código se clona aparte)
+engines/openttd/       build.sh, parches y pre.js de OpenTTD (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -161,6 +166,18 @@ engines/wolf3d/        build.sh, parches y puente C++ de Wolf4SDL (el código se
 - Los datos son el shareware 1.4 (primer episodio), sin modificar, con el
   paquete original y su licencia al lado. El permiso para repartirlo gratis
   es implícito: ver `engines/wolf3d/README.md`.
+
+## Cómo funciona OpenTTD
+
+- OpenTTD (GPL-2.0) trae soporte oficial para navegador. `build.sh` clona
+  la versión de `UPSTREAM_TAG`, aplica `patches/`, reemplaza su `pre.js` y
+  mete los gráficos libres OpenGFX (GPL-2.0) en `openttd.data`.
+- Corre en un iframe (`public/games/openttd/play.html`). El bucle lo maneja
+  el navegador, sin Asyncify: la pausa usa `Module.pauseMainLoop()`.
+- Arranca en español y con la encuesta automática de OpenTTD desactivada
+  (`pre.js` escribe la configuración inicial).
+- Guarda partidas y ajustes en IndexedDB (`/home/web_user/.openttd`).
+- No tiene sonido ni partidas en red.
 
 ## Agregar un juego
 
