@@ -447,3 +447,13 @@ Esto reemplaza con ventaja a "DOOM (con tu copia)", retirado en la sección
 no se pueden sumar.
 
 Se probó que arranca, muestra el título y entra a E1M1.
+
+## 17. Tres juegos más de Game Boy Color
+
+Big2Small (2021), Geometrix (2016) y GB-Wordyl (2022), los tres GPL-3.0 y a
+color. Se probó que arrancan y responden.
+
+Lección de esta tanda: la licencia que declara el catálogo (o la que detecta
+GitHub) habla del código. Hay que leer el README entero: Tuff tiene código
+MIT pero gráficos con todos los derechos reservados, y Renegade Rush usa arte
+de terceros. Los dos quedaron afuera.

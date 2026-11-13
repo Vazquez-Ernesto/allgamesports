@@ -53,6 +53,13 @@ Están en `public/games/gameboy/roms/`, con su licencia al lado:
 | 2048 | — | Homebrew Hub (github.com/Sanqui/2048-gb) | zlib | `3ea2376b15b34bd26b10e6b31d2753bf8b086098dbdb5ee84d9c0f03d66d3d7f` |
 | Carazu | — | Homebrew Hub (github.com/mholtkamp/carazu) | GPL-3.0 | `eef9dea9ecba15be7b21f3495e8c8bad937a0b2245cac09eec8baf61dfc91fb5` |
 | Tobu Tobu Girl Deluxe | — | Homebrew Hub (github.com/SimonLarsen/tobutobugirl-dx) | Código MIT, arte CC BY 4.0 | `0a0e8018dbbc8d7f8cd99f05e7cdc7b4cc9e358ecfe9377ebfb2291a84c6e310` |
+| Big2Small | 1.0.0 | github.com/mdsteele/big2small (release) | GPL-3.0 o posterior | `59c096333f93c12c8eb25a5fcffa2be15001abcd5d20b9a82c2bc2dae7e625b2` |
+| Geometrix | 1.0.0 | Homebrew Hub (github.com/AntonioND/geometrix) | GPL-3.0 o posterior | `f13575af6bf87003c3eef8c2cab67a49ca6b02aa23ff6a31a38beb96d6eb1795` |
+| GB-Wordyl | 0.85 (inglés) | Homebrew Hub (github.com/bbbbbr/gb-wordle) | GPL-3.0 | `acc12e3e920e0c432606846da60a5ca9bba21f8012304e8de4a26f88273d14de` |
+
+Descartados al leer la licencia completa: **Tuff** (código MIT, pero gráficos
+y mapas con todos los derechos reservados) y **Renegade Rush** (código MIT,
+con paquetes de arte de terceros sin licencia clara).
 
 [Homebrew Hub](https://hh.gbdev.io) es el catálogo de la comunidad de Game
 Boy: guarda el archivo de cada juego y su licencia declarada. Los archivos se
