@@ -32,6 +32,8 @@ La historia del proyecto, las decisiones y lo que se probó están en
 
 - `wsl bash engines/openjazz/build.sh`: recompila OpenJazz (Jazz Jackrabbit).
   En Linux (WSL), con CMake.
+- `wsl bash engines/rigel/build.sh`: recompila RigelEngine (Duke Nukem II).
+  En Linux (WSL), con CMake; baja los datos del shareware.
 - `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
   (WSL); baja su propio Emscripten y los gráficos. Tarda varios minutos.
 
@@ -56,12 +58,13 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
   runtimes/heretic/    arma la dirección del iframe de Heretic
   runtimes/openjazz/   arma la dirección del iframe de Jazz Jackrabbit
+  runtimes/rigel/      arma la dirección del iframe de Duke Nukem II
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -79,6 +82,7 @@ engines/wolf3d/        build.sh, parches y puente C++ de Wolf4SDL (el código se
 engines/openttd/       build.sh, parches y pre.js de OpenTTD (el código se clona aparte)
 engines/heretic/       build.sh, parche y config.h de Chocolate Heretic (el código se clona aparte)
 engines/openjazz/      build.sh y parche de OpenJazz (el código se clona aparte)
+engines/rigel/         build.sh y parches de RigelEngine (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -225,6 +229,18 @@ engines/openjazz/      build.sh y parche de OpenJazz (el código se clona aparte
   lo descomprime en el navegador. La ficha tiene que decir que es shareware,
   explicar qué es y nombrar a Epic MegaGames; no decir que es software libre.
 - OpenJazz no guarda partidas (no lo tiene implementado); sí sus ajustes.
+
+## Cómo funciona Duke Nukem II
+
+- El motor es RigelEngine (GPL-2.0), que trae build para WebAssembly.
+  `build.sh` (en WSL, con CMake) clona el commit de `UPSTREAM_COMMIT` con
+  sus submódulos y aplica tres parches chicos (tabla en su README).
+- Corre en un iframe (`public/games/rigel/play.html`). El bucle lo maneja el
+  navegador, como en OpenTTD: la pausa usa `Module.pauseMainLoop()`.
+- Los datos del shareware (primer episodio) viajan dentro de
+  `RigelEngine.data`, todos y sin modificar; el paquete original de Apogee
+  y su licencia están al lado. La ficha tiene que nombrar a Apogee.
+- El perfil (ajustes, partidas, puntajes) se guarda en IndexedDB (`/libsdl`).
 
 ## Agregar un juego
 

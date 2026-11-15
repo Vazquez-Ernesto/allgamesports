@@ -605,3 +605,34 @@ dos jugadores y hoy se conecta un solo control).
 Se probó: los tres arrancan y responden a los controles; en Nova se llegó al
 primer nivel, en Thwaite se dispararon los dos silos y en Concentration Room
 se dio vuelta una carta. Falta escuchar el sonido.
+
+## 23. Duke Nukem II (shareware)
+
+RigelEngine (GPL-2.0) es un motor libre escrito desde cero que lee los
+archivos originales. Trae build para WebAssembly, pero su versión web
+oficial está caída, y al compilarlo se vio por qué: no compila con un
+Emscripten actual.
+
+Tres parches:
+
+- El motor mostraba y ocultaba carteles de su propia página
+  (`document.getElementById(...)`). Ahora llama a `Module.onRigelReady` y
+  `Module.onRigelExit`, que define `play.js`.
+- Enlace sin su página, con IndexedDB y las funciones que `play.js` usa para
+  hacer esperar al motor mientras carga el perfil guardado.
+- La biblioteca de JSON que trae usa `std::char_traits<unsigned char>`, una
+  pieza de C++ que las versiones nuevas de la biblioteca estándar
+  eliminaron. Se esquiva pasándole los mismos bytes como `char`.
+
+La licencia del shareware es de las claras: Apogee dice que todos pueden
+copiarlo y repartirlo sin cobrar, y que por servicio en línea no hace falta
+permiso. Pide todos los archivos sin modificar y nombrar a Apogee.
+
+Susto durante las pruebas: el menú se dibujaba en un cuarto de la pantalla.
+No era el juego: el panel de pruebas tenía una emulación de tamaño colgada.
+Se confirmó limpiándola, y además simulando un cambio de tamaño en el
+reproductor (la imagen se escala entera).
+
+Se probó: intro, menú, partida nueva, caminar, saltar y disparar, guardar
+(el perfil queda en IndexedDB y sobrevive a recargar) y salir desde el menú.
+Falta escuchar el sonido.

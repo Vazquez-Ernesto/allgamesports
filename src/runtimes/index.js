@@ -20,6 +20,7 @@ import { startHeretic } from './heretic/index.js'
 import { startNes } from './nes/index.js'
 import { startOpenjazz } from './openjazz/index.js'
 import { startOpenttd } from './openttd/index.js'
+import { startRigel } from './rigel/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { startWolf3d } from './wolf3d/index.js'
@@ -230,7 +231,30 @@ const nes = {
   start: ({ canvas, data, saveKey, settings }) => startNes({ canvas, data, saveKey, settings }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz }
+// Duke Nukem II sobre RigelEngine: corre en su propia página.
+const rigel = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '→'], 'caminar'],
+    [['Ctrl'], 'saltar'],
+    [['Alt'], 'disparar'],
+    [['Esc'], 'menú'],
+  ],
+  keyList: [
+    ['Flechas izquierda y derecha', 'Caminar'],
+    ['Flecha arriba', 'Apuntar hacia arriba, subir escaleras y usar puertas o palancas'],
+    ['Flecha abajo', 'Agacharse y apuntar hacia abajo en el aire'],
+    ['Ctrl izquierdo', 'Saltar'],
+    ['Alt izquierdo', 'Disparar'],
+    ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
+    ['Enter', 'Aceptar en los menús'],
+  ],
+  keyNote: 'Las teclas se cambian dentro del juego: Esc, Options, Keyboard controls.',
+  start: ({ frame, onQuit, onError }) => startRigel({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

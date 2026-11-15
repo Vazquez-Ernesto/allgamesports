@@ -1,0 +1,39 @@
+diff --git a/src/frontend/user_profile.cpp b/src/frontend/user_profile.cpp
+index ce6df76..528a3fc 100644
+--- a/src/frontend/user_profile.cpp
++++ b/src/frontend/user_profile.cpp
+@@ -701,6 +701,16 @@ void deserializeJsonFile(
+ }
+ 
+ 
++// allgamesports: la biblioteca de JSON incluida lee los bytes con
++// std::char_traits<unsigned char>, que las versiones nuevas de la biblioteca
++// estandar de C++ (libc++) eliminaron. Se le pasan los mismos bytes como char.
++static nlohmann::json parseMsgpack(const assets::ByteBuffer& buffer)
++{
++  const auto pBegin = reinterpret_cast<const char*>(buffer.data());
++  return nlohmann::json::from_msgpack(pBegin, pBegin + buffer.size());
++}
++
++
+ UserProfile loadProfile(
+   const std::filesystem::path& fileOnDisk,
+   const std::filesystem::path& pathForSaving)
+@@ -710,7 +720,7 @@ UserProfile loadProfile(
+   try
+   {
+     auto buffer = assets::loadFile(fileOnDisk);
+-    const auto serializedProfile = nlohmann::json::from_msgpack(buffer);
++    const auto serializedProfile = parseMsgpack(buffer);
+ 
+     UserProfile profile{pathForSaving, std::move(buffer)};
+ 
+@@ -836,7 +846,7 @@ void UserProfile::saveToDisk()
+   {
+     try
+     {
+-      const auto previousProfile = json::from_msgpack(mOriginalJson);
++      const auto previousProfile = parseMsgpack(mOriginalJson);
+       serializedProfile = merge(previousProfile, serializedProfile);
+     }
+     catch (const std::exception& ex)

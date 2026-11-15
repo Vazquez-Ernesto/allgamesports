@@ -1,0 +1,30 @@
+diff --git a/src/emscripten_main.cpp b/src/emscripten_main.cpp
+index 955b9bf..8b10d03 100644
+--- a/src/emscripten_main.cpp
++++ b/src/emscripten_main.cpp
+@@ -61,9 +61,9 @@ void runOneFrameWrapper(void* pData)
+       result && *result == Game::StopReason::GameEnded)
+   {
+     // clang-format off
++    // allgamesports: el original mostraba un cartel de su propia pagina.
+     EM_ASM(
+-      document.getElementById("canvas").style.display = "none";
+-      document.getElementById("thankyoubox").style.display = "block";
++      if (Module.onRigelExit) Module.onRigelExit();
+     );
+     // clang-format on
+ 
+@@ -110,11 +110,9 @@ int main()
+   Game game(options, &userProfile, pWindow.get(), false);
+ 
+   // clang-format off
++  // allgamesports: el original sacaba el cartel de carga de su propia pagina.
+   EM_ASM(
+-    var loadingBox = document.getElementById("loadingbox");
+-    loadingBox.parentNode.removeChild(loadingBox);
+-
+-    document.getElementById("welcomebox").style.display = "block";
++    if (Module.onRigelReady) Module.onRigelReady();
+   );
+   // clang-format on
+ 
