@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ad88819..9c7c5f4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -297,14 +297,11 @@ if(WIN32)
+ elseif(EMSCRIPTEN)
+ 	target_sources(OpenJazz PRIVATE
+ 		src/platforms/emscripten.h)
+-	set_target_properties(OpenJazz PROPERTIES SUFFIX ".html")
+-	set(JS_SHELL "${CMAKE_CURRENT_SOURCE_DIR}/res/emscripten/shell.html")
+-
+-	set_property(TARGET OpenJazz PROPERTY LINK_FLAGS
+-		"--shell-file ${JS_SHELL} -sMINIFY_HTML=0 -flto --use-port=sdl2
+-		 -sFORCE_FILESYSTEM -sEXIT_RUNTIME=1 -sASYNCIFY
+-		 -sENVIRONMENT=web --closure 1 -sASSERTIONS -sNO_DISABLE_EXCEPTION_CATCHING")
+-	set_source_files_properties("src/main.cpp" PROPERTIES OBJECT_DEPENDS "${JS_SHELL}")
++	# allgamesports: sale openjazz.js (sin la pagina propia de OpenJazz). El
++	# reproductor copia los datos del juego y recien ahi llama a main()
++	# (INVOKE_RUN=0); las partidas van a IndexedDB (idbfs).
++	set_target_properties(OpenJazz PROPERTIES SUFFIX ".js" OUTPUT_NAME "openjazz")
++	set_property(TARGET OpenJazz PROPERTY LINK_FLAGS "-flto --use-port=sdl2 -sFORCE_FILESYSTEM -sEXIT_RUNTIME=1 -sASYNCIFY -sENVIRONMENT=web -sNO_DISABLE_EXCEPTION_CATCHING -sINVOKE_RUN=0 -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=5242880 -lidbfs.js -sEXPORTED_RUNTIME_METHODS=FS,IDBFS,callMain")
+ elseif(ANDROID)
+ 	target_sources(OpenJazz PRIVATE
+ 		src/platforms/android.cpp

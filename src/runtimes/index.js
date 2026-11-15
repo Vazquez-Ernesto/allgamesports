@@ -17,6 +17,7 @@ import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
 import { startGameBoy } from './gameboy/index.js'
 import { startHeretic } from './heretic/index.js'
+import { startOpenjazz } from './openjazz/index.js'
 import { startOpenttd } from './openttd/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
@@ -179,7 +180,33 @@ const heretic = {
   start: ({ frame, onQuit, onError }) => startHeretic({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d, openttd, heretic }
+// Jazz Jackrabbit sobre OpenJazz: corre en su propia página.
+const openjazz = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '→'], 'correr'],
+    [['Espacio'], 'saltar'],
+    [['Alt'], 'disparar'],
+    [['Esc'], 'menú'],
+  ],
+  keyList: [
+    ['Flechas izquierda y derecha', 'Correr'],
+    ['Flechas arriba y abajo', 'Mirar hacia arriba y agacharse'],
+    ['Espacio', 'Saltar'],
+    ['Alt izquierdo', 'Disparar'],
+    ['Ctrl derecho', 'Cambiar de arma'],
+    ['1 a 5', 'Elegir arma'],
+    ['P', 'Pausa'],
+    ['Esc', 'Menú (opciones, salir)'],
+    ['Enter', 'Aceptar en los menús'],
+  ],
+  keyNote: 'Las teclas se cambian dentro del juego: Esc, Setup options. El juego no guarda partidas.',
+  start: ({ frame, game, onQuit, onError }) =>
+    startOpenjazz({ frame, gameId: game.source.gameId, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d, openttd, heretic, openjazz }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

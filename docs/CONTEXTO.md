@@ -542,3 +542,35 @@ licencia al lado.
 
 Se probó: arranca, menú, partida nueva, moverse y disparar, guardar (y que
 la partida siga después de recargar) y salir. Falta escuchar el sonido.
+
+## 21. Jazz Jackrabbit y sus dos especiales navideños
+
+Primer juego de plataformas "de marca" del catálogo. OpenJazz (GPL-2.0) es un
+motor libre escrito desde cero que lee los archivos originales, y ya trae
+soporte para Emscripten: el único parche cambia las opciones de enlace para
+que no genere su propia página y espere a que `play.js` le copie los datos.
+
+Un motor, tres juegos: Jazz Jackrabbit 1.1 (primer episodio), Holiday Hare
+(1994) y Holiday Hare 1995. La página recibe cuál cargar en el `#`.
+
+La licencia de Epic MegaGames permite y alienta repartir el shareware en
+línea, pero exige que vaya completo y sin alterar (la de los especiales
+agrega: sin renombrar archivos, acreditando a Epic, diciendo que es shareware
+y explicando qué es). Por eso no se hospedan archivos sueltos: se hospeda el
+.zip original y se descomprime en el navegador. `play.js` trae un lector de
+.zip mínimo (el formato tiene un índice al final; cada archivo se infla con
+`DecompressionStream('deflate-raw')`, que ya viene en el navegador).
+
+Tropiezos:
+
+- Las opciones de enlace en varias líneas cortaban el comando ("no input
+  files"). Van en una sola línea.
+- A 640x480 el juego muestra más nivel y los personajes quedan chiquitos. Se
+  arranca con `--scale 2` (320x240 agrandado), que es como se veía.
+- OpenJazz no guarda partidas: el menú existe, pero el motor solo sabe leer
+  las del juego original. Las fichas lo aclaran.
+- Para probar otro juego en la misma pestaña hay que recargar: cambiar solo
+  el `#` no recarga la página.
+
+Se probó en los tres: arranca, menú, nivel, moverse y saltar; y en el
+primero, salir desde el menú. Falta escuchar el sonido.

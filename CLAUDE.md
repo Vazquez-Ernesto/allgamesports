@@ -29,6 +29,8 @@ La historia del proyecto, las decisiones y lo que se probó están en
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
   juegos. Ver `engines/scummvm/README.md`.
 
+- `wsl bash engines/openjazz/build.sh`: recompila OpenJazz (Jazz Jackrabbit).
+  En Linux (WSL), con CMake.
 - `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
   (WSL); baja su propio Emscripten y los gráficos. Tarda varios minutos.
 
@@ -53,11 +55,12 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
   runtimes/heretic/    arma la dirección del iframe de Heretic
+  runtimes/openjazz/   arma la dirección del iframe de Jazz Jackrabbit
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio, controles y guardado
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
@@ -71,6 +74,7 @@ engines/gameboy/       build.sh de binjgb (el código se clona aparte, sin parch
 engines/wolf3d/        build.sh, parches y puente C++ de Wolf4SDL (el código se clona aparte)
 engines/openttd/       build.sh, parches y pre.js de OpenTTD (el código se clona aparte)
 engines/heretic/       build.sh, parche y config.h de Chocolate Heretic (el código se clona aparte)
+engines/openjazz/      build.sh y parche de OpenJazz (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -193,6 +197,19 @@ engines/heretic/       build.sh, parche y config.h de Chocolate Heretic (el cód
   audio que colgaba la página. Ojo con eso en próximos ports.
 - Los datos son el shareware 1.2 (primer episodio), sin modificar y servidos
   comprimidos, como exige su licencia, con el paquete original al lado.
+
+## Cómo funciona Jazz Jackrabbit
+
+- El motor es OpenJazz (GPL-2.0), que ya trae soporte para Emscripten.
+  `build.sh` (en WSL, con CMake) clona la versión de `UPSTREAM_TAG` y aplica
+  un parche que solo cambia cómo se enlaza.
+- Corre en un iframe (`public/games/openjazz/play.html#<juego>`), con SDL2 y
+  Asyncify. Un mismo motor sirve tres juegos: `jazz`, `xmas94` y `xmas95`.
+- Los datos son los paquetes shareware de Epic MegaGames. Su licencia pide
+  repartirlos completos y sin tocar: se hospeda el .zip original y `play.js`
+  lo descomprime en el navegador. La ficha tiene que decir que es shareware,
+  explicar qué es y nombrar a Epic MegaGames; no decir que es software libre.
+- OpenJazz no guarda partidas (no lo tiene implementado); sí sus ajustes.
 
 ## Agregar un juego
 
