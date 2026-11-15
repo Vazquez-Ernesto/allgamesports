@@ -10,6 +10,7 @@
     "build:doom": "bash engines/doom/build.sh",
     "build:tyrian": "bash engines/tyrian/build.sh",
     "build:gameboy": "bash engines/gameboy/build.sh",
+    "build:nes": "bash engines/nes/build.sh",
     "build:wolf3d": "bash engines/wolf3d/build.sh",
     "build:heretic": "bash engines/heretic/build.sh"
   },

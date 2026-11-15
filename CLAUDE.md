@@ -22,6 +22,7 @@ La historia del proyecto, las decisiones y lo que se probó están en
 - `npm run build:tyrian`: recompila el motor de Tyrian (OpenTyrian). Mismos
   requisitos; probado con Emscripten 7.0.0.
 - `npm run build:gameboy`: recompila binjgb, el emulador de Game Boy.
+- `npm run build:nes`: recompila binjnes, el emulador de NES.
 - `npm run build:wolf3d`: recompila Wolf4SDL, el motor de Wolfenstein 3D.
 - `npm run build:heretic`: recompila Chocolate Heretic.
 - `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
@@ -61,7 +62,9 @@ src/
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
   runtimes/heretic/    arma la dirección del iframe de Heretic
   runtimes/openjazz/   arma la dirección del iframe de Jazz Jackrabbit
-  runtimes/gameboy/    conecta el emulador binjgb con canvas, audio, controles y guardado
+  runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
+  runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
+  runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
   lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
   styles/global.css    todos los estilos y los tokens de diseño
 public/games/doom/     motor compilado, datos de Freedoom y portadas
@@ -71,6 +74,7 @@ engines/doom/          código C del motor y build.sh (ver su README.md)
 engines/tyrian/        código C de OpenTyrian y build.sh (ver su README.md)
 engines/scummvm/       build.sh, parches y prepare-data.mjs (el código se clona aparte)
 engines/gameboy/       build.sh de binjgb (el código se clona aparte, sin parches)
+engines/nes/           build.sh de binjnes (el código se clona aparte, sin parches)
 engines/wolf3d/        build.sh, parches y puente C++ de Wolf4SDL (el código se clona aparte)
 engines/openttd/       build.sh, parches y pre.js de OpenTTD (el código se clona aparte)
 engines/heretic/       build.sh, parche y config.h de Chocolate Heretic (el código se clona aparte)
@@ -161,6 +165,17 @@ engines/openjazz/      build.sh y parche de OpenJazz (el código se clona aparte
 - Los juegos están en `public/games/gameboy/roms/` con su licencia; la
   tabla con origen y SHA-256 está en `engines/gameboy/README.md`.
 - La partida es la memoria del cartucho: se guarda sola en el navegador.
+
+## Cómo funciona la NES
+
+- El emulador es binjnes (MIT), del mismo autor que binjgb y con la misma
+  forma de uso. `runtimes/nes/index.js` lo conecta con la página.
+- Los controles de consola (teclado y mando) son compartidos con Game Boy:
+  `runtimes/consoleInput.js`.
+- Los juegos están en `public/games/nes/roms/` con su licencia; la tabla con
+  origen y SHA-256 está en `engines/nes/README.md`.
+- Hoy se conecta un solo control: no sirve para juegos de dos jugadores.
+- La partida es la memoria con pila del cartucho: se guarda sola.
 
 ## Cómo funciona Wolfenstein 3D
 

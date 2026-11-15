@@ -17,6 +17,13 @@ export const PLATFORMS = {
     about:
       'La PC con ventanas y mouse. Acá van los juegos de código abierto hechos por comunidades de aficionados, que se siguen actualizando hoy.',
   },
+  nes: {
+    name: 'Nintendo Entertainment System (NES)',
+    maker: 'Nintendo',
+    years: '1983 – 2003',
+    about:
+      'La consola de sobremesa de Nintendo, llamada Famicom en Japón: la de los cartuchos grises y el control rectangular. Estos son juegos caseros, hechos por aficionados años después y publicados gratis por sus autores. Corren sobre un emulador libre.',
+  },
   gb: {
     name: 'Game Boy',
     maker: 'Nintendo',

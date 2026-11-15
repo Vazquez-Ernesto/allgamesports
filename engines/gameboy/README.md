@@ -36,7 +36,7 @@ El emulador no sabe de pantallas ni de teclados. `src/runtimes/gameboy/`:
 | Archivo | Qué hace |
 |---|---|
 | `index.js` | Carga el juego en la memoria del emulador, lo hace avanzar en cada cuadro, copia la imagen (160x144) al canvas, manda el audio a Web Audio y guarda la partida |
-| `input.js` | Teclado y mando → botones de la consola |
+| `../consoleInput.js` | Teclado y mando → botones de la consola (compartido con NES) |
 
 La partida guardada es la memoria del cartucho. Se revisa una vez por
 segundo si cambió y se guarda en el navegador (OPFS), un archivo por juego.

@@ -17,6 +17,7 @@ import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
 import { startGameBoy } from './gameboy/index.js'
 import { startHeretic } from './heretic/index.js'
+import { startNes } from './nes/index.js'
 import { startOpenjazz } from './openjazz/index.js'
 import { startOpenttd } from './openttd/index.js'
 import { startScummvm } from './scummvm/index.js'
@@ -206,7 +207,30 @@ const openjazz = {
     startOpenjazz({ frame, gameId: game.source.gameId, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, wolf3d, openttd, heretic, openjazz }
+// NES, sobre el emulador binjnes (mismo autor y mismos controles que Game Boy).
+const nes = {
+  defaultSettings: {
+    volume: 0.8,
+    sharpPixels: true,
+  },
+  hint: [
+    [['←', '↑', '↓', '→'], 'cruz'],
+    [['X'], 'botón A'],
+    [['Z'], 'botón B'],
+    [['Enter'], 'Start'],
+  ],
+  keyList: [
+    ['Flechas', 'Cruz del control'],
+    ['X', 'Botón A'],
+    ['Z', 'Botón B'],
+    ['Enter', 'Start'],
+    ['Shift', 'Select'],
+  ],
+  keyNote: 'También funciona con un mando conectado. Qué hace cada botón depende del juego: está en su ficha.',
+  start: ({ canvas, data, saveKey, settings }) => startNes({ canvas, data, saveKey, settings }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

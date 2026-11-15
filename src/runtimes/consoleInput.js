@@ -1,7 +1,8 @@
-// Controles de Game Boy: teclado y mando.
+// Controles de consola: teclado y mando.
 //
-// La consola tiene una cruz, dos botones (A y B) y Start y Select. Cada uno
-// se aprieta llamando a una función del emulador (set_joyp_*).
+// Sirve para las consolas con una cruz, dos botones (A y B) y Start y Select:
+// Game Boy, Game Boy Color y NES. Cada runtime dice cómo se aprieta un botón
+// en su emulador con la función `press(boton, apretado)`.
 
 // Tecla física -> botón de la consola.
 const KEYS = {
@@ -20,9 +21,11 @@ const KEYS = {
 const PAD_BUTTONS = { 0: 'A', 1: 'B', 2: 'B', 3: 'A', 8: 'select', 9: 'start', 12: 'up', 13: 'down', 14: 'left', 15: 'right' }
 const PAD_POLL_MS = 16
 
-export function createInput(module, emulator) {
+/**
+ * @param {(button: string, down: boolean) => void} press  Aprieta o suelta un botón en el emulador.
+ */
+export function createInput(press) {
   let enabled = true
-  const press = (button, down) => module[`_set_joyp_${button}`](emulator, down)
 
   function onKey(event) {
     const button = KEYS[event.code]

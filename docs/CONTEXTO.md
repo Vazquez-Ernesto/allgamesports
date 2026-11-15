@@ -574,3 +574,34 @@ Tropiezos:
 
 Se probó en los tres: arranca, menú, nivel, moverse y saltar; y en el
 primero, salir desde el menú. Falta escuchar el sonido.
+
+## 22. Supaplex descartado; segunda consola: NES
+
+**Supaplex quedó afuera.** Wikipedia y el README de OpenSupaplex dicen que es
+"freeware", pero la fuente original cuenta otra cosa: los autores y Digital
+Integration (dueña de los derechos) le dieron permiso a una persona para
+regalarlo en su sitio. No hay una licencia para que otros lo repartan, y la
+descarga oficial es un instalador de Windows, que no se puede importar en el
+navegador. Lección: "freeware" en un README no alcanza; hay que llegar a
+quién dio el permiso y a quién.
+
+**NES.** El emulador es binjnes (MIT), del mismo autor que el de Game Boy y
+con la misma interfaz, así que el runtime es casi un calco. Diferencias: el
+tiempo se pide en segundos, la imagen hay que convertirla a RGBA antes de
+copiarla (256x240) y el audio sale en un solo canal, como números con coma.
+Los controles se movieron a `runtimes/consoleInput.js` para compartirlos.
+
+Al compilar sin el CMake del proyecto faltaba `-DBINJNES_CLANG`, la marca
+con la que su CMake avisa qué compilador se usa.
+
+Primeros juegos, de Homebrew Hub, con la licencia leída en el repositorio de
+cada autor: Nova the Squirrel, Thwaite y Concentration Room. Nova tiene
+código GPL y arte con Creative Commons no comercial: se puede repartir
+gratis, no vender.
+
+Descartado: RHDE: Furniture Fight (licencia libre, pero solo tiene modos de
+dos jugadores y hoy se conecta un solo control).
+
+Se probó: los tres arrancan y responden a los controles; en Nova se llegó al
+primer nivel, en Thwaite se dispararon los dos silos y en Concentration Room
+se dio vuelta una carta. Falta escuchar el sonido.

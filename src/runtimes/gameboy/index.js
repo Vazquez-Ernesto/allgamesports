@@ -12,7 +12,7 @@
 //   - set_joyp_*: aprieta o suelta un botón.
 // Este archivo conecta eso con el canvas, Web Audio, el teclado y el guardado.
 
-import { createInput } from './input.js'
+import { createInput } from '../consoleInput.js'
 import { loadEngineScript } from '../../lib/engineScript.js'
 import { loadLocalFile, saveLocalFile } from '../../lib/localFiles.js'
 
@@ -175,7 +175,7 @@ export async function startGameBoy({ canvas, data, saveKey, settings }) {
   const drawFrame = createVideo(module, emulator, canvas)
   const pushAudio = createAudio(module, emulator, audioContext, () => volume)
   const loop = createLoop(module, emulator, drawFrame, pushAudio)
-  const input = createInput(module, emulator)
+  const input = createInput((button, down) => module[`_set_joyp_${button}`](emulator, down))
   const saveTimer = setInterval(saves.saveIfChanged, SAVE_CHECK_MS)
 
   await audioContext.resume()
