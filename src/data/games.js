@@ -975,6 +975,51 @@ export const GAMES = [
       ['Guardado', 'No guarda partidas'],
     ],
   },
+  {
+    slug: 'rhde-furniture-fight',
+    title: 'RHDE: Furniture Fight',
+    short: 'Estrategia casera para dos (2014): amueblá tu casa y después entrá a la del otro a romperle todo.',
+    platform: 'nes',
+    genre: 'Estrategia',
+    year: 2014,
+    developer: 'Damian Yerrick',
+    publisher: 'Juego casero, publicado por su autor',
+    engine: 'nes',
+    cover: 'games/nes/covers/rhde.png',
+    source: {
+      type: 'hosted',
+      url: 'games/nes/roms/rhde.nes',
+      fileName: 'rhde.nes',
+      downloadMB: 0.1,
+    },
+    hint: [
+      [['Flechas', 'X', 'Z'], 'jugador 1'],
+      [['Y', 'G', 'H', 'J', 'L', 'K'], 'jugador 2'],
+    ],
+    keyList: [
+      ['Flechas', 'Jugador 1: mover el cursor'],
+      ['X', 'Jugador 1: elegir y colocar (botón A)'],
+      ['Z', 'Jugador 1: cancelar o girar (botón B)'],
+      ['Enter', 'Jugador 1: empezar y pausa (Start)'],
+      ['Y, G, H, J', 'Jugador 2: arriba, izquierda, abajo, derecha'],
+      ['L', 'Jugador 2: elegir y colocar (botón A)'],
+      ['K', 'Jugador 2: cancelar o girar (botón B)'],
+      ['O', 'Jugador 2: Start'],
+    ],
+    description: [
+      'Cada ronda tiene tres partes: comprás muebles, los acomodás en tu casa y después empieza la pelea, donde cada jugador intenta entrar a la casa del otro y destrozarle lo que armó. Gana el que termina con la casa mejor puesta. Es para dos personas: comparten el teclado o usan dos mandos. Está en inglés.',
+      'Es un juego casero y de código abierto de Damian Yerrick, hecho para una competencia de programación de NES. Acá corre sobre binjnes, un emulador libre compilado a WebAssembly.',
+    ],
+    facts: [
+      ['Idioma', 'Inglés'],
+      ['Jugadores', 'Dos, en el mismo teclado o con dos mandos'],
+      ['Motor', 'binjnes, emulador de NES (MIT)'],
+      ['Juego', 'Licencia permisiva (GNU All-Permissive)'],
+      ['Código del juego', 'github.com/pinobatch/rhde-nes'],
+      ['Tecnología', 'C → WebAssembly con Emscripten'],
+      ['Guardado', 'No guarda partidas'],
+    ],
+  },
 ]
 
 export function findGame(slug) {

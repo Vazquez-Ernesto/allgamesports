@@ -178,7 +178,8 @@ engines/rigel/         build.sh y parches de RigelEngine (el código se clona ap
   `runtimes/consoleInput.js`.
 - Los juegos están en `public/games/nes/roms/` con su licencia; la tabla con
   origen y SHA-256 está en `engines/nes/README.md`.
-- Hoy se conecta un solo control: no sirve para juegos de dos jugadores.
+- Tiene dos controles. Jugador 2: Y G H J (cruz), L (A), K (B), O (Start),
+  I (Select), las teclas de la demo oficial de binjnes; o el segundo mando.
 - La partida es la memoria con pila del cartucho: se guarda sola.
 
 ## Cómo funciona Wolfenstein 3D

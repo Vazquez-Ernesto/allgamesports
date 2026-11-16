@@ -227,7 +227,7 @@ const nes = {
     ['Enter', 'Start'],
     ['Shift', 'Select'],
   ],
-  keyNote: 'También funciona con un mando conectado. Qué hace cada botón depende del juego: está en su ficha.',
+  keyNote: 'También funciona con mandos: el segundo es el jugador 2. Qué hace cada botón depende del juego: está en su ficha.',
   start: ({ canvas, data, saveKey, settings }) => startNes({ canvas, data, saveKey, settings }),
 }
 

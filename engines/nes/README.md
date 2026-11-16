@@ -41,8 +41,19 @@ La partida guardada es la memoria con pila del cartucho. Se revisa una vez
 por segundo si cambió y se guarda en el navegador (OPFS), un archivo por
 juego. Los cartuchos sin pila no guardan nada.
 
-Hoy se conecta **un solo control**. Los juegos solo para dos jugadores no
-sirven todavía.
+Hay **dos controles**, como en la consola:
+
+| Botón | Jugador 1 | Jugador 2 |
+|---|---|---|
+| Cruz | Flechas | Y (arriba), G (izquierda), H (abajo), J (derecha) |
+| A | X | L |
+| B | Z | K |
+| Start | Enter | O |
+| Select | Shift | I |
+
+Las teclas del jugador 2 son las que eligió el autor del emulador en su
+propia demo. Con mandos, el primero conectado es el jugador 1 y el segundo,
+el jugador 2. Game Boy usa el mismo archivo con un solo control.
 
 ## Tipos de cartucho
 
@@ -59,27 +70,25 @@ Están en `public/games/nes/roms/`, con su licencia al lado:
 | Nova the Squirrel | Homebrew Hub (github.com/NovaSquirrel/NovaTheSquirrel) | Código GPL-3.0 o posterior; gráficos y niveles CC BY-NC-SA 4.0 | 1 (MMC1), con pila | `e4780e90b9d1587489bfb797d2ca395be21371ea9262fa9f87f99324ec6960ab` |
 | Thwaite 0.04a | Homebrew Hub (github.com/pinobatch/thwaite-nes) | GPL-3.0 o posterior | 0 (NROM) | `80e0918ea17577477c2f1b16beefadf457f207931ffbeae7612d8d230f999843` |
 | Concentration Room | Homebrew Hub (github.com/pinobatch/croom-nes) | GPL-3.0 o posterior | 0 (NROM) | `9b0b1e9b14b07a2e69db287e04f711e16af42b6cc85523b66bdfa640df80507a` |
+| RHDE: Furniture Fight | Homebrew Hub (github.com/pinobatch/rhde-nes) | GNU All-Permissive | 0 (NROM) | `b2c4748a5b3651e393572046daf126213653b58b55472cdfdf4b863834dd0241` |
 
 **Nova the Squirrel** tiene arte con licencia no comercial: se puede repartir
 gratis con atribución, no vender. Si algún día el sitio cobrara o tuviera
 publicidad, habría que revisarlo. El autor tampoco permite usar al personaje
 en otra cosa.
 
-Descartado: **RHDE: Furniture Fight** (licencia permisiva, github.com/pinobatch/rhde-nes).
-Solo tiene modos de dos jugadores.
+**RHDE** es solo para dos jugadores: entró cuando se sumó el segundo control.
 
 Los archivos se bajan de
 `https://hh3.gbdev.io/static/database-nes/entries/<juego>/<archivo>` y la
 licencia se confirma siempre en el repositorio del autor.
 
 Para sumar un juego: verificar que su licencia permita repartirlo (código y
-arte), que su tipo de cartucho esté soportado y que se pueda jugar con un
-solo control; bajar el archivo que publica su autor, copiar su licencia,
+arte) y que su tipo de cartucho esté soportado; bajar el archivo que publica su autor, copiar su licencia,
 agregar la entrada en `src/data/games.js` (motor `nes`) y capturar su portada.
 
 ## Pendiente
 
-- Segundo control, para juegos de dos jugadores (RHDE).
 - Más juegos: Homebrew Hub lista más de veinte de NES
   (`https://hh3.gbdev.io/api/search?platform=NES`), pero la mayoría no
   declara licencia; hay que revisarlos uno por uno.

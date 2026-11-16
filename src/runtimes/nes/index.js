@@ -7,7 +7,8 @@
 //   - emulator_run_until_secs(segundos): avanza la consola hasta ese instante
 //     y avisa si terminó un cuadro o se llenó el buffer de audio.
 //   - punteros a su memoria con el cuadro (256x240, RGBA) y el audio.
-//   - set_joyp_*(jugador, apretado): aprieta o suelta un botón.
+//   - set_joyp_*(jugador, apretado): aprieta o suelta un botón. Hay dos
+//     controles, como en la consola (jugador 0 y 1).
 // Este archivo conecta eso con el canvas, Web Audio, los controles y el guardado.
 
 import { createInput } from '../consoleInput.js'
@@ -17,7 +18,6 @@ import { loadLocalFile, saveLocalFile } from '../../lib/localFiles.js'
 const ENGINE_DIR = `${import.meta.env.BASE_URL}games/nes/`
 const WIDTH = 256
 const HEIGHT = 240
-const PLAYER_ONE = 0
 const MAX_STEP_SECONDS = 5 / 60 // si la pestaña se trabó, no intentar recuperar todo
 const AUDIO_FRAMES = 4096
 const AUDIO_LATENCY_SECONDS = 0.1
@@ -167,7 +167,8 @@ export async function startNes({ canvas, data, saveKey, settings }) {
   const drawFrame = createVideo(module, emulator, canvas)
   const pushAudio = createAudio(module, emulator, audioContext, () => volume)
   const loop = createLoop(module, emulator, drawFrame, pushAudio)
-  const input = createInput((button, down) => module[`_set_joyp_${button}`](emulator, PLAYER_ONE, down))
+  const press = (button, down, player) => module[`_set_joyp_${button}`](emulator, player, down)
+  const input = createInput(press, { players: 2 })
   const saveTimer = setInterval(saves.saveIfChanged, SAVE_CHECK_MS)
 
   await audioContext.resume()
