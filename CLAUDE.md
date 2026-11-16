@@ -25,6 +25,7 @@ La historia del proyecto, las decisiones y lo que se probó están en
 - `npm run build:nes`: recompila binjnes, el emulador de NES.
 - `npm run build:wolf3d`: recompila Wolf4SDL, el motor de Wolfenstein 3D.
 - `npm run build:heretic`: recompila Chocolate Heretic.
+- `npm run build:rott`: recompila taradino (Rise of the Triad) con sus datos.
 - `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
   Windows, WSL); baja su propio Emscripten. Después,
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
@@ -58,13 +59,14 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
   runtimes/heretic/    arma la dirección del iframe de Heretic
   runtimes/openjazz/   arma la dirección del iframe de Jazz Jackrabbit
   runtimes/rigel/      arma la dirección del iframe de Duke Nukem II
+  runtimes/rott/       arma la dirección del iframe de Rise of the Triad
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -83,6 +85,7 @@ engines/openttd/       build.sh, parches y pre.js de OpenTTD (el código se clon
 engines/heretic/       build.sh, parche y config.h de Chocolate Heretic (el código se clona aparte)
 engines/openjazz/      build.sh y parche de OpenJazz (el código se clona aparte)
 engines/rigel/         build.sh y parches de RigelEngine (el código se clona aparte)
+engines/rott/          build.sh y parche de taradino (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -243,6 +246,19 @@ engines/rigel/         build.sh y parches de RigelEngine (el código se clona ap
   y su licencia están al lado. La ficha tiene que nombrar a Apogee.
 - El perfil (ajustes, partidas, puntajes) se guarda en IndexedDB (`/libsdl`).
 
+## Cómo funciona Rise of the Triad
+
+- El motor es taradino (GPL-2.0+), adaptación del código original de Apogee.
+  `build.sh` clona la versión de `UPSTREAM_TAG`, aplica `patches/` y compila
+  con `emcc` directo; los datos del shareware viajan en `rott.data`.
+- Corre en un iframe (`public/games/rott/play.html`), con SDL2 y Asyncify.
+  Partidas en IndexedDB (`/libsdl/taradino`, base propia).
+- Dos trampas de C viejo en WebAssembly, documentadas en su README: llamadas
+  por puntero con tipos distintos (`-sEMULATE_FUNCTION_POINTER_CASTS`) y
+  bucles que esperan una tecla sin ceder el control (parche en
+  `IN_PumpEvents`).
+- No tiene música todavía (MIDI sin sintetizador); sí efectos.
+
 ## Agregar un juego
 
 Todo juego lleva: plataforma (clave de `platforms.js`), año, estudio, quién
@@ -261,7 +277,9 @@ explicar. Los juegos con archivo propio traen `source.steps` (pasos) y
    `src/runtimes/<motor>/` y una entrada en `src/runtimes/index.js` (ajustes,
    controles, cómo validar el archivo del jugador y cómo arrancar).
 4. Antes de recomendar un juego, verificar la licencia de los datos, no solo
-   la del motor.
+   la del motor. Criterio acordado: solo permiso explícito para repartirlo
+   gratis (ver `docs/CONTEXTO.md`, sección 25). Si es implícito o no hay,
+   se descarta.
 
 ## Convenciones
 

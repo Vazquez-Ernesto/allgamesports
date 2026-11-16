@@ -650,3 +650,42 @@ Con eso volvió RHDE: Furniture Fight, que se había descartado por ser solo
 para dos. Se probó que cada jugador elige su personaje con sus teclas, que
 la partida arranca (Start del jugador 1) y que Game Boy ignora las teclas
 del jugador 2.
+
+## 25. Descartes por licencia y Rise of the Triad
+
+Se siguió la lista de candidatos de más fácil a más difícil. Dos quedaron
+afuera por licencia, y con eso el criterio quedó fijado: **solo se suman
+datos con permiso explícito para repartirlos gratis**.
+
+- **Spear of Destiny (demo):** el paquete de FormGen (1992) no trae ninguna
+  licencia, solo una descripción y dónde comprar el juego completo.
+- **Cosmo's Cosmic Adventure:** la licencia que se encontró (Apogee, 1993)
+  regula a los revendedores y solo nombra a los BBS de pasada. Además venía
+  en un reempaquetado de archive.org; el paquete oficial usa un formato de
+  instalador de Apogee que no se pudo abrir.
+
+Herramientas que aparecieron: los autoextraíbles de los 90 suelen ser LHA o
+ARJ; en WSL se abren con `lha` (paquete lhasa) y `arj`.
+
+**Rise of the Triad: The HUNT Begins** sí entró: su VENDOR.DOC de 1995 es
+igual de explícito que el de Duke Nukem II. El motor es taradino, compilado
+con `emcc` directo, y trajo dos problemas típicos de C viejo:
+
+1. **"function signature mismatch"** al elegir "New Game". El menú guarda
+   funciones de distintos tipos y las llama todas como si recibieran un
+   `int`. En una PC eso funciona de casualidad; WebAssembly verifica el tipo
+   en cada llamada por puntero. Se resolvió con la opción de Emscripten
+   `-sEMULATE_FUNCTION_POINTER_CASTS`, sin tocar el código.
+2. **La página se congelaba** en los carteles de "¿Seguro?": un bucle
+   esperaba una tecla sin devolverle nunca el control al navegador, así que
+   la tecla nunca llegaba. Un parche en la función que lee el teclado la
+   hace ceder cada 8 ms. Es la versión general de lo que en Tyrian hace
+   `web.c`.
+
+También apareció que Duke Nukem II y Rise of the Triad compartían la base de
+IndexedDB `/libsdl` (los dos guardan donde indica SDL). Rise of the Triad
+monta su subcarpeta, y así tiene base propia.
+
+Se probó: intro, menú, partida nueva, moverse, disparar y levantar armas,
+guardar (queda en IndexedDB), los carteles de confirmación y salir. Tiene
+efectos de sonido, no música.

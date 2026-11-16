@@ -21,6 +21,7 @@ import { startNes } from './nes/index.js'
 import { startOpenjazz } from './openjazz/index.js'
 import { startOpenttd } from './openttd/index.js'
 import { startRigel } from './rigel/index.js'
+import { startRott } from './rott/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { startWolf3d } from './wolf3d/index.js'
@@ -254,7 +255,32 @@ const rigel = {
   start: ({ frame, onQuit, onError }) => startRigel({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel }
+// Rise of the Triad sobre taradino: corre en su propia página.
+const rott = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '↑', '↓', '→'], 'mover y girar'],
+    [['Ctrl'], 'disparar'],
+    [['Espacio'], 'abrir puertas'],
+    [['Esc'], 'menú'],
+  ],
+  keyList: [
+    ['Flechas', 'Avanzar, retroceder y girar'],
+    ['Ctrl', 'Disparar'],
+    ['Espacio', 'Abrir puertas y accionar interruptores'],
+    ['Shift', 'Correr'],
+    ['Alt + flechas, o coma y punto', 'Moverse de costado'],
+    ['Re Pág y Av Pág', 'Mirar hacia arriba y hacia abajo'],
+    ['1 a 4', 'Elegir arma'],
+    ['Enter', 'Cambiar de arma'],
+    ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
+  ],
+  keyNote: 'Las teclas se cambian dentro del juego: Esc, Options, Customize Controls.',
+  start: ({ frame, onQuit, onError }) => startRott({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

@@ -1,0 +1,46 @@
+diff --git a/rott/rt_in.c b/rott/rt_in.c
+index 8b30bd2..246ea73 100644
+--- a/rott/rt_in.c
++++ b/rott/rt_in.c
+@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ #include <string.h>
+ 
+ #include "SDL.h"
++#ifdef __EMSCRIPTEN__
++#include <emscripten.h>
++#endif
+ #include "modexlib.h"
+ 
+ #include "rt_main.h"
+@@ -538,8 +541,31 @@ static void sdl_handle_events(void)
+ // IN_PumpEvents () - Let platform process an event queue.
+ //
+ //******************************************************************************
++#ifdef __EMSCRIPTEN__
++// allgamesports: muchos bucles del juego esperan una tecla leyendo el teclado
++// sin parar. En DOS la tecla llegaba por una interrupcion; en el navegador
++// solo llega cuando el programa le devuelve el control. Se cede cada 8 ms
++// como maximo (Asyncify), asi esos bucles no congelan la pagina.
++#define WEB_YIELD_MS 8
++
++static void WebYield(void)
++{
++	static Uint32 last;
++	Uint32 now = SDL_GetTicks();
++
++	if (now - last >= WEB_YIELD_MS)
++	{
++		last = now;
++		emscripten_sleep(0);
++	}
++}
++#endif
++
+ void IN_PumpEvents(void)
+ {
++#ifdef __EMSCRIPTEN__
++	WebYield();
++#endif
+ 	sdl_handle_events();
+ }
+ 

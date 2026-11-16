@@ -12,7 +12,8 @@
     "build:gameboy": "bash engines/gameboy/build.sh",
     "build:nes": "bash engines/nes/build.sh",
     "build:wolf3d": "bash engines/wolf3d/build.sh",
-    "build:heretic": "bash engines/heretic/build.sh"
+    "build:heretic": "bash engines/heretic/build.sh",
+    "build:rott": "bash engines/rott/build.sh"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
