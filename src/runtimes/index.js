@@ -20,6 +20,7 @@ import { startHeretic } from './heretic/index.js'
 import { startNes } from './nes/index.js'
 import { startOpenjazz } from './openjazz/index.js'
 import { startOpenttd } from './openttd/index.js'
+import { startQuake } from './quake/index.js'
 import { startRigel } from './rigel/index.js'
 import { startRott } from './rott/index.js'
 import { startScummvm } from './scummvm/index.js'
@@ -280,7 +281,30 @@ const rott = {
   start: ({ frame, onQuit, onError }) => startRott({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott }
+// LibreQuake sobre FTEQW: corre en su propia página.
+const quake = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['W', 'A', 'S', 'D'], 'mover'],
+    [['Mouse'], 'apuntar'],
+    [['Clic'], 'disparar'],
+    [['Espacio'], 'saltar'],
+  ],
+  keyList: [
+    ['W, A, S, D', 'Moverse (también con las flechas)'],
+    ['Mouse', 'Apuntar (hacé clic en el juego para que tome el mouse; Esc lo suelta)'],
+    ['Clic izquierdo o Ctrl', 'Disparar'],
+    ['Espacio', 'Saltar y nadar hacia arriba'],
+    ['Shift', 'Correr'],
+    ['1 a 8, o la rueda', 'Elegir arma'],
+    ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
+  ],
+  keyNote: 'Las teclas se cambian dentro del juego: Esc, Options.',
+  start: ({ frame, onQuit, onError }) => startQuake({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

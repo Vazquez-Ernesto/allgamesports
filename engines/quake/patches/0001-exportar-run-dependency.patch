@@ -1,0 +1,14 @@
+diff --git a/engine/Makefile b/engine/Makefile
+index ab4281d08..9e6e37f96 100644
+--- a/engine/Makefile
++++ b/engine/Makefile
+@@ -1893,6 +1893,9 @@ ifeq ($(FTE_TARGET),web)
+ 	EMCC_LDFLAGS+= -s NO_FILESYSTEM=1				#we have our own.
+ 	EMCC_LDFLAGS+= -s FILESYSTEM=0					#we have our own.
+ 	EMCC_LDFLAGS+= -s ALLOW_MEMORY_GROWTH=1			#reduce crashes...
++	# allgamesports: web/prejs.js usa addRunDependency y removeRunDependency;
++	# Emscripten 6 solo las incluye si se exportan.
++	EMCC_LDFLAGS+= -s EXPORTED_RUNTIME_METHODS=addRunDependency,removeRunDependency
+ 	EMCC_LDFLAGS+= -s MAX_WEBGL_VERSION=2			#make use of what we can.
+ 	EMCC_LDFLAGS+= -s TOTAL_STACK=5MB			#big!
+    	EMCC_LDFLAGS+=-s ERROR_ON_UNDEFINED_SYMBOLS=1	#fairly obvious. no runtime errors please.

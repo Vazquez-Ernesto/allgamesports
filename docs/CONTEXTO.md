@@ -689,3 +689,34 @@ monta su subcarpeta, y así tiene base propia.
 Se probó: intro, menú, partida nueva, moverse, disparar y levantar armas,
 guardar (queda en IndexedDB), los carteles de confirmación y salir. Tiene
 efectos de sonido, no música.
+
+## 26. LibreQuake
+
+El último de la lista de candidatos, y el más pesado. Quake (1996) tiene el
+código libre desde 1999, pero no sus datos. LibreQuake los rehace desde cero
+con licencia libre (arte BSD-3, código del juego GPL-2.0): no es shareware ni
+permiso implícito, es software libre de verdad.
+
+El motor es FTEQW, el que recomienda LibreQuake, que trae objetivo oficial
+para navegador. Compiló con un solo parche: su arranque usa
+`addRunDependency`, que Emscripten 6 ya no incluye si no se pide.
+
+Se usa la versión "lite" (el primer episodio): 50 MB de datos que quedan en
+25 MB con gzip. La música (29 MB más) quedó afuera por ahora.
+
+Lo que se aprendió probando:
+
+- FTEQW escucha el teclado en el documento y en el canvas. Las teclas reales
+  llegan una vez; las simuladas sobre el canvas llegaban dos (Esc abría y
+  cerraba el menú). Se confirmó con pulsaciones reales antes de tocar nada:
+  era un problema de la prueba, no del juego.
+- Su menú sigue al mouse: Enter elige la opción que está debajo del puntero.
+- Guarda las partidas solo, en `localStorage`.
+
+Accidente de esta tanda: un script que agregaba la sección 24 de este
+documento lo abrió para escribir antes de leerlo y lo vació; se publicó así
+en `86043e8` y se restauró en `c0eb4c2`. Para agregar a un archivo: leer
+primero, escribir después, y revisar `git diff --stat` antes de commitear.
+
+Se probó: arranque, menú, partida nueva, moverse, guardar (queda en
+`localStorage`) y salir desde el menú.

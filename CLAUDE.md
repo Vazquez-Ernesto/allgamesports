@@ -33,6 +33,8 @@ La historia del proyecto, las decisiones y lo que se probó están en
 
 - `wsl bash engines/openjazz/build.sh`: recompila OpenJazz (Jazz Jackrabbit).
   En Linux (WSL), con CMake.
+- `wsl bash engines/quake/build.sh`: recompila FTEQW y prepara LibreQuake.
+  En Linux (WSL).
 - `wsl bash engines/rigel/build.sh`: recompila RigelEngine (Duke Nukem II).
   En Linux (WSL), con CMake; baja los datos del shareware.
 - `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
@@ -59,7 +61,7 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
@@ -67,6 +69,7 @@ src/
   runtimes/openjazz/   arma la dirección del iframe de Jazz Jackrabbit
   runtimes/rigel/      arma la dirección del iframe de Duke Nukem II
   runtimes/rott/       arma la dirección del iframe de Rise of the Triad
+  runtimes/quake/      arma la dirección del iframe de LibreQuake
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -86,6 +89,7 @@ engines/heretic/       build.sh, parche y config.h de Chocolate Heretic (el cód
 engines/openjazz/      build.sh y parche de OpenJazz (el código se clona aparte)
 engines/rigel/         build.sh y parches de RigelEngine (el código se clona aparte)
 engines/rott/          build.sh y parche de taradino (el código se clona aparte)
+engines/quake/         build.sh y parche de FTEQW (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -258,6 +262,20 @@ engines/rott/          build.sh y parche de taradino (el código se clona aparte
   bucles que esperan una tecla sin ceder el control (parche en
   `IN_PumpEvents`).
 - No tiene música todavía (MIDI sin sintetizador); sí efectos.
+
+## Cómo funciona LibreQuake
+
+- El motor es FTEQW (GPL-2.0), derivado de Quake, con objetivo oficial para
+  navegador. `build.sh` (en WSL) clona el commit de `UPSTREAM_COMMIT`, aplica
+  un parche de una línea y corre `make web-rel`.
+- Los datos son LibreQuake "lite" (arte BSD-3, código del juego GPL-2.0):
+  `pak0` y `pak1` comprimidos como `.pakgz`; `play.js` los descomprime y se
+  los pasa al motor en `Module.files`.
+- Corre en un iframe (`public/games/quake/play.html`). FTEQW guarda solo sus
+  partidas en `localStorage` (claves `fte/`).
+- Para simular teclas en pruebas, dispararlas sobre `document`, no sobre el
+  canvas (FTEQW escucha en los dos y las recibiría dobles).
+- No tiene música todavía (29 MB de OGG aparte).
 
 ## Agregar un juego
 

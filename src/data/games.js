@@ -1048,6 +1048,34 @@ export const GAMES = [
       ['Guardado', 'No guarda partidas'],
     ],
   },
+  {
+    slug: 'librequake',
+    title: 'LibreQuake',
+    short: 'El motor de Quake (1996) con un juego completamente libre: monstruos, castillos y tecnología oxidada en 3D.',
+    platform: 'pc',
+    genre: 'FPS',
+    year: 2019,
+    developer: 'Comunidad de LibreQuake, sobre el motor de id Software',
+    publisher: 'Proyecto LibreQuake',
+    engine: 'quake',
+    cover: 'games/quake/quake-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 31,
+    },
+    description: [
+      'Quake (id Software, 1996) fue el primer juego de disparos con mundos y monstruos realmente en 3D. Su código es libre desde 1999, pero los niveles, los gráficos y los sonidos originales no. LibreQuake los rehace desde cero con licencia libre: es un juego nuevo, completo y legal, que se juega como Quake. Está en inglés.',
+      'Esta es la versión liviana de LibreQuake 0.09, con su primer episodio. Corre sobre FTEQW, un motor libre derivado del código de Quake, compilado a WebAssembly. Por ahora suena con efectos pero sin música.',
+    ],
+    facts: [
+      ['Idioma', 'Inglés'],
+      ['Motor', 'FTEQW (GPL-2.0), sobre el código de Quake de id Software'],
+      ['Datos', 'LibreQuake 0.09 lite: arte y sonidos BSD-3, código del juego GPL-2.0'],
+      ['Tecnología', 'C → WebAssembly con Emscripten'],
+      ['Descarga', 'Unos 31 MB la primera vez'],
+      ['Guardado', 'En tu navegador'],
+    ],
+  },
 ]
 
 export function findGame(slug) {
