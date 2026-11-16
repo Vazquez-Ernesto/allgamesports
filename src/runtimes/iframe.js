@@ -16,12 +16,13 @@ const START_TIMEOUT_MS = 60000
  * @param {string} options.src          Dirección de la página del motor.
  * @param {(win: Window) => AudioContext | undefined} options.audioContextOf
  * @param {boolean} [options.pausesMainLoop]  El bucle del motor lo maneja el navegador y hay que frenarlo al pausar.
+ * @param {number} [options.startTimeoutMs]  Cuánto esperar el aviso 'ready' (más para descargas grandes).
  * @param {() => void} [options.onQuit]
  * @param {(message: string) => void} [options.onError]
  */
-export async function startIframeEngine({ frame, name, source, src, audioContextOf, pausesMainLoop = false, onQuit, onError }) {
+export async function startIframeEngine({ frame, name, source, src, audioContextOf, pausesMainLoop = false, startTimeoutMs = START_TIMEOUT_MS, onQuit, onError }) {
   const iframe = createIframe(name, src)
-  const messages = listenTo(iframe, source, name)
+  const messages = listenTo(iframe, source, name, startTimeoutMs)
   frame.appendChild(iframe)
 
   try {
@@ -47,7 +48,7 @@ function createIframe(name, src) {
 }
 
 // Escucha los avisos que vienen de ESTE iframe.
-function listenTo(iframe, source, name) {
+function listenTo(iframe, source, name, timeoutMs) {
   let handlers = {}
   const onMessage = (event) => {
     if (event.source !== iframe.contentWindow || event.data?.source !== source) return
@@ -56,7 +57,7 @@ function listenTo(iframe, source, name) {
   window.addEventListener('message', onMessage)
 
   return {
-    waitForReady: () => waitForReady((next) => (handlers = next), name),
+    waitForReady: () => waitForReady((next) => (handlers = next), name, timeoutMs),
     onAfterReady({ onQuit, onError }) {
       handlers = { exit: () => onQuit?.(), error: (detail) => onError?.(`${name} se cerró por un error: ${detail}`) }
     },
@@ -64,9 +65,9 @@ function listenTo(iframe, source, name) {
   }
 }
 
-function waitForReady(setHandlers, name) {
+function waitForReady(setHandlers, name, timeoutMs) {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${name} tardó demasiado en arrancar.`)), START_TIMEOUT_MS)
+    const timer = setTimeout(() => reject(new Error(`${name} tardó demasiado en arrancar.`)), timeoutMs)
     const finish = (callback) => (detail) => {
       clearTimeout(timer)
       callback(detail)

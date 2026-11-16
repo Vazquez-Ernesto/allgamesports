@@ -1,0 +1,13 @@
+--- a/src/supertux/main.cpp	2026-11-16 16:34:08.253410961 +0000
++++ b/src/supertux/main.cpp	2026-11-16 16:34:08.345505152 +0000
+@@ -792,6 +792,10 @@
+ 
+ #ifdef __ANDROID__
+     m_physfs_subsystem.reset(new PhysfsSubsystem(nullptr, args.datadir, SDL_AndroidGetExternalStoragePath()));
++#elif defined(__EMSCRIPTEN__)
++    // allgamesports: sin argv0, PhysFS busca su carpeta en /proc/self/exe,
++    // que en el navegador no existe, y no arranca.
++    m_physfs_subsystem.reset(new PhysfsSubsystem("/supertux2", args.datadir, args.userdir));
+ #else
+     m_physfs_subsystem.reset(new PhysfsSubsystem(nullptr, args.datadir, args.userdir));
+ #endif

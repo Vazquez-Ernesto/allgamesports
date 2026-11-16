@@ -745,3 +745,39 @@ botón para copiar esos datos. Los adaptadores USB de mandos de PS2 suelen
 aparecer como no reconocidos (`mapping` vacío): los botones llegan en el
 orden del fabricante. Con los datos de la página se puede armar el mapeo.
 Se probó con mandos simulados; falta uno real.
+
+## 28. SuperTux 0.7.0
+
+Plataformas libre (motor GPL-3.0; niveles, gráficos y música GPL 2+ y
+CC-BY-SA). Se eligió la 0.7.0 (2025) y no la 0.6.3: la vieja necesita Boost
+e hilos (SharedArrayBuffer, que GitHub Pages no permite), y la nueva ya trae
+soporte para navegador.
+
+Licencia de los datos: verificada archivo por archivo. Los 110 niveles y 6
+mapas incluidos declaran CC-BY-SA 4.0 o GPL 2+ / CC-BY-SA 3.0. Dos piezas
+son CC BY-NC 4.0 (cinta transportadora y `kill.wav`): se pueden repartir
+sin fines comerciales. Permiso explícito, como pide la sección 25.
+
+Tamaño: los datos pesan unos 325 MB. Se decidió ("los dos mundos,
+comprimidos") recomprimir la música a calidad 0, optimizar los PNG sin
+pérdida y sacar fuentes y traducciones que no se usan: quedan 162 MB en
+cuatro paquetes de `file_packager` (cada uno de menos de 100 MB, el límite
+de GitHub). La licencia permite modificar los datos avisándolo: la ficha y
+el README lo dicen.
+
+Trampas que aparecieron (detalle en `engines/supertux/README.md`):
+
+- `#ifdef EMSCRIPTEN` sin guiones bajos: Emscripten moderno solo define
+  `__EMSCRIPTEN__`, y los bloques web se apagaban en silencio. Se define a
+  mano. Revisarlo en próximos ports de código viejo.
+- `PHYSFS_init(nullptr)` falla en el navegador sin código de error. Se aisló
+  con un `main.c` de diez líneas enlazado contra la biblioteca de vcpkg y
+  corrido con Node: con NULL falla, con un nombre de programa anda.
+- La ruta de datos quedaba fija en la carpeta de compilación, con el usuario
+  de la máquina adentro. `-ffile-prefix-map` también saca esas rutas de los
+  mensajes de log, que se publicarían dentro del `.wasm`.
+- `iframe.js` ahora acepta `startTimeoutMs`: SuperTux baja 170 MB la primera
+  vez y el minuto por defecto no alcanza.
+
+Se probó: menú en español, intro, mapa del mundo, primer nivel, y que al
+volver a entrar retoma el progreso (IndexedDB).

@@ -23,6 +23,7 @@ import { startOpenttd } from './openttd/index.js'
 import { startQuake } from './quake/index.js'
 import { startRigel } from './rigel/index.js'
 import { startRott } from './rott/index.js'
+import { startSupertux } from './supertux/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { startWolf3d } from './wolf3d/index.js'
@@ -304,7 +305,29 @@ const quake = {
   start: ({ frame, onQuit, onError }) => startQuake({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake }
+// SuperTux: corre en su propia página.
+const supertux = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '→'], 'caminar'],
+    [['Espacio'], 'saltar'],
+    [['Ctrl'], 'acción'],
+    [['Esc'], 'menú'],
+  ],
+  keyList: [
+    ['← →', 'Caminar (con Ctrl apretado, correr)'],
+    ['↑ ↓', 'Mirar arriba y abajo; ↓ también agacharse'],
+    ['Espacio', 'Saltar (más alto si lo mantenés)'],
+    ['Ctrl', 'Correr, disparar y agarrar cosas'],
+    ['Esc', 'Menú (opciones, salir del nivel)'],
+    ['En el mapa: flechas y Enter', 'Elegir nivel y entrar'],
+  ],
+  keyNote: 'Las teclas y el mando se configuran dentro del juego: Opciones, Controles.',
+  start: ({ frame, onQuit, onError }) => startSupertux({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake, supertux }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]

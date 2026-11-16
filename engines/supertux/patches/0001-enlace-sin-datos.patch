@@ -1,0 +1,24 @@
+--- a/mk/cmake/SuperTux/Emscripten.cmake	2026-11-16 16:03:47.975193759 +0000
++++ b/mk/cmake/SuperTux/Emscripten.cmake	2026-11-16 16:03:48.032084757 +0000
+@@ -4,7 +4,9 @@
+ set(SSQ_BUILD_INSTALL NO)
+ 
+ set(EM_USE_FLAGS "-sDISABLE_EXCEPTION_CATCHING=0 -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sSDL2_IMAGE_FORMATS='[\"png\",\"jpg\"]' -sUSE_VORBIS=1")
+-set(EM_LINK_FLAGS " -sINITIAL_MEMORY=134217728 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=536870912 -sERROR_ON_UNDEFINED_SYMBOLS=0 --preload-file ${BUILD_CONFIG_DATA_DIR} --use-preload-plugins -lidbfs.js")
++set(EM_LINK_FLAGS " -sINITIAL_MEMORY=134217728 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=536870912 -sERROR_ON_UNDEFINED_SYMBOLS=0 --use-preload-plugins -lidbfs.js -sFORCE_FILESYSTEM")
++# allgamesports: los datos se empaquetan aparte con file_packager (en
++# varios archivos de menos de 100 MB), por eso no va --preload-file.
+ if(ENABLE_OPENGL)
+   set(EM_LINK_FLAGS "${EM_LINK_FLAGS} -sFULL_ES2")
+   set(HAVE_OPENGL ON CACHE BOOL "")
+--- a/CMakeLists.txt	2026-11-16 16:03:47.979257401 +0000
++++ b/CMakeLists.txt	2026-11-16 16:03:48.032084757 +0000
+@@ -397,7 +397,7 @@
+ endif()
+ 
+ if(EMSCRIPTEN)
+-  target_link_options(supertux2 PUBLIC -sEXPORTED_FUNCTIONS=['_main','_set_resolution','_save_config','_onDownloadProgress','_onDownloadFinished','_onDownloadError','_onDownloadAborted','_getExceptionMessage'] PUBLIC -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap'])
++  target_link_options(supertux2 PUBLIC -sEXPORTED_FUNCTIONS=['_main','_set_resolution','_save_config','_onDownloadProgress','_onDownloadFinished','_onDownloadError','_onDownloadAborted','_getExceptionMessage'] PUBLIC -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','FS','IDBFS','addRunDependency','removeRunDependency'])
+ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+   # This option makes symbol names available for libc's backtrace().
+   target_link_options(supertux2 PUBLIC -rdynamic)

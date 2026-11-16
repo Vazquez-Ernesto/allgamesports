@@ -37,6 +37,9 @@ La historia del proyecto, las decisiones y lo que se probó están en
   En Linux (WSL).
 - `wsl bash engines/rigel/build.sh`: recompila RigelEngine (Duke Nukem II).
   En Linux (WSL), con CMake; baja los datos del shareware.
+- `wsl bash engines/supertux/build.sh`: recompila SuperTux (con vcpkg). En
+  Linux (WSL). Después, `wsl bash engines/supertux/prepare-data.sh` arma los
+  datos comprimidos (necesita vorbis-tools y optipng).
 - `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
   (WSL); baja su propio Emscripten y los gráficos. Tarda varios minutos.
 
@@ -61,7 +64,7 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
@@ -70,6 +73,7 @@ src/
   runtimes/rigel/      arma la dirección del iframe de Duke Nukem II
   runtimes/rott/       arma la dirección del iframe de Rise of the Triad
   runtimes/quake/      arma la dirección del iframe de LibreQuake
+  runtimes/supertux/   arma la dirección del iframe de SuperTux
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -90,6 +94,7 @@ engines/openjazz/      build.sh y parche de OpenJazz (el código se clona aparte
 engines/rigel/         build.sh y parches de RigelEngine (el código se clona aparte)
 engines/rott/          build.sh y parche de taradino (el código se clona aparte)
 engines/quake/         build.sh y parche de FTEQW (el código se clona aparte)
+engines/supertux/      build.sh, prepare-data.sh y parches de SuperTux (el código se baja aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -276,6 +281,22 @@ engines/quake/         build.sh y parche de FTEQW (el código se clona aparte)
 - Para simular teclas en pruebas, dispararlas sobre `document`, no sobre el
   canvas (FTEQW escucha en los dos y las recibiría dobles).
 - No tiene música todavía (29 MB de OGG aparte).
+
+## Cómo funciona SuperTux
+
+- SuperTux 0.7.0 (GPL-3.0). `build.sh` (en WSL) baja el paquete de fuentes,
+  aplica `patches/` y compila con CMake y vcpkg. `prepare-data.sh` arma los
+  datos en cuatro paquetes de `file_packager` (`public/games/supertux/data/`).
+- Los datos se modificaron para pesar menos (música recomprimida, PNG
+  optimizados, sin fuentes ni traducciones que no se usan): la licencia lo
+  permite avisándolo, y la ficha y el README lo avisan.
+- Corre en un iframe (`public/games/supertux/play.html`). El bucle lo maneja
+  el navegador (`pausesMainLoop`). Guardado en IndexedDB
+  (`/home/web_user/.local/share/supertux2`, lo monta `play.js`).
+- Tres trampas documentadas en su README: la macro `EMSCRIPTEN`, PhysFS sin
+  `argv0` y la carpeta de datos fija.
+- Baja 170 MB la primera vez: su runtime le da 5 minutos para arrancar
+  (`startTimeoutMs` de `iframe.js`).
 
 ## Agregar un juego
 

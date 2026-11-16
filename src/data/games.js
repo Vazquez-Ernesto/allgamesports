@@ -1076,6 +1076,35 @@ export const GAMES = [
       ['Guardado', 'En tu navegador'],
     ],
   },
+  {
+    slug: 'supertux',
+    title: 'SuperTux',
+    short: 'Plataformas en 2D con Tux, el pingüino de Linux: hielo, bosques, jefes y un mundo entero por recorrer.',
+    platform: 'pc',
+    genre: 'Plataformas',
+    year: 2025,
+    developer: 'Equipo de SuperTux',
+    publisher: 'Proyecto SuperTux',
+    engine: 'supertux',
+    cover: 'games/supertux/supertux-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 170,
+    },
+    description: [
+      'SuperTux es un juego de plataformas libre que arrancó en 2003 y sigue creciendo: Tux salta, corre, se agacha, rompe bloques y junta monedas en mundos de hielo, bosque y castillos, con jefes al final. Todo, el motor, los niveles, los gráficos y la música, es libre. Viene en español.',
+      'Esta es la versión 0.7.0 (2025), con los dos mundos del modo historia y las islas extra, compilada a WebAssembly. Para que la descarga sea más liviana, la música está recomprimida y los gráficos optimizados; los niveles no cambian. Guarda tu avance en el navegador.',
+    ],
+    facts: [
+      ['Idioma', 'Español'],
+      ['Motor', 'SuperTux 0.7.0 (GPL-3.0)'],
+      ['Datos', 'Niveles CC-BY-SA 4.0 o GPL-2.0+; música GPL-2.0+ o CC-BY-SA; algunas imágenes CC BY-NC 4.0. Música recomprimida para la web'],
+      ['Código', 'github.com/SuperTux/supertux'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
+      ['Descarga', 'Unos 170 MB la primera vez'],
+      ['Guardado', 'En tu navegador'],
+    ],
+  },
 ]
 
 export function findGame(slug) {

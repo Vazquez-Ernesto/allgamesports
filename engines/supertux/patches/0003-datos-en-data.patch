@@ -1,0 +1,16 @@
+--- a/config.h.in	2026-11-16 16:44:47.917587193 +0000
++++ b/config.h.in	2026-11-16 16:44:47.959441957 +0000
+@@ -33,7 +33,13 @@
+ 
+ #define BUILD_DATA_DIR "${BUILD_DATA_DIR}"
+ 
++#ifdef __EMSCRIPTEN__
++/* allgamesports: en el navegador los datos van en /data (los paquetes de
++   file_packager), no en la carpeta donde se compiló. */
++#define BUILD_CONFIG_DATA_DIR "/data"
++#else
+ #define BUILD_CONFIG_DATA_DIR "${BUILD_CONFIG_DATA_DIR}"
++#endif
+ 
+ #cmakedefine IS_SUPERTUX_RELEASE
+ #cmakedefine ENABLE_DISCORD
