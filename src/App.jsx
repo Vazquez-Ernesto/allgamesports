@@ -4,6 +4,7 @@ import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
 import Home from './pages/Home.jsx'
 import GamePage from './pages/GamePage.jsx'
+import GamepadTest from './pages/GamepadTest.jsx'
 import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/juego/:slug" element={<GamePage />} />
+          <Route path="/mando" element={<GamepadTest />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -1286,3 +1286,109 @@ button.keycap:hover {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Probador de mandos (/mando) ---------- */
+
+.pad-page {
+  padding-block: 64px 0;
+}
+
+.pad-empty {
+  margin-top: 40px;
+  padding: 28px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+
+.pad-card {
+  display: grid;
+  gap: 16px;
+  margin-top: 40px;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.pad-name {
+  font-size: 18px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pad-status {
+  font-size: 15px;
+}
+
+.pad-status.is-ok {
+  color: var(--accent);
+}
+
+.pad-status.is-warn {
+  color: var(--byo);
+}
+
+.pad-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  list-style: none;
+}
+
+.pad-buttons li {
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pad-buttons li.is-pressed {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.pad-axes {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pad-axes li {
+  display: grid;
+  grid-template-columns: 56px 1fr 48px;
+  align-items: center;
+  gap: 12px;
+}
+
+.pad-axis-track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+}
+
+.pad-axis-dot {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%, -50%);
+}
+
+.pad-axis-value {
+  text-align: right;
+}
+
+.pad-card .btn {
+  justify-self: start;
+}

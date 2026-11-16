@@ -14,6 +14,7 @@ export default function Header() {
             Catálogo
           </NavLink>
           <a href={`${import.meta.env.BASE_URL}#como-funciona`}>Cómo funciona</a>
+          <NavLink to="/mando">Mando</NavLink>
           {SITE.repoUrl && (
             <a href={SITE.repoUrl} target="_blank" rel="noreferrer">
               Código

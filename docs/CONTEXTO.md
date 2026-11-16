@@ -720,3 +720,28 @@ primero, escribir después, y revisar `git diff --stat` antes de commitear.
 
 Se probó: arranque, menú, partida nueva, moverse, guardar (queda en
 `localStorage`) y salir desde el menú.
+
+## 27. Dragon Ball Z: Budokai Tenkaichi y el probador de mandos
+
+Se evaluó portar Budokai Tenkaichi 1 y 2 (PS2, Spike/Bandai, 2005 y 2006).
+El sitio de referencia (bt4.lauta.site) usa un motor recompilado para ese
+juego y sirve los archivos del disco original desde su propio servidor.
+
+Conclusión: **no entra en el catálogo**. Son juegos comerciales: ni sus
+datos ni su código se pueden repartir, y pedirle al jugador su propio disco
+choca con la regla del catálogo (sección 13).
+
+Caminos técnicos que existen, para uso personal con un disco propio:
+
+- **PCSX2** (emulador libre de PS2 para PC): el más directo, con mando.
+- **Recompilación estática** (ps2-web-recomp, PS2Recomp): traduce el
+  programa del juego a WebAssembly o a nativo. El resultado contiene el
+  código del juego y pertenece a sus dueños; la compatibilidad varía juego
+  por juego.
+
+Lo que sí se sumó: **/mando**, una página que muestra lo que el navegador
+recibe de cada mando (nombre, si está reconocido, botones y ejes), con un
+botón para copiar esos datos. Los adaptadores USB de mandos de PS2 suelen
+aparecer como no reconocidos (`mapping` vacío): los botones llegan en el
+orden del fabricante. Con los datos de la página se puede armar el mapeo.
+Se probó con mandos simulados; falta uno real.

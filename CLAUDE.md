@@ -56,7 +56,7 @@ src/
   site.js              nombre del sitio, link al repo, mail de contacto
   data/games.js        el catálogo: una entrada por juego
   data/platforms.js    plataformas originales (nombre, fabricante, años)
-  pages/               Home (catálogo), GamePage (ficha + reproductor), NotFound
+  pages/               Home (catálogo), GamePage (ficha + reproductor), GamepadTest (/mando), NotFound
   components/          Player, Modal, ControlsPanel, KeyList, SettingsPanel, GameCard...
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
@@ -73,7 +73,7 @@ src/
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
-  lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS)
+  lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS), mandos (gamepads.js)
   styles/global.css    todos los estilos y los tokens de diseño
 public/games/doom/     motor compilado, datos de Freedoom y portadas
 public/games/tyrian/   motor compilado (los datos los aporta el jugador)
