@@ -40,6 +40,8 @@ La historia del proyecto, las decisiones y lo que se probó están en
 - `wsl bash engines/supertux/build.sh`: recompila SuperTux (con vcpkg). En
   Linux (WSL). Después, `wsl bash engines/supertux/prepare-data.sh` arma los
   datos comprimidos (necesita vorbis-tools y optipng).
+- `wsl bash engines/pingus/build.sh`: recompila Pingus con sus dependencias.
+  En Linux (WSL).
 - `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
   (WSL); baja su propio Emscripten y los gráficos. Tarda varios minutos.
 
@@ -64,7 +66,7 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux, Pingus)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
@@ -74,6 +76,7 @@ src/
   runtimes/rott/       arma la dirección del iframe de Rise of the Triad
   runtimes/quake/      arma la dirección del iframe de LibreQuake
   runtimes/supertux/   arma la dirección del iframe de SuperTux
+  runtimes/pingus/     arma la dirección del iframe de Pingus
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -95,6 +98,7 @@ engines/rigel/         build.sh y parches de RigelEngine (el código se clona ap
 engines/rott/          build.sh y parche de taradino (el código se clona aparte)
 engines/quake/         build.sh y parche de FTEQW (el código se clona aparte)
 engines/supertux/      build.sh, prepare-data.sh y parches de SuperTux (el código se baja aparte)
+engines/pingus/        build.sh de Pingus y sus dependencias (el código se clona aparte, sin parches)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -297,6 +301,20 @@ engines/supertux/      build.sh, prepare-data.sh y parches de SuperTux (el códi
   `argv0` y la carpeta de datos fija.
 - Baja 170 MB la primera vez: su runtime le da 5 minutos para arrancar
   (`startTimeoutMs` de `iframe.js`).
+
+## Cómo funciona Pingus
+
+- Pingus (GPL-3.0+), rama de desarrollo 0.8.0, que trae build para
+  navegador armado con Nix. `build.sh` (en WSL) hace lo mismo sin Nix:
+  compila SDL2, SDL2_image, zlib y libmodplug, y después el juego con sus
+  datos en `pingus.data`. Sin parches.
+- Corre en un iframe (`public/games/pingus/play.html`). El bucle lo maneja el
+  navegador (`pausesMainLoop`; `play.js` conecta `Module.pauseMainLoop`).
+  Progreso en IndexedDB (`/pingus-user`, lo monta `play.js`).
+- Dibuja en 4:3: la página escala el canvas sin `object-fit`, para que SDL
+  ubique bien el mouse.
+- `build.sh` compila todo con `-ffile-prefix-map` y falla si queda una ruta
+  de la máquina en el `.wasm` (los `assert` de C la guardan).
 
 ## Agregar un juego
 

@@ -1105,6 +1105,33 @@ export const GAMES = [
       ['Guardado', 'En tu navegador'],
     ],
   },
+  {
+    slug: 'pingus',
+    title: 'Pingus',
+    short: 'Guiá a una fila de pingüinos hasta la salida dándoles tareas: cavar, construir puentes, frenar al resto.',
+    platform: 'pc',
+    genre: 'Puzles',
+    year: 2026,
+    developer: 'Ingo Ruhnke y colaboradores',
+    publisher: 'Proyecto Pingus',
+    engine: 'pingus',
+    cover: 'games/pingus/pingus-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 36,
+    },
+    description: [
+      'Pingus es un juego de puzles libre, inspirado en Lemmings: los pingüinos caminan solos y sin pensar, y vos les das tareas con el mouse (cavar, escalar, hacer de barrera, construir un puente) para que lleguen a la salida antes de caer al vacío. Arrancó en 1998 y sigue en desarrollo.',
+      'Esta es la versión en desarrollo de 2026, que ya trae soporte para navegador, compilada a WebAssembly con su música y efectos de sonido. Guarda tu avance en el navegador.',
+    ],
+    facts: [
+      ['Motor y datos', 'Pingus (GPL-3.0 o posterior), incluida la música, compuesta para el juego'],
+      ['Código', 'github.com/Pingus/pingus'],
+      ['Tecnología', 'C++ → WebAssembly con Emscripten'],
+      ['Descarga', 'Unos 36 MB la primera vez'],
+      ['Guardado', 'En tu navegador'],
+    ],
+  },
 ]
 
 export function findGame(slug) {

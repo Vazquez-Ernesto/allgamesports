@@ -781,3 +781,30 @@ Trampas que aparecieron (detalle en `engines/supertux/README.md`):
 
 Se probó: menú en español, intro, mapa del mundo, primer nivel, y que al
 volver a entrar retoma el progreso (IndexedDB).
+
+## 29. Abuse descartado; Pingus
+
+**Abuse** (Crack dot Com, 1996): el código es de dominio público y los datos
+del shareware se pueden usar libremente, salvo los efectos de sonido. Esos
+son de Bobby Prince, que en 2004 le dio a Debian un permiso ambiguo por mail
+("para sus propósitos"). Como es implícito y no es para nosotros, se
+descartó (criterio de la sección 25). Sin sonido el juego pierde mucho.
+
+**Pingus** (clon libre de Lemmings): el README declara todo el proyecto
+GPL-3.0+, y Debian lo distribuye en *main*. La música son módulos compuestos
+para el juego por colaboradores listados en `AUTHORS`. Se usó la rama de
+desarrollo (0.8.0, octubre de 2026), que ya trae build para navegador; la
+estable (0.7.6, 2011) usa SDL 1.2 y Boost.
+
+El build del proyecto usa Nix; `engines/pingus/build.sh` reproduce lo mismo
+con las versiones que fija el proyecto. Dos detalles:
+
+- libmodplug (2008) no conoce `wasm32-unknown-emscripten`: se le copian los
+  `config.sub`/`config.guess` de SDL2.
+- SDL2 dejó la ruta de la máquina dentro del `.wasm` (sus `assert`). Ahora
+  todo se compila con `-ffile-prefix-map` y el script lo verifica al final.
+  Vale como regla para los próximos ports.
+
+Descarga: unos 36 MB. Se probó: menú en español, sonido y música, mapa de
+Tutorial Island, niveles del tutorial y que el progreso sobrevive a la
+recarga.

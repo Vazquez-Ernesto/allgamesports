@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pingus</title>
+    <!-- Página mínima que carga Pingus dentro del reproductor (en un iframe).
+         Primero la configuración (play.js), después el motor. -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* Pingus dibuja en 4:3: se escala lo más grande posible sin
+         deformarlo. Sin object-fit, para que SDL ubique bien los clics. */
+      canvas {
+        display: block;
+        width: min(100vw, calc(100vh * 4 / 3));
+        height: min(100vh, calc(100vw * 3 / 4));
+        border: 0;
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" tabindex="0" oncontextmenu="event.preventDefault()"></canvas>
+    <script src="play.js"></script>
+    <script src="pingus.js"></script>
+  </body>
+</html>

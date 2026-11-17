@@ -24,6 +24,7 @@ import { startQuake } from './quake/index.js'
 import { startRigel } from './rigel/index.js'
 import { startRott } from './rott/index.js'
 import { startSupertux } from './supertux/index.js'
+import { startPingus } from './pingus/index.js'
 import { startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { startWolf3d } from './wolf3d/index.js'
@@ -327,7 +328,30 @@ const supertux = {
   start: ({ frame, onQuit, onError }) => startSupertux({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake, supertux }
+// Pingus: corre en su propia página.
+const pingus = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['Clic'], 'dar una tarea'],
+    [['1', '…', '0'], 'elegir tarea'],
+    [['Espacio'], 'acelerar'],
+    [['Esc'], 'menú'],
+  ],
+  keyList: [
+    ['Clic izquierdo', 'Elegir una tarea abajo y dársela a un pingüino'],
+    ['1 a 0, Tab o la rueda', 'Cambiar de tarea'],
+    ['Flechas', 'Mover la vista por el nivel'],
+    ['Espacio o F', 'Acelerar mientras lo mantenés'],
+    ['P', 'Pausa'],
+    ['S', 'Avanzar un paso (en pausa)'],
+    ['A', 'Armagedón: hace explotar a todos (para reintentar)'],
+    ['Esc', 'Menú (salir del nivel)'],
+  ],
+  start: ({ frame, onQuit, onError }) => startPingus({ frame, onQuit, onError }),
+}
+
+const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake, supertux, pingus }
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]
