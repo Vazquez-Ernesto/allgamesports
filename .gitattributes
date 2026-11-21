@@ -1,0 +1,5 @@
+# Los scripts y los parches se usan en Linux (WSL): siempre con fin de línea
+# LF, aunque Git en Windows tenga core.autocrlf=true. Con CRLF, bash no
+# entiende "set -euo pipefail" y git apply no encuentra las líneas del parche.
+*.sh text eol=lf
+*.patch text eol=lf

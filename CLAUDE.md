@@ -50,6 +50,10 @@ Bash: `export EMSDK_PYTHON=<ruta a python.exe>` y `source
 /c/tools/emsdk/emsdk_env.sh`. Sin `EMSDK_PYTHON`, emsdk usa `python3`, que en
 Windows es el acceso directo de la Microsoft Store y no instala nada.
 
+Los `.sh` y los `.patch` van siempre con fin de línea LF (`.gitattributes`).
+Git para Windows trae `core.autocrlf=true`: sin esa regla, un clon o un
+worktree nuevo los saca con CRLF y bash falla en `set -euo pipefail`.
+
 No hay tests automatizados ni linter. Para verificar un cambio: `npm run
 build` y probar a mano en el navegador (catálogo, arrancar un juego, guardar
 partida, paneles de controles y ajustes).
@@ -169,12 +173,14 @@ engines/pingus/        build.sh de Pingus y sus dependencias (el código se clon
 - Los datos se bajan bajo demanda: ScummVM pide `/data/.../index.json` y cada
   archivo cuando lo abre. `play.js` vuelve relativas esas rutas absolutas y
   descomprime los `.dgz` (gzip). El `index.json` lleva el tamaño sin comprimir.
-- Los cinco juegos (Beneath a Steel Sky, Flight of the Amazon Queen, Lure of
-  the Temptress, Drascula, DreamWeb) son freeware con licencia que permite
-  redistribuirlos con sus avisos intactos: se hospedan, con su archivo de
-  licencia legible al lado.
+- Los seis juegos (Beneath a Steel Sky, Flight of the Amazon Queen, Lure of
+  the Temptress, Drascula, DreamWeb, Sołtys) son freeware con licencia que
+  permite redistribuirlos con sus avisos intactos: se hospedan, con su
+  archivo de licencia legible al lado.
 - Usa SDL3 (`Module.SDL3.audioContext`) y guarda sus partidas en su propia
   base de IndexedDB (`/home/web_user`).
+- Cada tecla le llega 6 veces (oyentes de teclado de SDL3 duplicados, ver
+  su README): no listar en las fichas teclas que alternan algo.
 
 ## Cómo funciona Game Boy
 
@@ -366,6 +372,9 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
 - Tyrian: falta escuchar el sonido y probar mando, Firefox y Safari.
 - El encabezado desborda en ancho de celular (440 px en 375).
 - ScummVM: las versiones de CD con voces de BASS, FOTAQ y DreamWeb.
+- ScummVM: cada tecla llega 6 veces (nombres de partida con letras
+  repetidas; por eso 1 a 8 de Sołtys no están en su ficha). Ver
+  `engines/scummvm/README.md`.
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 
 ## Ingeniería inversa con REA

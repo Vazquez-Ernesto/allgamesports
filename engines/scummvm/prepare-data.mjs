@@ -95,6 +95,17 @@ const GAMES = [
       },
     ],
   },
+  {
+    id: 'soltys', // versión en español; license.txt es la misma licencia en inglés
+    legible: ['licencia.txt', 'license.txt'],
+    zips: [
+      {
+        url: `${EXTRAS}/Soltys/soltys-es-v1.0.zip`,
+        sha256: '913db60d16a3c7faa2f8d02a09ea925792614bfebdc46c6df8f89ac277a35302',
+        include: /^(vol\.cat|vol\.dat|licencia\.txt|license\.txt)$/i,
+      },
+    ],
+  },
 ]
 
 // Archivos del build que necesitan los motores y el tema del menú. El resto

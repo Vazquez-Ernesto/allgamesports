@@ -4,7 +4,7 @@
 compilado a WebAssembly con su propio target de Emscripten, solo con los
 motores de los juegos del catálogo: `sky` (Beneath a Steel Sky), `queen`
 (Flight of the Amazon Queen), `lure` (Lure of the Temptress), `drascula`
-(Drascula) y `dreamweb` (DreamWeb). Lleva además el decodificador de MP3
+(Drascula), `dreamweb` (DreamWeb) y `cge` (Sołtys). Lleva además el decodificador de MP3
 (`--enable-mad`) para la música de Drascula.
 
 Licencia: **GPL-3.0** (ver `LICENSE-scummvm`). Cualquier cambio a este código
@@ -72,7 +72,13 @@ SHA-256) y arma `public/games/scummvm/data/`.
 - **Música de Drascula.** Viene en un paquete aparte (pistas MP3). Sin ellas
   ScummVM muestra un aviso en cada arranque. Se bajan de a una, cuando suenan.
 - **Idioma.** Drascula trae varios idiomas en la misma carpeta; la ficha
-  pasa `--language=es` (`source.args` en `games.js`).
+  pasa `--language=es` (`source.args` en `games.js`). Sołtys no lo necesita:
+  el zip español trae un solo idioma y ScummVM lo reconoce por el tamaño y
+  el MD5 de `vol.dat` (entrada `ES_ESP` de `engines/cge/detection.cpp`).
+- **Sołtys no deja guardar en cualquier momento.** F5 solo abre el diálogo
+  si no hay ninguna acción en curso: con un globo de diálogo en pantalla
+  (se cierra con un clic) no pasa nada. Es el comportamiento original
+  (`canSaveGameStateCurrently` en `engines/cge/cge.cpp`).
 - **Portadas.** `play.html?captura#...` conserva la imagen del canvas (WebGL
   la borra después de mostrarla) para poder copiarla y sacar una portada.
 - **`scummvm.ini`.** Al arrancar, ScummVM pide su configuración. Sin el
@@ -85,6 +91,14 @@ SHA-256) y arma `public/games/scummvm/data/`.
 
 ## Pendiente
 
+- **Cada tecla llega 6 veces.** Al arrancar, los oyentes de `keydown`,
+  `keypress` y `keyup` de SDL3 quedan registrados 6 veces en `window` (se
+  ve en `JSEvents.eventHandlers` del iframe; los del mouse, una sola). Pasa
+  en todos los juegos de ScummVM. Efectos: los nombres de partida salen con
+  cada letra repetida (probado), y las teclas que alternan algo (1 a 8 en
+  Sołtys) deberían volver al estado inicial (deducido, no se vio). El mouse,
+  F5, F7, Esc y Alt+X andan. Falta buscar por
+  qué SDL3 no borra los oyentes viejos al recrear su ventana.
 - Versiones de CD, con voces: pesan entre 60 y 107 MB.
 - Más juegos freeware de ScummVM: cada uno suma su motor a
   `--enable-engine` y su entrada en `prepare-data.mjs`, después de verificar

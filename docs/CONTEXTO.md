@@ -808,3 +808,53 @@ con las versiones que fija el proyecto. Dos detalles:
 Descarga: unos 36 MB. Se probó: menú en español, sonido y música, mapa de
 Tutorial Island, niveles del tutorial y que el progreso sobrevive a la
 recarga.
+
+## 30. Nueva tanda de candidatos y Sołtys
+
+Se revisaron 17 juegos con el criterio de la sección 25 (permiso explícito,
+leído en el archivo original). Quedaron tres, de más fácil a más difícil:
+Sołtys (ScummVM), Blasphemer (motor de Heretic) y Duke Nukem 3D shareware
+(EDuke32). Los descartes, con la evidencia:
+
+| Juego | Por qué no |
+|---|---|
+| Quake shareware | El permiso de `SLICNSE.TXT` es para "Providers" y el paquete entero; prohíbe "publicly display" y usar capturas y sonidos (choca con las portadas) |
+| Hexen (demo) | Sin licencia; su README dice "Hexen is NOT a shareware product" |
+| Strife (demo) | Sin licencia; el propio `STRIFE.EXE` dice "NOT SHAREWARE, do not distribute!" |
+| The Griffon Legend | El paquete de ScummVM no trae licencia |
+| God of Thunder | Su contrato de uso prohíbe distribuirlo |
+| Mystery House | Se dice "public domain", pero no hay texto que lo respalde |
+| Juegos SLUDGE (Mandy) | Freeware con una condición extra: informarle las descargas al autor |
+| Warzone 2100 | Licencia perfecta (GPL), pero necesita hilos (SharedArrayBuffer), que en GitHub Pages no hay |
+| Rocks'n'Diamonds | Datos sin licencia, con niveles de Boulder Dash y Supaplex; Debian los sacó |
+| Commander Keen 1 | Licencia buena, pero el único port web (Chocolate Keen) sale del ejecutable original y su licencia no está clara |
+
+Hugo y Mortville Manor tienen motor en ScummVM, pero no están entre sus
+descargas freeware.
+
+**Sołtys** (LK Avalon, 1995) es una aventura polaca con versión en español.
+Su `licencia.txt` permite "distribuir este juego de forma gratuita en
+cualquier medio" con la licencia y los avisos intactos. Sumarlo fue activar
+el motor `cge` (169 KB más de `.wasm`) y agregar su zip a
+`prepare-data.mjs`. ScummVM reconoce la versión española por el tamaño y el
+MD5 de `vol.dat`.
+
+Tres cosas que aparecieron:
+
+- **Finales de línea.** El trabajo se hizo en un worktree de git, y los
+  `.sh` salieron con CRLF: Git para Windows trae `core.autocrlf=true` y los
+  convierte al sacarlos. bash leyó `pipefail\r` y cortó. Se sumó un
+  `.gitattributes` que fija LF para `.sh` y `.patch`.
+- **Cada tecla llega 6 veces** a ScummVM: sus oyentes de teclado quedan
+  registrados 6 veces al arrancar (se contaron en `JSEvents.eventHandlers`).
+  Pasa también en Lure, así que viene de antes. Los nombres de partida salen
+  con letras repetidas, y las teclas 1 a 8 de Sołtys no se listan. Queda
+  para la revisión general.
+- **El buscador no encontraba "soltys".** La ł no es una l con acento: NFD
+  no la separa. `Home.jsx` la cambia a mano.
+
+Se probó: arranque, intro en español, saltar escenas con Esc, caminar,
+agarrar un objeto, guardar con F5 (quedó en IndexedDB) y cargarlo con F7
+después de recargar la página, pausa (el audio pasa a `suspended`) y salir
+con Alt+X. F5 no recarga la página: SDL cancela la tecla
+(`defaultPrevented`). No se escuchó el sonido.

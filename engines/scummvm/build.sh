@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Compila ScummVM a WebAssembly, solo con los motores de los juegos del
-# catálogo (sky: Beneath a Steel Sky, queen: Flight of the Amazon Queen).
+# catálogo (sky: Beneath a Steel Sky, queen: Flight of the Amazon Queen,
+# lure: Lure of the Temptress, drascula, dreamweb y cge: Sołtys).
 #
 # Corre en Linux. En Windows, desde la raíz del repo:
 #   wsl bash engines/scummvm/build.sh
@@ -36,7 +37,7 @@ done
 
 cd "$SRC"
 ./dists/emscripten/build.sh setup libs configure make dist \
-  --disable-all-engines --enable-engine=sky,queen,lure,drascula,dreamweb --enable-mad
+  --disable-all-engines --enable-engine=sky,queen,lure,drascula,dreamweb,cge --enable-mad
 
 mkdir -p "$OUT_DIR"
 cp build-emscripten/scummvm.js build-emscripten/scummvm.wasm "$OUT_DIR/"

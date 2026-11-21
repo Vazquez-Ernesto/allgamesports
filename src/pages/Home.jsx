@@ -7,10 +7,12 @@ import { SITE } from '../site.js'
 
 const ALL = 'Todos'
 
-// Quita acentos y mayúsculas para que "accion" encuentre "Acción".
+// Quita acentos y mayúsculas para que "accion" encuentre "Acción". La ł polaca
+// no es una l con acento (NFD no la separa): se cambia a mano, para "Sołtys".
 const normalize = (text) =>
   text
     .toLowerCase()
+    .replace(/ł/g, 'l')
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
 
