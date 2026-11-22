@@ -6,20 +6,24 @@
 //   defaultBindings  (opcional) teclas reasignables; si no hay, se muestra keyList
 //   keyList          (opcional) controles fijos: [['tecla', 'qué hace']]
 //   identifyFile     valida el archivo que aporta el jugador -> { fileName, title }
-//   start(options)   arranca el motor -> { pause, resume, destroy, applySettings?, setBindings? }
+//   start(options)   arranca el motor -> { pause, resume, destroy, flush?, applySettings?, setBindings? }
+//                    flush: copia ya lo guardado al navegador (lo usa "Exportar")
 //   surface          (opcional) 'iframe' si el motor corre en su propia página
 //                    en vez de dibujar en el canvas del reproductor
+//   saves            (opcional) dónde guarda: ({ game, saveKey }) => lugar (ver
+//                    lib/savedGames.js). Con esto aparece el botón "Partidas".
+//                    Las rutas de IndexedDB son las que monta su play.js.
 //
 // Un juego del catálogo puede traer su propio hint y keyList (ScummVM: cada
 // juego usa teclas distintas).
 
 import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
-import { startGameBoy } from './gameboy/index.js'
+import { gameboySaveFile, startGameBoy } from './gameboy/index.js'
 import { startCrispyHeretic } from './crispy-heretic/index.js'
 import { startEduke32 } from './eduke32/index.js'
 import { startHeretic } from './heretic/index.js'
-import { startNes } from './nes/index.js'
+import { nesSaveFile, startNes } from './nes/index.js'
 import { startOpenjazz } from './openjazz/index.js'
 import { startOpenttd } from './openttd/index.js'
 import { startQuake } from './quake/index.js'
@@ -27,7 +31,7 @@ import { startRigel } from './rigel/index.js'
 import { startRott } from './rott/index.js'
 import { startSupertux } from './supertux/index.js'
 import { startPingus } from './pingus/index.js'
-import { startScummvm } from './scummvm/index.js'
+import { scummvmSaves, startScummvm } from './scummvm/index.js'
 import { identifyTyrianZip, startTyrian } from './tyrian/index.js'
 import { startWolf3d } from './wolf3d/index.js'
 
@@ -46,6 +50,7 @@ const doom = {
     [['E'], 'usar'],
   ],
   defaultBindings: doomBindings,
+  saves: ({ saveKey }) => ({ type: 'idbfs', db: '/save', dir: saveKey }),
   async start({ data, fileName, ...options }) {
     const running = await startDoom({ ...options, wad: data, wadName: fileName })
     return {
@@ -82,6 +87,7 @@ const tyrian = {
   ],
   keyNote: 'Las teclas se cambian dentro del juego, en el menú entre misiones: Options.',
   identifyFile: (bytes) => identifyTyrianZip(bytes),
+  saves: ({ saveKey }) => saveKey && { type: 'idbfs', db: '/save', dir: saveKey },
   start: ({ canvas, data, saveKey, onQuit, onError }) => startTyrian({ canvas, data, saveKey, onQuit, onError }),
 }
 
@@ -90,6 +96,7 @@ const scummvm = {
   surface: 'iframe',
   defaultSettings: {}, // ScummVM escala y suaviza por su cuenta
   keyNote: 'ScummVM tiene además su menú general con Ctrl+F5.',
+  saves: ({ game }) => scummvmSaves(game.source.gameId),
   start: ({ frame, game, onQuit, onError }) =>
     startScummvm({ frame, gameId: game.source.gameId, args: game.source.args, onQuit, onError }),
 }
@@ -114,6 +121,7 @@ const gameboy = {
     ['Shift', 'Select'],
   ],
   keyNote: 'También funciona con un mando conectado. Qué hace cada botón depende del juego: está en su ficha.',
+  saves: ({ saveKey }) => ({ type: 'opfs', file: gameboySaveFile(saveKey) }),
   start: ({ canvas, data, saveKey, settings }) => startGameBoy({ canvas, data, saveKey, settings }),
 }
 
@@ -138,6 +146,7 @@ const wolf3d = {
     ['Enter', 'Aceptar en los menús'],
   ],
   keyNote: 'Las teclas se cambian dentro del juego: Esc, Control, Customize controls.',
+  saves: () => ({ type: 'idbfs', db: '/save-wolf3d' }),
   start: ({ frame, onQuit, onError }) => startWolf3d({ frame, onQuit, onError }),
 }
 
@@ -159,6 +168,7 @@ const openttd = {
     ['Supr', 'Cerrar todas las ventanas'],
   ],
   keyNote: 'Para salir: el botón del disquete, arriba a la izquierda, y después "Salir".',
+  saves: () => ({ type: 'idbfs', db: '/home/web_user/.openttd' }),
   start: ({ frame, onQuit, onError }) => startOpenttd({ frame, onQuit, onError }),
 }
 
@@ -185,6 +195,7 @@ const heretic = {
     ['Tab', 'Mapa'],
     ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
   ],
+  saves: () => ({ type: 'idbfs', db: '/save-heretic' }),
   start: ({ frame, onQuit, onError }) => startHeretic({ frame, onQuit, onError }),
 }
 
@@ -216,6 +227,7 @@ const eduke32 = {
     ['F2 / F3', 'Guardar / cargar partida'],
     ['Esc', 'Menú'],
   ],
+  saves: () => ({ type: 'idbfs', db: '/save-duke3d' }),
   start: ({ frame, onQuit, onError }) => startEduke32({ frame, onQuit, onError }),
 }
 
@@ -244,6 +256,7 @@ const crispyHeretic = {
     ['Tab', 'Mapa'],
     ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
   ],
+  saves: () => ({ type: 'idbfs', db: '/save-blasphemer' }),
   start: ({ frame, onQuit, onError }) => startCrispyHeretic({ frame, onQuit, onError }),
 }
 
@@ -293,6 +306,7 @@ const nes = {
     ['Shift', 'Select'],
   ],
   keyNote: 'También funciona con mandos: el segundo es el jugador 2. Qué hace cada botón depende del juego: está en su ficha.',
+  saves: ({ saveKey }) => ({ type: 'opfs', file: nesSaveFile(saveKey) }),
   start: ({ canvas, data, saveKey, settings }) => startNes({ canvas, data, saveKey, settings }),
 }
 
@@ -316,6 +330,7 @@ const rigel = {
     ['Enter', 'Aceptar en los menús'],
   ],
   keyNote: 'Las teclas se cambian dentro del juego: Esc, Options, Keyboard controls.',
+  saves: () => ({ type: 'idbfs', db: '/libsdl' }), // perfil: ajustes, partidas y puntajes juntos
   start: ({ frame, onQuit, onError }) => startRigel({ frame, onQuit, onError }),
 }
 
@@ -341,6 +356,7 @@ const rott = {
     ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
   ],
   keyNote: 'Las teclas se cambian dentro del juego: Esc, Options, Customize Controls.',
+  saves: () => ({ type: 'idbfs', db: '/libsdl/taradino' }),
   start: ({ frame, onQuit, onError }) => startRott({ frame, onQuit, onError }),
 }
 
@@ -364,6 +380,7 @@ const quake = {
     ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
   ],
   keyNote: 'Las teclas se cambian dentro del juego: Esc, Options.',
+  saves: () => ({ type: 'localStorage', prefix: 'fte/' }),
   start: ({ frame, onQuit, onError }) => startQuake({ frame, onQuit, onError }),
 }
 
@@ -386,6 +403,7 @@ const supertux = {
     ['En el mapa: flechas y Enter', 'Elegir nivel y entrar'],
   ],
   keyNote: 'Las teclas y el mando se configuran dentro del juego: Opciones, Controles.',
+  saves: () => ({ type: 'idbfs', db: '/home/web_user/.local/share/supertux2' }),
   start: ({ frame, onQuit, onError }) => startSupertux({ frame, onQuit, onError }),
 }
 
@@ -409,6 +427,7 @@ const pingus = {
     ['A', 'Armagedón: hace explotar a todos (para reintentar)'],
     ['Esc', 'Menú (salir del nivel)'],
   ],
+  saves: () => ({ type: 'idbfs', db: '/pingus-user' }),
   start: ({ frame, onQuit, onError }) => startPingus({ frame, onQuit, onError }),
 }
 

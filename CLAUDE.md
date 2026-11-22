@@ -71,7 +71,7 @@ src/
   data/games.js        el catálogo: una entrada por juego
   data/platforms.js    plataformas originales (nombre, fabricante, años)
   pages/               Home (catálogo), GamePage (ficha + reproductor), GamepadTest (/mando), NotFound
-  components/          Player, Modal, ControlsPanel, KeyList, SettingsPanel, GameCard...
+  components/          Player, Modal, ControlsPanel, KeyList, SettingsPanel, SavesPanel, GameCard...
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
@@ -91,7 +91,7 @@ src/
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
-  lib/                 localStorage, WAD, zip, descargas, partidas (IDBFS), archivos locales (OPFS), mandos (gamepads.js)
+  lib/                 localStorage, WAD, zip (leer y escribir), descargas, partidas (IDBFS, exportar/importar), archivos locales (OPFS), mandos (gamepads.js)
   styles/global.css    todos los estilos y los tokens de diseño
 public/games/doom/     motor compilado, datos de Freedoom y portadas
 public/games/tyrian/   motor compilado (los datos los aporta el jugador)
@@ -366,6 +366,31 @@ engines/eduke32/       build.sh, parche y licencias de EDuke32, para Duke Nukem 
 - Junto al motor van `BUILDLIC.TXT` y `BUILD-NOTICE.txt`, que la licencia
   BUILD exige.
 
+## Partidas: exportar e importar
+
+- El botón "Partidas" del reproductor abre `components/SavesPanel.jsx`:
+  exportar baja `partidas-<slug>-<fecha>.zip`; importar lo reemplaza todo.
+  Aparece si el motor declara `saves` en `runtimes/index.js` (Jazz
+  Jackrabbit no: no guarda partidas).
+- `saves` dice dónde guarda cada juego (`lib/savedGames.js`): IndexedDB de
+  IDBFS (la ruta que monta su `play.js`; `dir` y `match` separan los juegos
+  de una base compartida, como Doom/Tyrian en `/save` y los de ScummVM en
+  `/home/web_user/saves`), un archivo de OPFS (Game Boy, NES) o claves de
+  `localStorage` (FTEQW, `fte/`).
+- El zip trae `allgamesports.json` (de qué juego es) y los archivos en
+  `partidas/` con sus nombres reales. Importar rechaza otro juego, rutas con
+  `..` y archivos fuera de lo suyo (en ScummVM, `scummvm.ini` o partidas de
+  otro juego).
+- Importar con el juego en marcha no sirve: IDBFS vuelve a copiar su memoria
+  y borra lo que no conoce. El panel cierra el juego antes (y lo avisa).
+- `lib/idbfs.js` escribe la base como la espera IDBFS: `timestamp` tiene que
+  ser un `Date` (compara con `getTime()`) y cada carpeta de la ruta va como
+  registro propio. Si la base no existía, se crea con versión 1 e IDBFS la
+  sube a la 21 al arrancar.
+- Al cerrar o reiniciar un juego en iframe, `iframe.js` hace `FS.syncfs` antes
+  de sacarlo (hasta 10 s). Antes se perdía lo guardado después de la última
+  copia automática.
+
 ## Agregar un juego
 
 Todo juego lleva: plataforma (clave de `platforms.js`), año, estudio, quién
@@ -382,7 +407,8 @@ explicar. Los juegos con archivo propio traen `source.steps` (pasos) y
 3. Motor nuevo: código y script en `engines/<motor>/`, salida compilada en
    `public/games/<motor>/`, el código que lo conecta con la página en
    `src/runtimes/<motor>/` y una entrada en `src/runtimes/index.js` (ajustes,
-   controles, cómo validar el archivo del jugador y cómo arrancar).
+   controles, cómo validar el archivo del jugador, cómo arrancar y dónde
+   guarda: `saves`, para el panel "Partidas").
 4. Antes de recomendar un juego, verificar la licencia de los datos, no solo
    la del motor. Criterio acordado: solo permiso explícito para repartirlo
    gratis (ver `docs/CONTEXTO.md`, sección 25). Si es implícito o no hay,
@@ -425,6 +451,9 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
 - El encabezado desborda en ancho de celular (440 px en 375).
 - ScummVM: las versiones de CD con voces de BASS, FOTAQ y DreamWeb.
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
+- Partidas: salir de la ficha con un juego en iframe andando puede perder los
+  últimos segundos (deducido, ver `docs/CONTEXTO.md`, sección 35). Exportar e
+  importar no se probó en Firefox ni Safari.
 
 ## Ingeniería inversa con REA
 

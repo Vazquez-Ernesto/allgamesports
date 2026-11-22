@@ -148,6 +148,7 @@ export async function startDoom({ canvas, wad, wadName, saveKey, bindings, setti
   return {
     input,
     setVolume: (value) => audio.setVolume(value),
+    flush: () => saves.flush(),
     // Pausa "dura": deja de pedir frames (el juego se congela).
     pause() {
       stopLoop()

@@ -153,6 +153,7 @@ function createController({ module, canvas, saves, exit, stopWatching }) {
   return {
     pause: () => setPaused(true),
     resume: () => setPaused(false),
+    flush: () => saves.flush(),
     destroy: () => destroy({ module, saves, exit, audioContext, stopWatching }),
   }
 }

@@ -80,10 +80,13 @@ function createAudio(module, emulator, context, getVolume) {
   }
 }
 
+// Archivo de la partida en OPFS (también lo usa el panel "Partidas").
+export const gameboySaveFile = (saveKey) => `gameboy-${saveKey}.sav`
+
 // La partida guardada es la memoria del cartucho ("RAM externa"). El emulador
 // la entrega y la recibe a través de un bloque temporal de su memoria.
 function createSaves(module, emulator, saveKey) {
-  const name = `gameboy-${saveKey}.sav`
+  const name = gameboySaveFile(saveKey)
   function withFileData(callback) {
     const fileData = module._ext_ram_file_data_new(emulator)
     const bytes = view(module, module._get_file_data_ptr(fileData), module._get_file_data_size(fileData))
@@ -106,7 +109,7 @@ function createSaves(module, emulator, saveKey) {
         module._emulator_write_ext_ram(emulator, fileData)
         return new Uint8Array(bytes)
       })
-      if (copy.length > 0) saveLocalFile(name, copy)
+      if (copy.length > 0) return saveLocalFile(name, copy)
     },
   }
 }
@@ -193,10 +196,11 @@ export async function startGameBoy({ canvas, data, saveKey, settings }) {
       audioContext.resume()
       loop.start()
     },
+    flush: () => saves.saveIfChanged(),
     async destroy() {
       loop.stop()
       clearInterval(saveTimer)
-      saves.saveIfChanged()
+      await saves.saveIfChanged()
       input.destroy()
       await audioContext.close()
     },

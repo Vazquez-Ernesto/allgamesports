@@ -7,6 +7,7 @@
 // 'exit'.
 
 const START_TIMEOUT_MS = 60000
+const SYNC_TIMEOUT_MS = 10000 // suele tardar menos de medio segundo
 
 /**
  * @param {object} options
@@ -95,9 +96,25 @@ function createController(iframe, messages, audioContextOf, pausesMainLoop) {
       mainLoop('resumeMainLoop')
       iframe.focus()
     },
+    flush: () => syncFiles(iframe.contentWindow),
     async destroy() {
       messages.stop()
+      audioContext()?.suspend()
+      await syncFiles(iframe.contentWindow)
       iframe.remove()
     },
   }
+}
+
+// Le pide al motor que copie a IndexedDB lo que tiene en memoria (IDBFS) y
+// espera, como mucho unos segundos. Sin esto, al sacar el iframe se perdía
+// lo guardado después de la última copia automática (cada 5 a 10 s).
+// ScummVM y OpenTTD no exponen FS, pero copian solos al guardar.
+function syncFiles(win) {
+  const FS = win?.Module?.FS
+  if (!FS?.syncfs) return Promise.resolve()
+  return new Promise((resolve) => {
+    setTimeout(resolve, SYNC_TIMEOUT_MS)
+    FS.syncfs(false, () => resolve())
+  })
 }

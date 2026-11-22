@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import Modal from './Modal.jsx'
 import ControlsPanel from './ControlsPanel.jsx'
 import KeyList from './KeyList.jsx'
+import SavesPanel from './SavesPanel.jsx'
 import SettingsPanel from './SettingsPanel.jsx'
 import { runtimeFor } from '../runtimes/index.js'
 import { fetchBytes } from '../lib/fetchBytes.js'
@@ -10,6 +11,12 @@ import { loadLocalFile, removeLocalFile, saveLocalFile } from '../lib/localFiles
 import { loadJSON, removeKey, saveJSON } from '../lib/storage.js'
 
 const formatMB = (bytes) => (bytes / 1024 / 1024).toFixed(1)
+
+// Carpeta de partidas: el slug del juego, o el nombre del archivo del jugador.
+function saveKeyFor(game, fileName) {
+  if (game.source.type !== 'byo') return game.slug
+  return fileName ? `byo-${fileName.replace(/\.[^.]+$/, '')}` : null // doom.wad -> byo-doom
+}
 
 export default function Player({ game }) {
   const runtime = runtimeFor(game.engine)
@@ -30,7 +37,7 @@ export default function Player({ game }) {
   const [phase, setPhase] = useState('idle')
   const [progress, setProgress] = useState(null) // { loaded, total }
   const [error, setError] = useState('')
-  const [panel, setPanel] = useState(null) // 'controls' | 'settings' | null
+  const [panel, setPanel] = useState(null) // 'controls' | 'settings' | 'saves' | null
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [dragging, setDragging] = useState(false)
 
@@ -46,27 +53,43 @@ export default function Player({ game }) {
   const [byoFile, setByoFile] = useState(() => (isByo ? loadJSON(byoKey, null) : null))
   // Las entradas guardadas antes del segundo motor usaban wadName.
   const byoFileName = byoFile?.fileName ?? byoFile?.wadName
+  // Dónde guarda este juego (panel "Partidas"); null si el motor no guarda.
+  const savesPlace = useMemo(
+    () => runtime.saves?.({ game, saveKey: saveKeyFor(game, byoFileName) }) || null,
+    [runtime, game, byoFileName],
+  )
 
   // ----- Arranque y parada del motor -----
 
+  // Devuelve la promesa del cierre: el motor copia lo último que guardó.
   const stop = useCallback(() => {
     runRef.current += 1
     const running = gameRef.current
     gameRef.current = null
-    running?.destroy()
+    return running?.destroy()
   }, [])
 
   // Al salir de la página, liberar el motor.
   useEffect(() => stop, [stop])
 
+  const flush = useCallback(() => gameRef.current?.flush?.(), [])
+
+  // Para importar partidas: el motor en marcha las pisaría con su copia.
+  const stopGame = useCallback(async () => {
+    await stop()
+    setPhase('idle')
+  }, [stop])
+
   async function start(picked) {
-    stop()
+    const stopping = stop()
     const run = runRef.current
     setPhase('loading')
     setError('')
     setProgress(null)
 
     try {
+      // Que el motor anterior termine de guardar antes de que el nuevo lea.
+      await Promise.resolve(stopping).catch(() => {})
       let data
       let fileName
       let saveKey
@@ -79,7 +102,7 @@ export default function Player({ game }) {
           )
         }
         fileName = game.source.fileName
-        saveKey = game.slug
+        saveKey = saveKeyFor(game)
       } else {
         data = picked?.bytes ?? (await loadLocalFile(game.source.storageKey))
         fileName = picked?.fileName ?? byoFileName
@@ -87,7 +110,7 @@ export default function Player({ game }) {
           forgetByoFile()
           throw new Error('No se encontró el archivo guardado. Elegilo de nuevo.')
         }
-        saveKey = `byo-${fileName.replace(/\.[^.]+$/, '')}` // doom.wad -> byo-doom
+        saveKey = saveKeyFor(game, fileName)
       }
 
       if (run !== runRef.current) return // se canceló mientras descargaba
@@ -347,6 +370,11 @@ export default function Player({ game }) {
             Ajustes
           </button>
         )}
+        {savesPlace && phase !== 'loading' && (
+          <button type="button" className="btn" onClick={() => setPanel('saves')}>
+            Partidas
+          </button>
+        )}
         {(phase === 'running' || phase === 'ended') && (
           <button type="button" className="btn btn-quiet" onClick={() => start()}>
             Reiniciar
@@ -366,6 +394,11 @@ export default function Player({ game }) {
       {panel === 'settings' && (
         <Modal title="Ajustes" onClose={() => setPanel(null)}>
           <SettingsPanel settings={settings} onChange={setSettings} defaults={runtime.defaultSettings} />
+        </Modal>
+      )}
+      {panel === 'saves' && savesPlace && (
+        <Modal title="Partidas" onClose={() => setPanel(null)}>
+          <SavesPanel game={game} place={savesPlace} isRunning={phase === 'running'} flush={flush} stopGame={stopGame} />
         </Modal>
       )}
     </section>

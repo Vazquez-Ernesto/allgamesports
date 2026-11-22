@@ -6,6 +6,27 @@ import { startIframeEngine } from '../iframe.js'
 
 const ENGINE_DIR = `${import.meta.env.BASE_URL}games/scummvm/`
 
+// Cómo nombra cada motor sus partidas (ver engines/<motor>/ en ScummVM). Los
+// que no figuran usan "<juego>.000", "<juego>.001"... porque ScummVM arranca
+// con el id del juego como nombre de la partida.
+const SAVE_NAMES = {
+  sky: /^SKY-VM\.(SAV|\d{3})$/i, // SKY-VM.SAV es la lista con los nombres de las partidas
+  queen: /^queen\.s\d{2}$/i,
+  dreamweb: /^DREAMWEB\.D\d{2}$/i,
+}
+
+// Dónde guarda un juego: $HOME/saves, en la base que comparten todos. Es la
+// carpeta que usa la versión para navegador (se vio en la base: no es la
+// .local/share/scummvm/saves de Linux).
+export function scummvmSaves(gameId) {
+  return {
+    type: 'idbfs',
+    db: '/home/web_user',
+    dir: 'saves',
+    match: SAVE_NAMES[gameId] ?? new RegExp(`^${gameId}\\.\\d{3}$`, 'i'),
+  }
+}
+
 /**
  * Arranca un juego de ScummVM.
  *

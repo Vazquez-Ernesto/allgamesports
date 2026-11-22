@@ -1013,3 +1013,66 @@ Se probó: los dos arrancan y ScummVM los reconoce ("Nippon Safes, Inc.
 eligió idioma, se ingresó el código y se llegó al primer escenario, y se
 abrió el guardado con S; en Sfinx el juego responde al mouse. No se escuchó
 el sonido.
+
+## 35. Exportar e importar partidas
+
+**El pedido:** poder sacar las partidas del navegador en un .zip y volver a
+cargarlas (otra computadora, otro navegador, una copia de seguridad). La
+idea vino de otro sitio de juegos: un botón para cada cosa y una línea con
+cuánto ocupa lo guardado. Ver la sección "Partidas" de `CLAUDE.md`.
+
+**El problema de fondo: cada motor guarda en un lugar distinto.** Se relevaron
+los 16 motores y caen en cuatro casos:
+
+- Una base de IndexedDB propia, vía IDBFS (Heretic, Blasphemer, Duke 3D,
+  Wolfenstein, ROTT, Duke II, OpenTTD, SuperTux, Pingus).
+- Una base compartida: Doom, Freedoom y Tyrian en `/save`, una carpeta por
+  juego; los ocho de ScummVM en `/home/web_user`, separados por el nombre de
+  archivo (`soltys.000`, `SKY-VM.001`, `DREAMWEB.D02`, `queen.s03`…; cada
+  motor de ScummVM tiene su formato).
+- Un archivo de OPFS (Game Boy y NES).
+- Claves de `localStorage` (FTEQW, LibreQuake).
+
+En vez de que el panel sepa qué es partida y qué es configuración, exporta
+todo lo que el juego guardó. Cada motor declara su lugar en una línea
+(`saves` en `runtimes/index.js`).
+
+**Por qué hay que cerrar el juego para importar.** IDBFS no lee IndexedDB a
+cada rato: copia la base a la memoria del motor al arrancar y después, cada
+pocos segundos, copia la memoria a la base, y borra lo que no conoce. Si se
+importa con el juego andando, en 5 segundos el motor pisa lo importado. Por
+eso importar cierra el juego (con aviso) y exportar primero le pide que
+copie lo último (`flush`).
+
+**Escribir la base desde afuera.** IDBFS tiene sus reglas, leídas en los
+builds del repo, no supuestas: la clave es la ruta completa, la fecha va como
+`Date` porque la compara con `getTime()`, y cada carpeta de la ruta es un
+registro propio, sin el cual falla al restaurar. Si la base no existía, se
+crea con la versión 1 y el almacén y el índice que espera IDBFS, que al
+arrancar la adopta y la sube a la 21. Se probó borrando la base entera,
+importando y cargando la partida desde el juego.
+
+**Dos sorpresas de las pruebas:**
+
+- ScummVM no guarda en `.local/share/scummvm/saves` (lo de Linux) sino en
+  `/home/web_user/saves`. Se vio en la base, no en el código: por eso antes de
+  cablear una ruta hay que mirar la base real.
+- Al reiniciar o cerrar un juego en iframe, el iframe se sacaba sin pedirle
+  al motor que copiara: se perdía lo guardado desde la última copia
+  automática (5 a 10 s). Ahora `iframe.js` hace `FS.syncfs` antes. En 13
+  pruebas con un archivo escrito justo antes de reiniciar, quedó guardado en
+  12 (en 11 a 336 ms). Una vez se perdió y no se pudo reproducir; la
+  hipótesis es que esa copia tardó más que la espera de entonces (3 s), que
+  se subió a 10.
+
+**Se probó** exportar, borrar e importar en un juego de cada tipo, y cargar
+la partida desde el juego después: Blasphemer (base propia), Sołtys (base
+compartida: la partida de Sfinx quedó intacta), Doom (base compartida, motor
+en la página), Tobu Tobu Girl (OPFS) y LibreQuake (`localStorage`). También
+que rechace el zip de otro juego y archivos fuera de lo suyo (`scummvm.ini`,
+`sfinx.000`, `../`). No se probó en Firefox ni en Safari.
+
+**Queda abierto:** salir de la ficha con el juego andando todavía puede
+perder los últimos segundos. Es una deducción, no se probó: React saca el
+iframe de la página antes de correr la limpieza del reproductor, así que ya
+no hay a quién pedirle la copia.

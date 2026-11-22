@@ -74,11 +74,14 @@ function createAudio(module, emulator, context, getVolume) {
   }
 }
 
+// Archivo de la partida en OPFS (también lo usa el panel "Partidas").
+export const nesSaveFile = (saveKey) => `nes-${saveKey}.sav`
+
 // La partida guardada es la memoria con pila del cartucho. El emulador la
 // entrega y la recibe a través de un bloque temporal de su memoria. Los
 // cartuchos sin pila no guardan nada: el bloque mide cero.
 function createSaves(module, emulator, saveKey) {
-  const name = `nes-${saveKey}.sav`
+  const name = nesSaveFile(saveKey)
   function withFileData(callback) {
     const fileData = module._prg_ram_file_data_new(emulator)
     const data = bytes(module, module._get_file_data_ptr(fileData), module._get_file_data_size(fileData))
@@ -101,7 +104,7 @@ function createSaves(module, emulator, saveKey) {
         module._emulator_write_prg_ram(emulator, fileData)
         return new Uint8Array(data)
       })
-      if (copy.length > 0) saveLocalFile(name, copy)
+      if (copy.length > 0) return saveLocalFile(name, copy)
     },
   }
 }
@@ -186,10 +189,11 @@ export async function startNes({ canvas, data, saveKey, settings }) {
       audioContext.resume()
       loop.start()
     },
+    flush: () => saves.saveIfChanged(),
     async destroy() {
       loop.stop()
       clearInterval(saveTimer)
-      saves.saveIfChanged()
+      await saves.saveIfChanged()
       input.destroy()
       await audioContext.close()
     },
