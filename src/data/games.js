@@ -1117,6 +1117,33 @@ export const GAMES = [
     ],
   },
   {
+    slug: 'blasphemer',
+    title: 'Blasphemer',
+    short: 'Un juego libre de fantasía oscura sobre el motor de Heretic: tres episodios de magia, cultos y criaturas.',
+    platform: 'pc',
+    genre: 'FPS',
+    year: 2023,
+    developer: 'Comunidad de Blasphemer, sobre el motor de Raven Software',
+    publisher: 'Proyecto Blasphemer',
+    engine: 'crispy-heretic',
+    cover: 'games/crispy-heretic/blasphemer-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 10,
+    },
+    description: [
+      'Blasphemer es a Heretic lo que Freedoom es a DOOM: un juego nuevo, hecho por la comunidad, que reemplaza los niveles, los gráficos, los sonidos y la música por material libre. Se juega como Heretic, con magia, un inventario de objetos y la posibilidad de mirar hacia arriba y abajo. Está en inglés.',
+      'Todavía está en desarrollo (versión 0.1.8): los tres primeros episodios se juegan de punta a punta, el resto de los mapas son provisorios y algunas pantallas de ayuda también. Corre sobre Crispy Heretic, porque sus mapas superan los límites del motor original de 1994.',
+    ],
+    facts: [
+      ['Idioma', 'Inglés'],
+      ['Motor', 'Crispy Heretic 7.2 (GPL-2.0), sobre el código de Heretic de Raven Software'],
+      ['Datos', 'Blasphemer 0.1.8 (BSD-3)'],
+      ['Tecnología', 'C → WebAssembly con Emscripten'],
+      ['Guardado', 'En tu navegador (IndexedDB)'],
+    ],
+  },
+  {
     slug: 'supertux',
     title: 'SuperTux',
     short: 'Plataformas en 2D con Tux, el pingüino de Linux: hielo, bosques, jefes y un mundo entero por recorrer.',

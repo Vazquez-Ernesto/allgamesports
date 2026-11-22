@@ -42,6 +42,8 @@ La historia del proyecto, las decisiones y lo que se probó están en
   datos comprimidos (necesita vorbis-tools y optipng).
 - `wsl bash engines/pingus/build.sh`: recompila Pingus con sus dependencias.
   En Linux (WSL).
+- `wsl bash engines/crispy-heretic/build.sh`: recompila Crispy Heretic y arma
+  los datos de Blasphemer. En Linux (WSL).
 - `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
   (WSL); baja su propio Emscripten y los gráficos. Tarda varios minutos.
 
@@ -70,7 +72,7 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux, Pingus)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux, Pingus, Blasphemer)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
@@ -81,6 +83,7 @@ src/
   runtimes/quake/      arma la dirección del iframe de LibreQuake
   runtimes/supertux/   arma la dirección del iframe de SuperTux
   runtimes/pingus/     arma la dirección del iframe de Pingus
+  runtimes/crispy-heretic/  arma la dirección del iframe de Blasphemer
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -103,6 +106,7 @@ engines/rott/          build.sh y parche de taradino (el código se clona aparte
 engines/quake/         build.sh y parche de FTEQW (el código se clona aparte)
 engines/supertux/      build.sh, prepare-data.sh y parches de SuperTux (el código se baja aparte)
 engines/pingus/        build.sh de Pingus y sus dependencias (el código se clona aparte, sin parches)
+engines/crispy-heretic/  build.sh, parche y config.h de Crispy Heretic, para Blasphemer (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -322,6 +326,22 @@ engines/pingus/        build.sh de Pingus y sus dependencias (el código se clon
 - `build.sh` compila todo con `-ffile-prefix-map` y falla si queda una ruta
   de la máquina en el `.wasm` (los `assert` de C la guardan).
 
+## Cómo funciona Blasphemer
+
+- Blasphemer 0.1.8 (BSD-3) reemplaza los datos de Heretic, como Freedoom los
+  de DOOM. Corre sobre Crispy Heretic (GPL-2.0, de Crispy Doom), no sobre
+  Chocolate Heretic: sus mapas superan los límites de 1994 (con Chocolate,
+  E1M2 cortaba con "no more visplanes"). El Heretic shareware sigue en
+  Chocolate.
+- `build.sh` (en WSL) clona el tag de `UPSTREAM_TAG`, verifica su commit,
+  aplica el mismo parche de OPL que Heretic y compila con `emcc` directo.
+  También baja Blasphemer y sus licencias con SHA-256 verificado.
+- Corre en un iframe (`public/games/crispy-heretic/play.html`), con SDL2 y
+  Asyncify. Partidas en IndexedDB (`/save-blasphemer`).
+- No mover la caché de Emscripten (`EM_CACHE`): los ports (SDL2...) dejan la
+  ruta de la máquina en el `.wasm` si la caché está fuera de su carpeta. Ver
+  su README.
+
 ## Agregar un juego
 
 Todo juego lleva: plataforma (clave de `platforms.js`), año, estudio, quién
@@ -375,6 +395,10 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
 - ScummVM: cada tecla llega 6 veces (nombres de partida con letras
   repetidas; por eso 1 a 8 de Sołtys no están en su ficha). Ver
   `engines/scummvm/README.md`.
+- Rutas de la máquina publicadas (usuario de Windows o de WSL): `rott.js`,
+  los 4 `.js` de datos de SuperTux, `RigelEngine.wasm`, `openttd.wasm` y
+  `openjazz.wasm`. En los `.wasm` es probable que sea el port de SDL2 con la
+  caché de Emscripten movida (ver `engines/crispy-heretic/README.md`).
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 
 ## Ingeniería inversa con REA

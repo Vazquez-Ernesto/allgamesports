@@ -1,0 +1,19 @@
+diff --git a/opl/opl.c b/opl/opl.c
+index 2b452e8..10d964f 100644
+--- a/opl/opl.c
++++ b/opl/opl.c
+@@ -277,6 +277,14 @@ opl_init_result_t OPL_Detect(void)
+     int result1, result2;
+     int i;
+ 
++#ifdef __EMSCRIPTEN__
++    // allgamesports: la deteccion programa un temporizador y espera a que
++    // el hilo de audio lo dispare (OPL_Delay). En el navegador el audio corre
++    // en el mismo hilo, asi que esa espera no termina nunca. El "chip" es el
++    // emulador OPL3 incluido: siempre esta.
++    return OPL_INIT_OPL3;
++#endif
++
+     // Reset both timers:
+     OPL_WriteRegister(OPL_REG_TIMER_CTRL, 0x60);
+ 

@@ -858,3 +858,45 @@ agarrar un objeto, guardar con F5 (quedó en IndexedDB) y cargarlo con F7
 después de recargar la página, pausa (el audio pasa a `suspended`) y salir
 con Alt+X. F5 no recarga la página: SDL cancela la tecla
 (`defaultPrevented`). No se escuchó el sonido.
+
+## 31. Blasphemer y Crispy Heretic
+
+Blasphemer (BSD-3) es a Heretic lo que Freedoom es a DOOM: niveles,
+gráficos, sonidos y música libres. La idea era usar el Chocolate Heretic que
+ya estaba. Arrancó, pero en E1M2, a los pocos pasos, cortó con
+`R_FindPlane: no more visplanes`.
+
+Un "visplane" es cada superficie de piso o techo distinta que se ve a la
+vez. El motor de 1994 les reserva 128 lugares en un arreglo de tamaño fijo y
+aborta si hacen falta más. Chocolate copia ese límite a propósito (busca ser
+fiel al original), y el README de Blasphemer avisa que necesita un motor
+"limit-removing". Se pasó a **Crispy Heretic** (de Crispy Doom), el mismo
+código sin esos topes: cuando un arreglo se llena, lo agranda al doble. Se
+armó como motor aparte (`engines/crispy-heretic`); el Heretic shareware no
+se tocó.
+
+Se recorrieron los 25 mapas de los tres episodios jugables. La consola de
+Crispy avisa cada vez que agranda algo: visplanes hasta 512, drawsegs hasta
+2048 y sprites visibles hasta 512, contra 128, 256 y 128 del original. Con
+Chocolate, cualquiera de esos mapas habría cortado.
+
+Tres cosas que aparecieron:
+
+- **La compilación se cortó por falta de memoria** en el último paso, el
+  enlace con Asyncify, que es el que más RAM usa. Se relanzó con menos
+  programas abiertos.
+- **Rutas de la máquina en el `.wasm`.** El control de `build.sh` encontró
+  dos, del SDL2 que trae Emscripten como "port". Emscripten compila los
+  ports en su caché con sus propios flags (borra `EMCC_CFLAGS`) y solo
+  reemplaza las rutas que quedan debajo de su carpeta. La caché estaba
+  movida (`EM_CACHE`); con la de por defecto, quedaron limpias. Al revisar
+  todo `public/games/` aparecieron rutas parecidas en motores ya publicados
+  (ROTT, SuperTux, Duke Nukem II, OpenTTD, Jazz Jackrabbit): quedan para la
+  revisión general.
+- **Los trucos de Crispy leen el carácter tipeado** (evento `keypress`): en
+  pruebas automáticas, `engage<e><m>` solo entra con tipeo real.
+
+Se probó, además de los 25 mapas: guardar con F2, recargar la página y
+cargar con F3, pausa (el audio pasa a `suspended`) y salir con F10. SDL2 no
+tiene el problema de teclas repetidas de ScummVM (un solo oyente por
+evento). No se escuchó el sonido.

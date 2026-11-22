@@ -16,6 +16,7 @@
 import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
 import { startGameBoy } from './gameboy/index.js'
+import { startCrispyHeretic } from './crispy-heretic/index.js'
 import { startHeretic } from './heretic/index.js'
 import { startNes } from './nes/index.js'
 import { startOpenjazz } from './openjazz/index.js'
@@ -186,6 +187,34 @@ const heretic = {
   start: ({ frame, onQuit, onError }) => startHeretic({ frame, onQuit, onError }),
 }
 
+// Blasphemer sobre Crispy Heretic: las teclas de Heretic más las que Crispy
+// suma por defecto (WASD y Bloq Mayús; ver m_controls.c de Crispy Doom).
+const crispyHeretic = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['W', 'A', 'S', 'D'], 'moverse'],
+    [['Ctrl'], 'atacar'],
+    [['Espacio'], 'abrir puertas'],
+    [['Enter'], 'usar objeto'],
+  ],
+  keyList: [
+    ['Flechas', 'Avanzar, retroceder y girar'],
+    ['W A S D', 'Avanzar, retroceder y moverse de costado'],
+    ['Mouse', 'Girar (hacé clic en el juego para activarlo; Esc lo suelta)'],
+    ['Ctrl o clic', 'Atacar'],
+    ['Espacio', 'Abrir puertas y accionar interruptores'],
+    ['Shift', 'Correr (Bloq Mayús: correr siempre)'],
+    ['RePág / Supr', 'Mirar hacia arriba / hacia abajo (Fin: al frente)'],
+    ['[ y ]', 'Elegir un objeto del inventario'],
+    ['Enter', 'Usar el objeto elegido'],
+    ['1 a 7', 'Elegir arma'],
+    ['Tab', 'Mapa'],
+    ['Esc', 'Menú (guardar, cargar, opciones, salir)'],
+  ],
+  start: ({ frame, onQuit, onError }) => startCrispyHeretic({ frame, onQuit, onError }),
+}
+
 // Jazz Jackrabbit sobre OpenJazz: corre en su propia página.
 const openjazz = {
   surface: 'iframe',
@@ -351,7 +380,10 @@ const pingus = {
   start: ({ frame, onQuit, onError }) => startPingus({ frame, onQuit, onError }),
 }
 
-const RUNTIMES = { doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake, supertux, pingus }
+const RUNTIMES = {
+  doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake, supertux, pingus,
+  'crispy-heretic': crispyHeretic,
+}
 
 export function runtimeFor(engine) {
   const runtime = RUNTIMES[engine]
