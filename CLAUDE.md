@@ -182,14 +182,14 @@ engines/eduke32/       build.sh, parche y licencias de EDuke32, para Duke Nukem 
 - Los datos se bajan bajo demanda: ScummVM pide `/data/.../index.json` y cada
   archivo cuando lo abre. `play.js` vuelve relativas esas rutas absolutas y
   descomprime los `.dgz` (gzip). El `index.json` lleva el tamaño sin comprimir.
-- Los seis juegos (Beneath a Steel Sky, Flight of the Amazon Queen, Lure of
-  the Temptress, Drascula, DreamWeb, Sołtys) son freeware con licencia que
-  permite redistribuirlos con sus avisos intactos: se hospedan, con su
-  archivo de licencia legible al lado.
+- Los ocho juegos (Beneath a Steel Sky, Flight of the Amazon Queen, Lure of
+  the Temptress, Drascula, DreamWeb, Sołtys, Nippon Safes, Sfinx) son
+  freeware con licencia que permite redistribuirlos con sus avisos intactos:
+  se hospedan, con su archivo de licencia legible al lado.
 - Usa SDL3 (`Module.SDL3.audioContext`) y guarda sus partidas en su propia
   base de IndexedDB (`/home/web_user`).
-- Cada tecla le llega 6 veces (oyentes de teclado de SDL3 duplicados, ver
-  su README): no listar en las fichas teclas que alternan algo.
+- SDL3 es un port de Emscripten: `build.sh` le aplica `patches-sdl3/` en la
+  caché y lo recompila. Sin ese parche cada tecla llegaba 6 veces.
 
 ## Cómo funciona Game Boy
 
@@ -424,9 +424,6 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
 - Tyrian: falta escuchar el sonido y probar mando, Firefox y Safari.
 - El encabezado desborda en ancho de celular (440 px en 375).
 - ScummVM: las versiones de CD con voces de BASS, FOTAQ y DreamWeb.
-- ScummVM: cada tecla llega 6 veces (nombres de partida con letras
-  repetidas; por eso 1 a 8 de Sołtys no están en su ficha). Ver
-  `engines/scummvm/README.md`.
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 
 ## Ingeniería inversa con REA

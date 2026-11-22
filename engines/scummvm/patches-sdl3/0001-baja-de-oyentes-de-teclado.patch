@@ -1,0 +1,21 @@
+--- a/src/video/emscripten/SDL_emscriptenevents.c	2026-11-22 17:19:05.342725932 +0000
++++ b/src/video/emscripten/SDL_emscriptenevents.c	2026-11-22 17:19:05.363500573 +0000
+@@ -1094,12 +1094,16 @@
+ 
+     emscripten_set_pointerlockchange_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, NULL, 0, NULL);
+ 
++    // allgamesports: el mismo criterio que Emscripten_RegisterEventHandlers.
++    // Antes leía *target con target == EMSCRIPTEN_EVENT_TARGET_WINDOW (el
++    // puntero 2): en WebAssembly esa dirección vale 0, la condición daba falso
++    // y los oyentes de teclado nunca se daban de baja (se acumulaban).
+     target = SDL_GetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT);
+-    if (!target) {
++    if (!target || !*target) {
+         target = EMSCRIPTEN_EVENT_TARGET_WINDOW;
+     }
+ 
+-    if (*target) {
++    if (target == EMSCRIPTEN_EVENT_TARGET_WINDOW || SDL_strcmp(target, "#none") != 0) {
+         emscripten_set_keydown_callback(target, NULL, 0, NULL);
+         emscripten_set_keyup_callback(target, NULL, 0, NULL);
+         emscripten_set_keypress_callback(target, NULL, 0, NULL);

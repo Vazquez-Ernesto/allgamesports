@@ -975,3 +975,41 @@ nueva en Hollywood Holocaust, avanzar con flechas y disparar con Ctrl,
 guardar con F2, recargar la página y cargar, pausa y salir (después de las
 pantallas promocionales del shareware). No se escuchó el sonido ni se
 comprobó la música. Pide 256 MB de memoria al arrancar.
+
+## 34. Las teclas de ScummVM, Nippon Safes y Sfinx
+
+**El bug de las teclas repetidas (sección 30) tenía una causa de una
+línea.** SDL3, que ScummVM usa como port de Emscripten, escucha el teclado
+en la ventana del navegador. Para nombrar "la ventana", Emscripten usa
+`EMSCRIPTEN_EVENT_TARGET_WINDOW`, que es el número 2 disfrazado de puntero.
+Al dar de baja los oyentes, SDL hacía `if (*target)`: leía la memoria en la
+dirección 2, que en WebAssembly vale cero, y nunca los borraba. Cada vez que
+ScummVM recrea su ventana se sumaba otro juego: 6 al jugar. Es un ejemplo de
+por qué en C importa distinguir un puntero de lo que apunta.
+
+El arreglo es un parche al port (`engines/scummvm/patches-sdl3/`). El código
+del port vive en la caché del Emscripten que instala ScummVM, no en su
+código: `build.sh` instala ese Emscripten, aplica el parche ahí y recompila
+solo SDL3. Se comprobó que queda un oyente por evento y que un nombre de
+partida se escribe sin repetir letras. Sołtys recuperó en su ficha las teclas
+1 a 8 y F1, que se habían sacado por el bug.
+
+**Dos juegos más en la misma recompilación**, con la misma licencia de 6
+cláusulas que Sołtys (leída en cada zip):
+
+- **Nippon Safes Inc.** (Dynabyte, 1992, motor `parallaction`). Versión
+  internacional: inglés, francés, alemán o italiano. Al empezar pide un
+  código de seis fichas de katakana, que venía en el manual: es la forma de
+  elegir personaje. Los códigos están en el código de ScummVM (`_pcKeys`) y
+  la ficha los muestra. Se probó con el de Doug.
+- **Sfinx** (LK Avalon, 1997, motor `cge2`, la versión nueva del de Sołtys),
+  en inglés, con dos protagonistas.
+
+No se pudo leer el argumento de Sfinx: la wiki de ScummVM y MobyGames
+bloquean las lecturas automáticas. Su ficha dice solo lo verificado.
+
+Se probó: los dos arrancan y ScummVM los reconoce ("Nippon Safes, Inc.
+(Multi-lingual/DOS)", "Sfinx (Freeware v1.1/DOS/English)"); en Nippon se
+eligió idioma, se ingresó el código y se llegó al primer escenario, y se
+abrió el guardado con S; en Sfinx el juego responde al mouse. No se escuchó
+el sonido.

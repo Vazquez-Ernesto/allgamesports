@@ -106,6 +106,28 @@ const GAMES = [
       },
     ],
   },
+  {
+    id: 'nippon', // internacional (inglés, francés, alemán, italiano); readme.txt es la licencia
+    legible: ['readme.txt', 'README'],
+    zips: [
+      {
+        url: `${EXTRAS}/Nippon%20Safes/nippon-1.0.zip`,
+        sha256: '53e7e2c60065e4aed193169bbcdcfd1113fa68d3efe1c8240ba073c0e20d613f',
+        include: /^(?!.*\.(exe|bat)$)/i, // todo menos los ejecutables y scripts de DOS
+      },
+    ],
+  },
+  {
+    id: 'sfinx', // en inglés
+    legible: ['license.txt'],
+    zips: [
+      {
+        url: `${EXTRAS}/Sfinx/sfinx-en-v1.1.zip`,
+        sha256: 'f516b30a046526f78cbc923d8f907d267ab964ccd9b770afc72350e8d467ec4d',
+        include: /^(vol\.cat|vol\.dat|license\.txt)$/i,
+      },
+    ],
+  },
 ]
 
 // Archivos del build que necesitan los motores y el tema del menú. El resto

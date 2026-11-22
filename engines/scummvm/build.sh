@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Compila ScummVM a WebAssembly, solo con los motores de los juegos del
 # catálogo (sky: Beneath a Steel Sky, queen: Flight of the Amazon Queen,
-# lure: Lure of the Temptress, drascula, dreamweb y cge: Sołtys).
+# lure: Lure of the Temptress, drascula, dreamweb, cge: Sołtys,
+# cge2: Sfinx y parallaction: Nippon Safes).
 #
 # Corre en Linux. En Windows, desde la raíz del repo:
 #   wsl bash engines/scummvm/build.sh
@@ -35,9 +36,34 @@ for patch in "$HERE"/patches/*.patch; do
   git -C "$SRC" apply "$patch"
 done
 
+# SDL3 viene como port de Emscripten, en la caché del Emscripten que instala
+# ScummVM. Se le aplica patches-sdl3/ y se recompila solo ese port: su baja de
+# los oyentes de teclado nunca funcionaba, y cada vez que ScummVM recrea su
+# ventana se sumaba otro juego de oyentes (cada tecla llegaba 6 veces).
+patch_sdl3() {
+  local emsdk port
+  emsdk="$(ls -d "$SRC"/dists/emscripten/emsdk-*/ | head -1)"
+  # shellcheck disable=SC1091
+  source "$emsdk/emsdk_env.sh" > /dev/null 2>&1
+  embuilder build sdl3 > /dev/null
+  port="$(ls -d "$emsdk"/upstream/emscripten/cache/ports/sdl3/SDL-release-*/ | head -1)"
+  if ! grep -q allgamesports "$port/src/video/emscripten/SDL_emscriptenevents.c"; then
+    for patch in "$HERE"/patches-sdl3/*.patch; do
+      echo "[patch sdl3] $(basename "$patch")"
+      patch -d "$port" -p1 < "$patch"
+    done
+    embuilder build sdl3 --force
+  fi
+}
+
 cd "$SRC"
-./dists/emscripten/build.sh setup libs configure make dist \
-  --disable-all-engines --enable-engine=sky,queen,lure,drascula,dreamweb,cge --enable-mad
+./dists/emscripten/build.sh setup
+(patch_sdl3)
+# make no sabe que cambió la biblioteca SDL3 de la caché: se borra la salida
+# para que siempre vuelva a enlazar.
+rm -f scummvm.html scummvm.js scummvm.wasm build-emscripten/scummvm.js build-emscripten/scummvm.wasm
+./dists/emscripten/build.sh libs configure make dist \
+  --disable-all-engines --enable-engine=sky,queen,lure,drascula,dreamweb,cge,cge2,parallaction --enable-mad
 
 mkdir -p "$OUT_DIR"
 cp build-emscripten/scummvm.js build-emscripten/scummvm.wasm "$OUT_DIR/"

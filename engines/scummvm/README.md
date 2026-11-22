@@ -4,7 +4,8 @@
 compilado a WebAssembly con su propio target de Emscripten, solo con los
 motores de los juegos del catálogo: `sky` (Beneath a Steel Sky), `queen`
 (Flight of the Amazon Queen), `lure` (Lure of the Temptress), `drascula`
-(Drascula), `dreamweb` (DreamWeb) y `cge` (Sołtys). Lleva además el decodificador de MP3
+(Drascula), `dreamweb` (DreamWeb), `cge` (Sołtys), `cge2` (Sfinx) y
+`parallaction` (Nippon Safes). Lleva además el decodificador de MP3
 (`--enable-mad`) para la música de Drascula.
 
 Licencia: **GPL-3.0** (ver `LICENSE-scummvm`). Cualquier cambio a este código
@@ -53,6 +54,26 @@ SHA-256) y arma `public/games/scummvm/data/`.
 |---|---|---|
 | `0001-avisar-salida.patch` | `main()` llama a `Module.onScummvmExit` antes de devolver | Con Asyncify el runtime queda vivo y Emscripten no llama a `Module.onExit`: sin esto, el reproductor no se entera de que el jugador salió |
 | `0002-salir-al-terminar.patch` | La plataforma Emscripten deja de declarar `kFeatureNoQuit` | Con ese flag, al terminar un juego ScummVM vuelve a su lanzador y `main()` nunca termina. Todos sus usos son del lanzador, que acá no se muestra |
+| `patches-sdl3/0001-baja-de-oyentes-de-teclado.patch` (SDL 3.2.4, `SDL_emscriptenevents.c`) | La baja de los oyentes de teclado usa el mismo criterio que el registro | Ver abajo: sin esto cada tecla llegaba 6 veces |
+
+### El parche de SDL3
+
+SDL3 no viene de ScummVM: es un port de Emscripten, que se baja y se compila
+en la caché del Emscripten que instala el script de ScummVM. `build.sh` corre
+solo el paso `setup`, aplica `patches-sdl3/` sobre el código del port en esa
+caché (si todavía no está aplicado) y lo recompila con
+`embuilder build sdl3 --force`.
+
+El bug: para escuchar el teclado, SDL usa como destino
+`EMSCRIPTEN_EVENT_TARGET_WINDOW`, que no es un texto sino el número 2
+disfrazado de puntero (`(const char*)2`). Al dar de baja hacía `if
+(*target)`, o sea, leía el byte en la dirección 2 de la memoria. En
+WebAssembly esa zona está en cero, así que nunca daba de baja nada. Cada vez
+que ScummVM recrea su ventana (del lanzador al juego, al cambiar el modo de
+video) se sumaba otro juego de oyentes: al jugar había 6 y cada tecla llegaba
+6 veces (nombres de partida con letras repetidas, teclas que alternan algo
+que volvían al estado inicial). Con el parche queda uno solo
+(`JSEvents.eventHandlers` en el iframe).
 
 ## Detalles que importan
 
@@ -79,6 +100,11 @@ SHA-256) y arma `public/games/scummvm/data/`.
   si no hay ninguna acción en curso: con un globo de diálogo en pantalla
   (se cierra con un clic) no pasa nada. Es el comportamiento original
   (`canSaveGameStateCurrently` en `engines/cge/cge.cpp`).
+- **Nippon Safes pide un código al empezar.** Es la forma de elegir personaje
+  y venía en el manual: seis fichas de katakana. Los códigos de la versión de
+  PC están en `_pcKeys` de `engines/parallaction/gui_ns.cpp` y la ficha los
+  muestra. Sus escenarios son más angostos que la pantalla: por eso la
+  portada es la elección de idioma.
 - **Portadas.** `play.html?captura#...` conserva la imagen del canvas (WebGL
   la borra después de mostrarla) para poder copiarla y sacar una portada.
 - **`scummvm.ini`.** Al arrancar, ScummVM pide su configuración. Sin el
@@ -91,14 +117,6 @@ SHA-256) y arma `public/games/scummvm/data/`.
 
 ## Pendiente
 
-- **Cada tecla llega 6 veces.** Al arrancar, los oyentes de `keydown`,
-  `keypress` y `keyup` de SDL3 quedan registrados 6 veces en `window` (se
-  ve en `JSEvents.eventHandlers` del iframe; los del mouse, una sola). Pasa
-  en todos los juegos de ScummVM. Efectos: los nombres de partida salen con
-  cada letra repetida (probado), y las teclas que alternan algo (1 a 8 en
-  Sołtys) deberían volver al estado inicial (deducido, no se vio). El mouse,
-  F5, F7, Esc y Alt+X andan. Falta buscar por
-  qué SDL3 no borra los oyentes viejos al recrear su ventana.
 - Versiones de CD, con voces: pesan entre 60 y 107 MB.
 - Más juegos freeware de ScummVM: cada uno suma su motor a
   `--enable-engine` y su entrada en `prepare-data.mjs`, después de verificar
