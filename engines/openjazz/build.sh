@@ -44,10 +44,17 @@ done
 echo "[build] openjazz.js + openjazz.wasm"
 mkdir -p "$SRC/build-web" "$OUT_DIR"
 cd "$SRC/build-web"
-emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DNETWORK=OFF
+# -ffile-prefix-map: que no quede la ruta de esta máquina en el .wasm (los
+# assert y los mensajes de error guardan la ruta de su archivo fuente).
+MAP="-ffile-prefix-map=$SRC/="
+emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DNETWORK=OFF \
+  -DCMAKE_C_FLAGS="$MAP" -DCMAKE_CXX_FLAGS="$MAP"
 # make no sabe que cambiaron las opciones de enlace: se borra la salida.
 rm -f openjazz.js openjazz.wasm
 emmake make -j"${JOBS:-4}"
 
 cp openjazz.js openjazz.wasm "$OUT_DIR/"
+if grep -q "$HOME" "$OUT_DIR/openjazz.wasm" "$OUT_DIR/openjazz.js"; then
+  echo "ERROR: quedó una ruta de esta máquina en el motor"; exit 1
+fi
 ls -lh "$OUT_DIR"/openjazz.js "$OUT_DIR"/openjazz.wasm

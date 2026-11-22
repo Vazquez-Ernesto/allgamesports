@@ -12,7 +12,13 @@ Emscripten 6.0.1 compartido (`~/.cache/allgamesports/emsdk-6.0.1`).
 ```bash
 bash engines/supertux/build.sh        # motor: supertux2.js + supertux2.wasm
 JOBS=2 bash engines/supertux/prepare-data.sh   # datos (vorbis-tools y optipng)
+SOLO_EMPAQUETAR=1 bash engines/supertux/prepare-data.sh   # solo rearma los paquetes
 ```
+
+`SOLO_EMPAQUETAR=1` reusa lo ya procesado: la música recomprimida podría no
+salir igual byte a byte, y así los `.data` publicados no cambian si no hace
+falta. `file_packager` se llama con nombres relativos, porque escribe el
+nombre del `.data` en el `.js` (ver `docs/CONTEXTO.md`, sección 32).
 
 `build.sh` clona vcpkg y compila con él las bibliotecas (PhysFS, FreeType,
 libpng, Vorbis...) para `wasm32-emscripten`. La primera vez tarda bastante;

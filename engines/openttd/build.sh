@@ -64,7 +64,14 @@ if [ ! -f baseset/opengfx/ogfx1_base.grf ]; then
   mkdir -p baseset/opengfx
   tar -xf "$WORK/opengfx-$OPENGFX_VERSION.tar" -C baseset/opengfx --strip-components=1
 fi
-emcmake cmake .. -DHOST_BINARY_DIR=../build-host -DCMAKE_BUILD_TYPE=Release -DOPTION_USE_ASSERTS=OFF
+# Que no quede la ruta de esta máquina en el .wasm:
+# -ffile-prefix-map: NOT_REACHED y otros avisos guardan la ruta de su fuente.
+# GLOBAL_DIR: la carpeta de datos "global" se graba en el programa; por
+#   defecto sale del sysroot de Emscripten, que está dentro de $HOME. En el
+#   navegador no existe: se usa la ruta estándar de Linux.
+MAP="-ffile-prefix-map=$SRC/="
+emcmake cmake .. -DHOST_BINARY_DIR=../build-host -DCMAKE_BUILD_TYPE=Release -DOPTION_USE_ASSERTS=OFF \
+  -DCMAKE_C_FLAGS="$MAP" -DCMAKE_CXX_FLAGS="$MAP" -DGLOBAL_DIR=/usr/share/games/openttd
 # make no sabe que pre.js y baseset/ forman parte del resultado: se borra la
 # salida para que siempre vuelva a hacer el enlace final.
 rm -f openttd.html openttd.js openttd.wasm openttd.data
@@ -72,4 +79,7 @@ emmake make -j"$JOBS"
 
 mkdir -p "$OUT_DIR"
 cp openttd.js openttd.wasm openttd.data "$OUT_DIR/"
+if grep -q "$HOME" "$OUT_DIR/openttd.wasm" "$OUT_DIR/openttd.js"; then
+  echo "ERROR: quedó una ruta de esta máquina en el motor"; exit 1
+fi
 ls -lh "$OUT_DIR"/openttd.*

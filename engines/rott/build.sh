@@ -60,6 +60,9 @@ mkdir -p "$OUT_DIR"
 #   Esta opción hace que Emscripten tolere esas llamadas.
 # --preload-file: los datos viajan en rott.data y aparecen en /data.
 # INVOKE_RUN=0: play.js prepara las carpetas y recién ahí llama a main().
+# -o rott.js (relativo): Emscripten nombra el paquete de datos con esa misma
+#   ruta y la escribe en rott.js; con una ruta absoluta quedaba la de la
+#   máquina. Se compila acá y después se copia.
 echo "[build] rott.js + rott.wasm + rott.data"
 emcc rott/*.c -Irott -O2 -Wno-everything \
   -DSHAREWARE=1 -DHAVE_DIRENT_H \
@@ -77,7 +80,11 @@ emcc rott/*.c -Irott -O2 -Wno-everything \
   -sEXPORTED_RUNTIME_METHODS='["FS","IDBFS","callMain"]' \
   --preload-file "$DATA@/data" \
   --profiling-funcs \
-  -o "$OUT_DIR/rott.js"
+  -o rott.js
 
+cp rott.js rott.wasm rott.data "$OUT_DIR/"
 cp "$WORK/1rott13.zip" "$OUT_DIR/1rott13.zip"
+if grep -q -e "$HOME" -e "Users/$(basename "$HOME")" "$OUT_DIR/rott.js" "$OUT_DIR/rott.wasm"; then
+  echo "ERROR: quedó una ruta de esta máquina en el motor"; exit 1
+fi
 ls -lh "$OUT_DIR"

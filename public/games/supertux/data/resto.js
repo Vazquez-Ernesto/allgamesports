@@ -17,7 +17,7 @@
         // web worker
         PACKAGE_PATH = encodeURIComponent(location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/');
       }
-      var PACKAGE_NAME = '/mnt/c/Users/CFOTech/Downloads/Personal/REA/allgamesports/engines/supertux/../../public/games/supertux/data/resto.data';
+      var PACKAGE_NAME = 'resto.data';
       var REMOTE_PACKAGE_BASE = 'resto.data';
       var REMOTE_PACKAGE_NAME = Module['locateFile'] ? Module['locateFile'](REMOTE_PACKAGE_BASE, '') : REMOTE_PACKAGE_BASE;
       var REMOTE_PACKAGE_SIZE = metadata['remote_package_size'];
@@ -255,9 +255,9 @@ Module['FS_createPath']("/data", "speech", true, true);
             // canOwn this data in the filesystem, it is a slice into the heap that will never change
         Module['FS_createDataFile'](name, null, data, true, true, true);
           }
-          Module['removeRunDependency']('datafile_/mnt/c/Users/CFOTech/Downloads/Personal/REA/allgamesports/engines/supertux/../../public/games/supertux/data/resto.data');
+          Module['removeRunDependency']('datafile_resto.data');
       }
-      Module['addRunDependency']('datafile_/mnt/c/Users/CFOTech/Downloads/Personal/REA/allgamesports/engines/supertux/../../public/games/supertux/data/resto.data');
+      Module['addRunDependency']('datafile_resto.data');
 
       if (!Module['preloadResults']) Module['preloadResults'] = {};
 

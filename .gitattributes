@@ -3,3 +3,6 @@
 # entiende "set -euo pipefail" y git apply no encuentra las líneas del parche.
 *.sh text eol=lf
 *.patch text eol=lf
+# Las versiones fijadas (UPSTREAM_TAG, UPSTREAM_COMMIT...) también las lee
+# bash: con CRLF, git busca un commit que termina en \r y no lo encuentra.
+UPSTREAM_* text eol=lf

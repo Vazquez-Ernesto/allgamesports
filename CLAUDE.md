@@ -52,9 +52,10 @@ Bash: `export EMSDK_PYTHON=<ruta a python.exe>` y `source
 /c/tools/emsdk/emsdk_env.sh`. Sin `EMSDK_PYTHON`, emsdk usa `python3`, que en
 Windows es el acceso directo de la Microsoft Store y no instala nada.
 
-Los `.sh` y los `.patch` van siempre con fin de línea LF (`.gitattributes`).
-Git para Windows trae `core.autocrlf=true`: sin esa regla, un clon o un
-worktree nuevo los saca con CRLF y bash falla en `set -euo pipefail`.
+Los `.sh`, los `.patch` y los `UPSTREAM_*` van siempre con fin de línea LF
+(`.gitattributes`). Git para Windows trae `core.autocrlf=true`: sin esa
+regla, un clon o un worktree nuevo los saca con CRLF, bash falla en
+`set -euo pipefail` y git no encuentra el commit fijado (termina en `\r`).
 
 No hay tests automatizados ni linter. Para verificar un cambio: `npm run
 build` y probar a mano en el navegador (catálogo, arrancar un juego, guardar
@@ -363,6 +364,11 @@ explicar. Los juegos con archivo propio traen `source.steps` (pasos) y
    la del motor. Criterio acordado: solo permiso explícito para repartirlo
    gratis (ver `docs/CONTEXTO.md`, sección 25). Si es implícito o no hay,
    se descarta.
+5. Antes de publicar, buscar rutas de la máquina en todo lo compilado:
+   `rg -a -l '/home/<usuario>|Users/<usuario>' public/games`. Tres causas
+   conocidas (sección 32 de `docs/CONTEXTO.md`): compilar sin
+   `-ffile-prefix-map`, mover la caché de Emscripten (`EM_CACHE`) y pasarle
+   rutas absolutas a `--preload-file`/`file_packager`.
 
 ## Convenciones
 
@@ -395,10 +401,6 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
 - ScummVM: cada tecla llega 6 veces (nombres de partida con letras
   repetidas; por eso 1 a 8 de Sołtys no están en su ficha). Ver
   `engines/scummvm/README.md`.
-- Rutas de la máquina publicadas (usuario de Windows o de WSL): `rott.js`,
-  los 4 `.js` de datos de SuperTux, `RigelEngine.wasm`, `openttd.wasm` y
-  `openjazz.wasm`. En los `.wasm` es probable que sea el port de SDL2 con la
-  caché de Emscripten movida (ver `engines/crispy-heretic/README.md`).
 - Agrupar el catálogo por plataforma (el campo `platform` ya existe).
 
 ## Ingeniería inversa con REA

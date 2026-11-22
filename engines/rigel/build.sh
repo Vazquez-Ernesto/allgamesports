@@ -58,11 +58,18 @@ fi
 echo "[build] RigelEngine.js + .wasm + .data"
 mkdir -p "$SRC/build-web" "$OUT_DIR"
 cd "$SRC/build-web"
-emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DWEBASSEMBLY_GAME_PATH="$DATA"
+# -ffile-prefix-map: que no quede la ruta de esta máquina en el .wasm (los
+# assert y los mensajes de log guardan la ruta de su archivo fuente).
+MAP="-ffile-prefix-map=$SRC/="
+emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DWEBASSEMBLY_GAME_PATH="$DATA" \
+  -DCMAKE_C_FLAGS="$MAP" -DCMAKE_CXX_FLAGS="$MAP"
 # make no sabe que cambiaron los datos ni las opciones de enlace.
 rm -f src/RigelEngine.js src/RigelEngine.wasm src/RigelEngine.data
 emmake make -j"${JOBS:-3}" RigelEngine
 
 cp src/RigelEngine.js src/RigelEngine.wasm src/RigelEngine.data "$OUT_DIR/"
 cp "$WORK/4duke.zip" "$OUT_DIR/4duke.zip"
+if grep -q "$HOME" "$OUT_DIR/RigelEngine.wasm" "$OUT_DIR/RigelEngine.js"; then
+  echo "ERROR: quedó una ruta de esta máquina en el motor"; exit 1
+fi
 ls -lh "$OUT_DIR"

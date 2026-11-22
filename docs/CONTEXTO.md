@@ -900,3 +900,38 @@ Se probó, además de los 25 mapas: guardar con F2, recargar la página y
 cargar con F3, pausa (el audio pasa a `suspended`) y salir con F10. SDL2 no
 tiene el problema de teclas repetidas de ScummVM (un solo oyente por
 evento). No se escuchó el sonido.
+
+## 32. Rutas de la máquina en lo publicado
+
+El control de Blasphemer llevó a revisar todo `public/games/`. Siete
+archivos publicados tenían rutas con el usuario de Windows o el de WSL.
+Había tres causas distintas:
+
+| Causa | Archivos | Arreglo |
+|---|---|---|
+| El código se compiló sin `-ffile-prefix-map`: los `assert` y los mensajes de error guardan la ruta de su archivo fuente (`__FILE__`) | `RigelEngine.wasm`, `openjazz.wasm`, `openttd.wasm` | `-DCMAKE_C_FLAGS`/`-DCMAKE_CXX_FLAGS` con el mapeo |
+| Un valor de configuración armado con una ruta de la máquina: OpenTTD graba su carpeta de datos "global", que salía del Emscripten instalado en `$HOME` | `openttd.wasm` | `-DGLOBAL_DIR=/usr/share/games/openttd` |
+| Rutas absolutas al empaquetar datos: Emscripten usa el nombre del `.data` tal como lo recibe como identificador dentro del `.js` | `rott.js`, los 4 `.js` de SuperTux | Salida relativa (`-o rott.js`) y `file_packager` corrido desde la carpeta de salida |
+
+La cuarta causa posible, la caché de Emscripten fuera de su carpeta, solo
+apareció en Blasphemer (sección 31).
+
+Cómo se rehízo cada uno sin tocar lo que ya andaba:
+
+- ROTT se recompiló con el mismo Emscripten 7.0.0 de Windows: `rott.wasm` y
+  `rott.data` salieron idénticos byte a byte, y solo cambió `rott.js`.
+- SuperTux no se volvió a procesar (la música recomprimida podría no salir
+  igual): `prepare-data.sh` ganó `SOLO_EMPAQUETAR=1`, que reusa lo ya
+  procesado. Los 4 `.data` (162 MB) quedaron idénticos; cambiaron 3 líneas
+  de cada `.js`. Efecto secundario: la caché del navegador usa ese nombre
+  como clave, así que quien ya lo jugó lo baja una vez más, y la copia vieja
+  queda guardada hasta que borre los datos del sitio.
+- Duke Nukem II, Jazz Jackrabbit y OpenTTD se recompilaron; sus datos no
+  cambiaron.
+
+Todos los `build.sh` tocados ahora fallan si encuentran una ruta de la
+máquina en la salida. Dos tropiezos en el camino: Windows se quedó sin
+memoria compilando OpenTTD (cada compilador de C++ usa cerca de 1 GB; se
+relanzó con `JOBS=1`), y en el worktree los archivos `UPSTREAM_*` también
+salían con CRLF (git buscaba un commit terminado en `\r`): se sumaron al
+`.gitattributes`.

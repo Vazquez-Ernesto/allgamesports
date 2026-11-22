@@ -17,7 +17,7 @@
         // web worker
         PACKAGE_PATH = encodeURIComponent(location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/');
       }
-      var PACKAGE_NAME = '/mnt/c/Users/CFOTech/Downloads/Personal/REA/allgamesports/engines/supertux/../../public/games/supertux/data/imagenes-2.data';
+      var PACKAGE_NAME = 'imagenes-2.data';
       var REMOTE_PACKAGE_BASE = 'imagenes-2.data';
       var REMOTE_PACKAGE_NAME = Module['locateFile'] ? Module['locateFile'](REMOTE_PACKAGE_BASE, '') : REMOTE_PACKAGE_BASE;
       var REMOTE_PACKAGE_SIZE = metadata['remote_package_size'];
@@ -397,9 +397,9 @@ Module['FS_createPath']("/data/images/worlds", "locked", true, true);
             // canOwn this data in the filesystem, it is a slice into the heap that will never change
         Module['FS_createDataFile'](name, null, data, true, true, true);
           }
-          Module['removeRunDependency']('datafile_/mnt/c/Users/CFOTech/Downloads/Personal/REA/allgamesports/engines/supertux/../../public/games/supertux/data/imagenes-2.data');
+          Module['removeRunDependency']('datafile_imagenes-2.data');
       }
-      Module['addRunDependency']('datafile_/mnt/c/Users/CFOTech/Downloads/Personal/REA/allgamesports/engines/supertux/../../public/games/supertux/data/imagenes-2.data');
+      Module['addRunDependency']('datafile_imagenes-2.data');
 
       if (!Module['preloadResults']) Module['preloadResults'] = {};
 
