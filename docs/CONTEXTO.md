@@ -935,3 +935,43 @@ memoria compilando OpenTTD (cada compilador de C++ usa cerca de 1 GB; se
 relanzó con `JOBS=1`), y en el worktree los archivos `UPSTREAM_*` también
 salían con CRLF (git buscaba un commit terminado en `\r`): se sumaron al
 `.gitattributes`.
+
+## 33. Duke Nukem 3D
+
+El último de la tanda. Dos decisiones previas del dueño del proyecto: se
+aceptó la licencia del motor Build de Ken Silverman (solo gratis y por
+internet, sin uso comercial), aunque no sea software libre en sentido
+estricto, y se pidió resolver de dónde salía el paquete antes de compilar.
+
+**Procedencia.** La copia disponible es un reempaquetado de archive.org. Se
+comparó contra Debian (game-data-packager, `data/duke3d.yaml`): mismo
+tamaño, MD5 y SHA-1 que el `3dduke13.zip` oficial, y su `DUKE3D.GRP` también
+coincide. Su licencia permite ofrecerlo gratis en sitios web, completo y sin
+modificar, y no como servicio multijugador.
+
+**Motor.** EDuke32 no tiene build oficial para navegador; el fork
+eduke32-wasm sí. El último commit del fork no compiló sin su juego en red
+(no se podía pasar `NETDUKE32=1`: la licencia no lo permite). Se intentó
+parchear: eran unos 30 puntos en seis archivos, algunos sin ningún `#if`
+alrededor. La historia mostró que todos los arreglos del port web eran del
+primer día, antes de la red, así que se fijó ese commit (`a0dc8ba`): el port
+puro, sin una línea de red, con un solo parche de enlace.
+
+**Datos.** Se hospeda el zip original y `play.js` lo descomprime en el
+navegador. Adentro trae `DN3DSW13.SHR`, que es otro zip: el lector de
+OpenJazz se adaptó para devolver la lista de archivos y abrir el segundo.
+
+**Teclas y Ctrl+W.** Las teclas modernas de EDuke32 avanzan con W y disparan
+con Ctrl: disparar mientras se avanza es Ctrl+W, que cierra la pestaña sin
+que la página pueda impedirlo. EDuke32 trae también las teclas originales de
+1996 (`oldkeydefaults`), que avanzan con las flechas: `play.js` las escribe
+en el primer `settings.cfg`. Se omitieron W y T, funciones del multijugador
+que con Ctrl apretado serían Ctrl+W y Ctrl+T. Revisando esto apareció el
+mismo problema en Blasphemer (Crispy suma WASD y ataca con Ctrl): su ficha
+ahora muestra flechas y aclara que con WASD se ataca con el clic.
+
+Se probó: arranque (EDuke32 reconoce "Duke Nukem 3D Shareware 1.3D"), partida
+nueva en Hollywood Holocaust, avanzar con flechas y disparar con Ctrl,
+guardar con F2, recargar la página y cargar, pausa y salir (después de las
+pantallas promocionales del shareware). No se escuchó el sonido ni se
+comprobó la música. Pide 256 MB de memoria al arrancar.

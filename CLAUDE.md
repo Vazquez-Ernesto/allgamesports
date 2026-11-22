@@ -44,6 +44,8 @@ La historia del proyecto, las decisiones y lo que se probó están en
   En Linux (WSL).
 - `wsl bash engines/crispy-heretic/build.sh`: recompila Crispy Heretic y arma
   los datos de Blasphemer. En Linux (WSL).
+- `wsl bash engines/eduke32/build.sh`: recompila EDuke32 (Duke Nukem 3D) y baja
+  el shareware. En Linux (WSL), con un solo proceso por defecto.
 - `wsl bash engines/openttd/build.sh`: recompila OpenTTD. También en Linux
   (WSL); baja su propio Emscripten y los gráficos. Tarda varios minutos.
 
@@ -73,7 +75,7 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux, Pingus, Blasphemer)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux, Pingus, Blasphemer, Duke Nukem 3D)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
@@ -85,6 +87,7 @@ src/
   runtimes/supertux/   arma la dirección del iframe de SuperTux
   runtimes/pingus/     arma la dirección del iframe de Pingus
   runtimes/crispy-heretic/  arma la dirección del iframe de Blasphemer
+  runtimes/eduke32/    arma la dirección del iframe de Duke Nukem 3D
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -108,6 +111,7 @@ engines/quake/         build.sh y parche de FTEQW (el código se clona aparte)
 engines/supertux/      build.sh, prepare-data.sh y parches de SuperTux (el código se baja aparte)
 engines/pingus/        build.sh de Pingus y sus dependencias (el código se clona aparte, sin parches)
 engines/crispy-heretic/  build.sh, parche y config.h de Crispy Heretic, para Blasphemer (el código se clona aparte)
+engines/eduke32/       build.sh, parche y licencias de EDuke32, para Duke Nukem 3D (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -342,6 +346,25 @@ engines/crispy-heretic/  build.sh, parche y config.h de Crispy Heretic, para Bla
 - No mover la caché de Emscripten (`EM_CACHE`): los ports (SDL2...) dejan la
   ruta de la máquina en el `.wasm` si la caché está fuera de su carpeta. Ver
   su README.
+- Crispy suma WASD: con esas teclas hay que atacar con el clic (Ctrl+W cierra
+  la pestaña). La ficha lo avisa.
+
+## Cómo funciona Duke Nukem 3D
+
+- El motor es EDuke32 (GPL-2.0) con el motor Build de Ken Silverman (licencia
+  BUILD: solo gratis y por internet; aceptada a propósito). Se usa el fork
+  eduke32-wasm, fijado en el último commit antes de su juego en red: los
+  siguientes no compilan sin red. Ver `engines/eduke32/README.md`.
+- Corre en un iframe (`public/games/eduke32/play.html`), con SDL2 y Asyncify.
+  Se hospeda el paquete shareware original (`3dduke13.zip`, verificado contra
+  los hashes de Debian) y `play.js` lo descomprime: adentro trae otro zip.
+- La carpeta de trabajo es `/save-duke3d`, montada sobre IndexedDB:
+  configuración, teclas y partidas quedan ahí. Los datos van en `/duke3d`.
+- Teclas clásicas del juego (avanzar con flechas), que `play.js` deja en el
+  primer `settings.cfg`: con las modernas, avanzar (W) y disparar (Ctrl) es
+  Ctrl+W.
+- Junto al motor van `BUILDLIC.TXT` y `BUILD-NOTICE.txt`, que la licencia
+  BUILD exige.
 
 ## Agregar un juego
 
@@ -369,6 +392,9 @@ explicar. Los juegos con archivo propio traen `source.steps` (pasos) y
    conocidas (sección 32 de `docs/CONTEXTO.md`): compilar sin
    `-ffile-prefix-map`, mover la caché de Emscripten (`EM_CACHE`) y pasarle
    rutas absolutas a `--preload-file`/`file_packager`.
+6. Revisar que los controles no armen combinaciones que el navegador se
+   reserva y la página no puede frenar: Ctrl+W (cerrar pestaña), Ctrl+T,
+   Ctrl+N, Ctrl+Tab. El caso típico: avanzar con W y disparar con Ctrl.
 
 ## Convenciones
 

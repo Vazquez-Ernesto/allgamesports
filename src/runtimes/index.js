@@ -17,6 +17,7 @@ import { startDoom } from './doom/index.js'
 import { defaultBindings as doomBindings } from './doom/keys.js'
 import { startGameBoy } from './gameboy/index.js'
 import { startCrispyHeretic } from './crispy-heretic/index.js'
+import { startEduke32 } from './eduke32/index.js'
 import { startHeretic } from './heretic/index.js'
 import { startNes } from './nes/index.js'
 import { startOpenjazz } from './openjazz/index.js'
@@ -187,20 +188,51 @@ const heretic = {
   start: ({ frame, onQuit, onError }) => startHeretic({ frame, onQuit, onError }),
 }
 
+// Duke Nukem 3D sobre EDuke32. Teclas: las originales del juego, que EDuke32
+// trae como "clásicas" y play.js deja configuradas (con las modernas, avanzar
+// con W y disparar con Ctrl es Ctrl+W: el navegador cierra la pestaña).
+const eduke32 = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '↑', '↓', '→'], 'mover y girar'],
+    [['Ctrl'], 'disparar'],
+    [['Espacio'], 'abrir, usar'],
+    [['A'], 'saltar'],
+  ],
+  keyList: [
+    ['Flechas', 'Avanzar, retroceder y girar'],
+    ['Mouse', 'Apuntar (hacé clic en el juego para activarlo; Esc lo suelta)'],
+    ['Ctrl o clic', 'Disparar'],
+    ['Espacio', 'Abrir puertas, usar interruptores'],
+    ['A / Z', 'Saltar / agacharse'],
+    ['Shift', 'Correr (Bloq Mayús: correr siempre)'],
+    [', y . (o Alt + flechas)', 'Moverse de costado'],
+    ['RePág / AvPág', 'Mirar hacia arriba / hacia abajo'],
+    ['1 a 0', 'Elegir arma'],
+    ['[ y ] / Enter', 'Elegir y usar un objeto del inventario'],
+    ['M / N / J', 'Botiquín / visión nocturna / jetpack'],
+    ['Tab', 'Mapa'],
+    ['F2 / F3', 'Guardar / cargar partida'],
+    ['Esc', 'Menú'],
+  ],
+  start: ({ frame, onQuit, onError }) => startEduke32({ frame, onQuit, onError }),
+}
+
 // Blasphemer sobre Crispy Heretic: las teclas de Heretic más las que Crispy
 // suma por defecto (WASD y Bloq Mayús; ver m_controls.c de Crispy Doom).
 const crispyHeretic = {
   surface: 'iframe',
   defaultSettings: {},
   hint: [
-    [['W', 'A', 'S', 'D'], 'moverse'],
+    [['←', '↑', '↓', '→'], 'mover y girar'],
     [['Ctrl'], 'atacar'],
     [['Espacio'], 'abrir puertas'],
     [['Enter'], 'usar objeto'],
   ],
   keyList: [
     ['Flechas', 'Avanzar, retroceder y girar'],
-    ['W A S D', 'Avanzar, retroceder y moverse de costado'],
+    ['W A S D', 'Avanzar, retroceder y moverse de costado (con estas, atacá con el clic: Ctrl+W cierra la pestaña)'],
     ['Mouse', 'Girar (hacé clic en el juego para activarlo; Esc lo suelta)'],
     ['Ctrl o clic', 'Atacar'],
     ['Espacio', 'Abrir puertas y accionar interruptores'],
@@ -383,6 +415,7 @@ const pingus = {
 const RUNTIMES = {
   doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake, supertux, pingus,
   'crispy-heretic': crispyHeretic,
+  eduke32,
 }
 
 export function runtimeFor(engine) {
