@@ -71,6 +71,7 @@ Están en `public/games/nes/roms/`, con su licencia al lado:
 | Thwaite 0.04a | Homebrew Hub (github.com/pinobatch/thwaite-nes) | GPL-3.0 o posterior | 0 (NROM) | `80e0918ea17577477c2f1b16beefadf457f207931ffbeae7612d8d230f999843` |
 | Concentration Room | Homebrew Hub (github.com/pinobatch/croom-nes) | GPL-3.0 o posterior | 0 (NROM) | `9b0b1e9b14b07a2e69db287e04f711e16af42b6cc85523b66bdfa640df80507a` |
 | RHDE: Furniture Fight | Homebrew Hub (github.com/pinobatch/rhde-nes) | GNU All-Permissive | 0 (NROM) | `b2c4748a5b3651e393572046daf126213653b58b55472cdfdf4b863834dd0241` |
+| 8-Bit Table Tennis 1.0 | Release v1.0 del autor (github.com/mike42/8bit-table-tennis) | MIT | 0 (NROM) | `05122457672f95fcf2ee518c3f37e506617725c2d031100b1b1c8b7785068ea3` |
 
 **Nova the Squirrel** tiene arte con licencia no comercial: se puede repartir
 gratis con atribución, no vender. Si algún día el sitio cobrara o tuviera
@@ -78,6 +79,11 @@ publicidad, habría que revisarlo. El autor tampoco permite usar al personaje
 en otra cosa.
 
 **RHDE** es solo para dos jugadores: entró cuando se sumó el segundo control.
+
+**8-Bit Table Tennis** también es para dos. No está en Homebrew Hub: se bajó
+de la release v1.0 del repositorio del autor. Su código parte del ejemplo
+`bbbradsmith/NES-ca65-example`, que se puede repartir y reusar libremente
+("can be freely redistributed, modified or reused in any way").
 
 Los archivos se bajan de
 `https://hh3.gbdev.io/static/database-nes/entries/<juego>/<archivo>` y la

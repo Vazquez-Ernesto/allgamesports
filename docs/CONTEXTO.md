@@ -1076,3 +1076,49 @@ que rechace el zip de otro juego y archivos fuera de lo suyo (`scummvm.ini`,
 perder los últimos segundos. Es una deducción, no se probó: React saca el
 iframe de la página antes de correr la limpieza del reproductor, así que ya
 no hay a quién pedirle la copia.
+
+## 36. Dragon Ball otra vez, nueva tanda y 8-Bit Table Tennis
+
+**Dragon Ball, segunda vuelta.** Se pidió portar Budokai Tenkaichi 1 a 4 con
+BT4decomp (NauTaro), que corre sobre Tenkaichi3Decomp (z3xox). Los dos repos
+son AGPL-3.0, pero esa licencia cubre solo el código del port: el README de
+Tenkaichi3Decomp aclara que el código del juego (`src/`, `include/`) sale de
+la decompilación y "belongs to the game's rights holders", y que los datos se
+leen de la ISO del jugador. Además se desmarca de cualquier sitio que lo
+corra en el navegador. Choca con la regla del catálogo igual que en la
+sección 27. De BT1 no hay decomp ni recomp; de BT2 solo BT2-Recomp, verde y
+solo para Windows x64. Para jugarlo en casa está la versión nativa de
+BT4decomp con la ISO propia, que ya trae online.
+
+**La tanda nueva: juegos para jugar de a varios**, que es lo que se buscaba de
+Dragon Ball. En orden: 8-Bit Table Tennis (NES), Jump 'n Bump y GLFighters.
+Quedaron en reserva SDL Sopwith, Powermanga, Project: Starfighter y Lugaru
+(este sin versus). Descartados por licencia: Super Tilt Bro. (personajes de
+otros juegos sin licencia publicada, como VGSage y Sunny), Ikemen GO (no hay
+personajes libres: Kung Fu Man es no comercial), C-Dogs (su autor admite que
+los sonidos son de películas, sin permiso), Blobby Volley 2, Hurrican,
+Teen Agent y Mission Supernova (sin licencia de datos).
+
+**Nova the Squirrel**: el README de su autor hoy pide "Do not involve this
+game with AI-assisted projects". Este sitio se hace con IA. Por ahora se
+queda; se decide en la revisión general.
+
+**8-Bit Table Tennis** (Michael Billington, 2020, MIT): ping-pong estilo Pong
+para dos. La ROM es la release v1.0 del autor (40 KB, cartucho NROM). Su
+código parte del ejemplo de Brad Smith, que se puede repartir y reusar
+libremente. Tabla con SHA-256 en `engines/nes/README.md`.
+
+**Dos trampas al probar con el navegador automatizado:**
+
+- Una tecla apretada y soltada al instante no llega al juego: el emulador
+  mira los botones una vez por cuadro y el evento entra y sale entre dos
+  cuadros. Para probar, mantenerla unos 150 ms (`keydown`, espera, `keyup`
+  sobre `window`).
+- La extensión de Chrome bloquea las respuestas de JavaScript que parecen
+  datos binarios (base64, hexadecimal), así que la portada no se puede sacar
+  con `canvas.toDataURL`. Se capturó la zona del canvas como imagen y se
+  achicó a 320x200 con Python (PIL), con bordes negros como las otras de NES.
+
+Se probó: arranca, la pantalla de título, Start, el saque y las dos paletas
+(jugador 1 con flechas, jugador 2 con Y/H). No se probó con mandos ni se
+escuchó el sonido.
