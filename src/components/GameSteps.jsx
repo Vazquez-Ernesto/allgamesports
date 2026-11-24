@@ -2,11 +2,17 @@
 // Los juegos con archivo propio traen sus pasos en source.steps y una
 // explicación de por qué hace falta el archivo en source.why.
 
+import { runtimeFor } from '../runtimes/index.js'
+
+// Mismo criterio que el botón "Partidas": guarda si el motor declara `saves`.
 function hostedSteps(game) {
+  const saves = runtimeFor(game.engine).saves
   return [
     `Tocá "Jugar". La primera vez descarga unos ${game.source.downloadMB} MB.`,
     'Abrí "Controles" para ver las teclas de este juego.',
-    'Tu partida queda guardada en este navegador: podés cerrar y seguir después.',
+    saves
+      ? 'Tu partida queda guardada en este navegador: podés cerrar y seguir después.'
+      : 'Este juego no guarda partidas: cada vez que entrás, arranca de cero.',
   ]
 }
 
