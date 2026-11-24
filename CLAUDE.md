@@ -26,6 +26,8 @@ La historia del proyecto, las decisiones y lo que se probó están en
 - `npm run build:wolf3d`: recompila Wolf4SDL, el motor de Wolfenstein 3D.
 - `npm run build:heretic`: recompila Chocolate Heretic.
 - `npm run build:rott`: recompila taradino (Rise of the Triad) con sus datos.
+- `npm run build:jumpnbump`: recompila Jump 'n Bump y arma sus datos (necesita
+  también Node).
 - `wsl bash engines/scummvm/build.sh`: recompila ScummVM. Corre en Linux (en
   Windows, WSL); baja su propio Emscripten. Después,
   `node engines/scummvm/prepare-data.mjs <carpeta>` arma los datos de los
@@ -75,7 +77,7 @@ src/
   runtimes/index.js    registro de motores: lo que el reproductor sabe de cada uno
   runtimes/doom/       JS que conecta doom.wasm con canvas, audio y controles
   runtimes/tyrian/     JS que arranca tyrian.wasm (SDL2 resuelve video, audio y teclado)
-  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux, Pingus, Blasphemer, Duke Nukem 3D)
+  runtimes/iframe.js   motores que corren en su propia página (ScummVM, Wolfenstein 3D, OpenTTD, Heretic, Jazz Jackrabbit, Duke Nukem II, Rise of the Triad, LibreQuake, SuperTux, Pingus, Blasphemer, Duke Nukem 3D, Jump 'n Bump)
   runtimes/scummvm/    arma la dirección del iframe de ScummVM
   runtimes/wolf3d/     arma la dirección del iframe de Wolfenstein 3D
   runtimes/openttd/    arma la dirección del iframe de OpenTTD
@@ -88,6 +90,7 @@ src/
   runtimes/pingus/     arma la dirección del iframe de Pingus
   runtimes/crispy-heretic/  arma la dirección del iframe de Blasphemer
   runtimes/eduke32/    arma la dirección del iframe de Duke Nukem 3D
+  runtimes/jumpnbump/  arma la dirección del iframe de Jump 'n Bump
   runtimes/consoleInput.js  teclado y mando para las consolas (Game Boy y NES)
   runtimes/gameboy/    conecta el emulador binjgb con canvas, audio y guardado
   runtimes/nes/        conecta el emulador binjnes con canvas, audio y guardado
@@ -112,6 +115,7 @@ engines/supertux/      build.sh, prepare-data.sh y parches de SuperTux (el códi
 engines/pingus/        build.sh de Pingus y sus dependencias (el código se clona aparte, sin parches)
 engines/crispy-heretic/  build.sh, parche y config.h de Crispy Heretic, para Blasphemer (el código se clona aparte)
 engines/eduke32/       build.sh, parche y licencias de EDuke32, para Duke Nukem 3D (el código se clona aparte)
+engines/jumpnbump/     build.sh y parche de Jump 'n Bump (el código se clona aparte)
 .github/workflows/     deploy.yml publica en GitHub Pages
 ```
 
@@ -366,12 +370,28 @@ engines/eduke32/       build.sh, parche y licencias de EDuke32, para Duke Nukem 
 - Junto al motor van `BUILDLIC.TXT` y `BUILD-NOTICE.txt`, que la licencia
   BUILD exige.
 
+## Cómo funciona Jump 'n Bump
+
+- Jump 'n Bump 1.70 (GPL-2.0+, código y datos), del repositorio oficial
+  LibreGames en GitLab. `build.sh` corre en Git Bash (sin WSL): clona el tag,
+  verifica el commit, aplica un parche de declaraciones y compila con `emcc`
+  directo, sin juego en red (SDL2_net usa sockets TCP).
+- Los datos (`jumpbump.dat`) se arman con dos herramientas de C del repo,
+  compiladas con `emcc` para Node. Se clona con `core.autocrlf=false` para
+  que los `.txt` que van adentro no cambien según la máquina.
+- Corre en un iframe (`public/games/jumpnbump/play.html`), con SDL2 y
+  Asyncify. No guarda nada: sin IndexedDB ni panel "Partidas".
+- Hasta cuatro jugadores en el mismo teclado (flechas, A W D, J I L y el
+  teclado numérico) o con mandos. Música `.mod` con libmodplug, que es C++:
+  por eso `-sDEFAULT_TO_CXX`.
+
 ## Partidas: exportar e importar
 
 - El botón "Partidas" del reproductor abre `components/SavesPanel.jsx`:
   exportar baja `partidas-<slug>-<fecha>.zip`; importar lo reemplaza todo.
   Aparece si el motor declara `saves` en `runtimes/index.js` (Jazz
-  Jackrabbit no: no guarda partidas).
+  Jackrabbit y Jump 'n Bump no: no guardan partidas). "Cómo jugar"
+  (`GameSteps.jsx`) usa el mismo criterio para prometer o no el guardado.
 - `saves` dice dónde guarda cada juego (`lib/savedGames.js`): IndexedDB de
   IDBFS (la ruta que monta su `play.js`; `dir` y `match` separan los juegos
   de una base compartida, como Doom/Tyrian en `/save` y los de ScummVM en

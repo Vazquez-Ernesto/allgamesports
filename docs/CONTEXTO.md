@@ -1122,3 +1122,48 @@ libremente. Tabla con SHA-256 en `engines/nes/README.md`.
 Se probó: arranca, la pantalla de título, Start, el saque y las dos paletas
 (jugador 1 con flechas, jugador 2 con Y/H). No se probó con mandos ni se
 escuchó el sonido.
+
+## 37. Jump 'n Bump
+
+Segundo juego de la tanda. Jump 'n Bump 1.70 (Brainchild Design, DOS, 1998),
+del repositorio oficial de LibreGames en GitLab. Código y datos bajo
+GPL-2.0 o posterior; el readme de 1998 ya invitaba a repartirlo. Detalles de
+compilación, parche y controles en `engines/jumpnbump/README.md`.
+
+**Primer port que compila en Git Bash, sin WSL.** Lo que costó:
+
+- Sin juego en red (`USE_NET` apagado, porque SDL2_net usa sockets TCP),
+  dos funciones quedaban sin declarar y clang cortaba con "conflicting
+  types". El único parche las saca del `#ifdef` en `network.h`.
+- La música son módulos `.mod` que lee libmodplug, escrita en C++. Al
+  enlazar un programa en C faltan `new` y `delete`: `-sDEFAULT_TO_CXX`.
+- Los datos (`jumpbump.dat`) se arman con dos herramientas de C del repo.
+  Git Bash no trae `gcc`, así que se compilan con `emcc` para Node
+  (`-sNODERAWFS=1`) y se corren con `node`.
+- Git para Windows clona con CRLF: los `.txt` que van dentro del `.dat`
+  cambiaban según la máquina. Se clona con `core.autocrlf=false`.
+- El chequeo de rutas del build no puede buscar `/home/`: el `.js` de
+  Emscripten trae `/home/web_user` de fábrica.
+
+**"Cómo jugar" prometía guardar en juegos que no guardan.** El tercer paso
+de los juegos hospedados decía siempre "Tu partida queda guardada en este
+navegador". Era falso en Jump 'n Bump y en los tres Jazz Jackrabbit (OpenJazz
+no guarda partidas). `GameSteps.jsx` ahora usa el mismo criterio que el botón
+"Partidas": si el motor declara `saves`, lo promete; si no, avisa que arranca
+de cero.
+
+**El conejo se llama Dott**, con doble t, como lo escribe el juego en el
+marcador. Los controles decían "Dot".
+
+**Portada.** Captura de una partida con la computadora manejando a Jiffy. El
+juego dibuja en 400x256 y SDL lo centra en el iframe con barras negras a los
+costados: se recortaron las barras (la proporción quedó en 1,5623 contra
+1,5625 del juego, o sea sin estirar), se llevó a 320 de ancho y se recortaron
+2 o 3 filas arriba y abajo para llegar a 200.
+
+Se probó en Chrome: arranca en el menú, dos conejos (flechas y
+A W D) saltan el tronco y empiezan la partida, el marcador suma, las teclas
+1 y 2 le pasan los conejos a la computadora, Esc termina la ronda y muestra
+la tabla, y Esc en el menú cierra el juego ("Volver a jugar"). No se probaron
+Fizz ni Mijji, los mandos, Firefox ni Safari, y el sonido no se escuchó (las
+pruebas son automatizadas).

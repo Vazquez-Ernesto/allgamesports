@@ -29,6 +29,7 @@ import { startOpenttd } from './openttd/index.js'
 import { startQuake } from './quake/index.js'
 import { startRigel } from './rigel/index.js'
 import { startRott } from './rott/index.js'
+import { startJumpnbump } from './jumpnbump/index.js'
 import { startSupertux } from './supertux/index.js'
 import { startPingus } from './pingus/index.js'
 import { scummvmSaves, startScummvm } from './scummvm/index.js'
@@ -229,6 +230,28 @@ const eduke32 = {
   ],
   saves: () => ({ type: 'idbfs', db: '/save-duke3d' }),
   start: ({ frame, onQuit, onError }) => startEduke32({ frame, onQuit, onError }),
+}
+
+// Jump 'n Bump: corre en su propia página. No guarda partidas (sin `saves`).
+const jumpnbump = {
+  surface: 'iframe',
+  defaultSettings: {},
+  hint: [
+    [['←', '↑', '→'], 'Jiffy'],
+    [['A', 'W', 'D'], 'Dott'],
+    [['J', 'I', 'L'], 'Fizz'],
+    [['Esc'], 'salir'],
+  ],
+  keyList: [
+    ['← ↑ →', 'Jiffy: izquierda, saltar, derecha'],
+    ['A W D', 'Dott: izquierda, saltar, derecha'],
+    ['J I L', 'Fizz: izquierda, saltar, derecha'],
+    ['4 8 6 del teclado numérico', 'Mijji: izquierda, saltar, derecha'],
+    ['1 a 4', 'En la partida: la computadora maneja ese conejo (otra vez, lo devuelve)'],
+    ['Esc', 'Terminar la ronda (en el menú, salir)'],
+  ],
+  keyNote: 'Las teclas son por posición, como en un teclado QWERTY. Un mando maneja a un conejo con el eje y el primer botón.',
+  start: ({ frame, onQuit, onError }) => startJumpnbump({ frame, onQuit, onError }),
 }
 
 // Blasphemer sobre Crispy Heretic: las teclas de Heretic más las que Crispy
@@ -435,6 +458,7 @@ const RUNTIMES = {
   doom, tyrian, scummvm, gameboy, nes, wolf3d, openttd, heretic, openjazz, rigel, rott, quake, supertux, pingus,
   'crispy-heretic': crispyHeretic,
   eduke32,
+  jumpnbump,
 }
 
 export function runtimeFor(engine) {

@@ -1355,6 +1355,34 @@ export const GAMES = [
       ['Guardado', 'En tu navegador'],
     ],
   },
+  {
+    slug: 'jump-n-bump',
+    title: "Jump 'n Bump",
+    short: 'Conejos que se aplastan saltándose en la cabeza (1998), para hasta cuatro personas en el mismo teclado.',
+    platform: 'dos',
+    genre: 'Acción',
+    year: 1998,
+    developer: 'Brainchild Design',
+    publisher: 'Brainchild Design (gratis, para copiar y pasar)',
+    engine: 'jumpnbump',
+    cover: 'games/jumpnbump/jumpnbump-cover.png',
+    source: {
+      type: 'hosted',
+      downloadMB: 2,
+    },
+    description: [
+      'Cuatro conejos en una misma pantalla y una sola regla: caerle en la cabeza a otro suma un punto. Hay resortes, agua, hielo y moscas. Cada uno maneja su conejo con tres teclas (izquierda, saltar, derecha) y todos comparten el teclado, o usan mandos. Para entrar a la partida, cada jugador salta el tronco del menú y camina hacia la derecha. El primero que llega a 100 gana.',
+      'Lo hizo Brainchild Design, un grupo sueco, en 1998 para DOS, y lo repartió gratis invitando a pasarlo a todo el mundo. En 1999 liberaron el código; la comunidad lo llevó a SDL y lo sigue manteniendo como software libre. Acá corre ese código, compilado a WebAssembly, con su música y sus efectos.',
+    ],
+    facts: [
+      ['Jugadores', 'De dos a cuatro, en el mismo teclado o con mandos; la computadora puede manejar conejos'],
+      ['Motor y datos', "Jump 'n Bump 1.70 (GPL-2.0 o posterior)"],
+      ['Código', 'gitlab.com/LibreGames/jumpnbump'],
+      ['Tecnología', 'C → WebAssembly con Emscripten'],
+      ['Descarga', 'Unos 2 MB la primera vez'],
+      ['Guardado', 'No guarda partidas'],
+    ],
+  },
 ]
 
 export function findGame(slug) {
