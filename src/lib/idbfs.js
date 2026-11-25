@@ -104,3 +104,25 @@ export async function replaceFiles(place, files) {
     db.close()
   }
 }
+
+// Escribe solo estos archivos y borra solo estos otros (rutas relativas a su
+// carpeta); lo demás de la base queda como está.
+function writeSome(db, place, changed, removed) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE, 'readwrite')
+    const store = transaction.objectStore(STORE)
+    removed.forEach((path) => store.delete(`${rootOf(place)}/${path}`))
+    recordsFor(place, changed).forEach((record, key) => store.put(record, key))
+    transaction.oncomplete = () => resolve()
+    transaction.onabort = () => reject(transaction.error)
+  })
+}
+
+export async function updateFiles(place, changed, removed) {
+  const db = await openDb(place.db, true)
+  try {
+    await writeSome(db, place, changed, removed)
+  } finally {
+    db.close()
+  }
+}

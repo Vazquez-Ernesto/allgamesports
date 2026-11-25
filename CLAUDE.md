@@ -156,8 +156,10 @@ engines/jumpnbump/     build.sh y parche de Jump 'n Bump (el código se clona ap
 - Los WAD se sirven comprimidos con gzip y extensión `.wadgz`. La extensión
   es a propósito: con `.gz` algunos servidores agregan `Content-Encoding` y
   rompen la barra de progreso.
-- Las partidas se guardan en IndexedDB (IDBFS montado en `/save`, una carpeta
-  por juego).
+- Las partidas se guardan en IndexedDB (base `/save`, una carpeta por juego,
+  compartida con Tyrian). `lib/saves.js` copia solo las diferencias de la
+  carpeta del juego. No montar IDBFS ahí: es un espejo y borraba partidas de
+  otras pestañas y de otros juegos (`docs/CONTEXTO.md`, sección 38).
 
 ## Cómo funciona el port de Tyrian
 
@@ -474,6 +476,9 @@ https://vazquez-ernesto.github.io/allgamesports/. Antes de subir, correr
 - Partidas: salir de la ficha con un juego en iframe andando puede perder los
   últimos segundos (deducido, ver `docs/CONTEXTO.md`, sección 35). Exportar e
   importar no se probó en Firefox ni Safari.
+- Partidas en iframe: siguen con IDBFS (espejo), así que dos pestañas del
+  mismo juego se pueden borrar lo guardado; ScummVM comparte `/home/web_user`
+  entre sus ocho juegos (sección 38).
 
 ## Ingeniería inversa con REA
 

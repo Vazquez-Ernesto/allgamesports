@@ -66,7 +66,7 @@ Node 22. El código de doomgeneric se copió del commit que figura en
 | Sonido: C entrega PCM de 8 bits y JS lo reproduce con Web Audio | Evita compilar un mezclador; cada efecto se convierte una sola vez a `AudioBuffer` |
 | Música: módulo vacío | Los temas están en formato MUS y necesitan un sintetizador. Quedó pendiente |
 | Límites del renderer ampliados y `-mb 64` | Freedoom exige un motor "limit-removing"; con los límites de 1993 algunos mapas fallarían |
-| Partidas en IndexedDB (IDBFS en `/save/<juego>`) | Persisten entre visitas; se sincronizan cada 4 segundos y al ocultar la pestaña |
+| Partidas en IndexedDB (base `/save`, carpeta `/save/<juego>`) | Persisten entre visitas; se sincronizan cada 4 segundos y al ocultar la pestaña. Desde la sección 38, por diferencias y sin montar IDBFS |
 
 ### Problemas que aparecieron
 
@@ -1167,3 +1167,47 @@ A W D) saltan el tronco y empiezan la partida, el marcador suma, las teclas
 la tabla, y Esc en el menú cierra el juego ("Volver a jugar"). No se probaron
 Fizz ni Mijji, los mandos, Firefox ni Safari, y el sonido no se escuchó (las
 pruebas son automatizadas).
+
+## 38. Partidas de Doom borradas: IDBFS es un espejo
+
+En producción no se podía exportar la partida de Doom: el panel contaba 0
+archivos. En la base `/save` del navegador quedaban solo las carpetas
+`.savegame`, vacías. Las partidas se habían borrado.
+
+**Causa.** `FS.syncfs(false)` de IDBFS no copia "lo nuevo": deja la base
+igual a lo que la instancia tiene en memoria y borra lo que no conoce. Doom,
+Freedoom 1 y 2 y Tyrian comparten la base `/save` (una carpeta por juego) y
+cada uno montaba la carpeta entera. Con dos instancias vivas a la vez (dos
+pestañas, o un juego trabado que el reproductor no pudo cerrar), la que tenía
+la foto vieja borraba lo que había guardado la otra, aunque fuera de otro
+juego. Se reprodujo: la partida aparecía y desaparecía de la base cada 4 s.
+
+**Arreglo: copiar por diferencias** (`lib/saves.js`). `/save` ya no se monta
+con IDBFS: es una carpeta en memoria. Al arrancar se llena con lo que hay en
+la base (`listFiles` de `lib/idbfs.js`, mismo formato que IDBFS). Cada 4 s,
+al ocultar la pestaña y al cerrar, se compara la carpeta del juego con la
+última foto que vio esa instancia: se escribe lo que cambió y se borra lo que
+se borró (`updateFiles`, en una transacción). Si no cambió nada, ni se abre
+la base. Una instancia vieja o trabada no escribe nada, así que no pisa a
+nadie. Si dos pestañas guardan el mismo archivo, gana la última.
+
+Descartados: un candado con Web Locks (escribe una sola instancia), porque lo
+que guardara la otra pestaña se perdía y un juego trabado se quedaba con el
+candado; y una base por juego, que no cubre dos pestañas del mismo juego y
+obligaba a migrar las partidas. Las partidas que ya se borraron no se
+recuperan.
+
+**Pruebas** (Chrome, automatizadas). Con tres instancias reales del motor de
+Doom en la misma página: con el código viejo, B sin cambios sincronizó y
+borró la partida de A y la de otro juego; con el nuevo, quedaron las dos, y
+borrar en A borró solo ese archivo. Freedoom de punta a punta: guardar con
+F2, recargar y verla en F3; con dos pestañas jugando, la partida que guardó
+la segunda seguía en la base 16 s después, y el panel "Partidas" la mostraba
+para exportar. Tyrian: la misma prueba sobre su sistema de archivos
+(Emscripten 7), sin los datos del juego. No se probó Firefox ni Safari.
+
+**Sigue pendiente.** Los juegos en iframe siguen con IDBFS, cada uno en su
+base: dos pestañas del mismo juego todavía se pueden pisar, y ScummVM
+comparte `/home/web_user` entre sus ocho juegos. Además, `startDoom` hace
+`await audio.resume()` después de montar las partidas: sin un clic real se
+cuelga y deja una instancia zombi. Ahora no borra nada, pero sigue ahí.
